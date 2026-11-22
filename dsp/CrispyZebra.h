@@ -429,54 +429,75 @@ public:
                 break;
             }
             case Waveform::REZ_SAW: {
-                // Authentic CZ 1x..15x resonant harmonic sweep under sawtooth window
+                // Authentic Casio uPD933 unipolar resonant formula: (1 - cos(k*phi)) * window(phi)
+                // Preserves full fat sawtooth fundamental PLUS screaming 1x..15x resonant sweep!
                 uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
                     + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
                 uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                int32_t core_bipolar = static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]);
+                uint32_t core_uni = static_cast<uint32_t>(static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) + 32768);
                 uint32_t window = 65535 - local_phase;
-                raw_sample = ((core_bipolar * static_cast<int32_t>(window)) >> 16) + 32768;
+                int32_t prod = static_cast<int32_t>((static_cast<uint64_t>(core_uni) * window) >> 16);
+                int32_t centered = ((prod - 16384) * 5) >> 2;
+                if (centered > 32767) centered = 32767;
+                else if (centered < -32768) centered = -32768;
+                raw_sample = centered + 32768;
                 break;
             }
             case Waveform::REZ_TRI: {
                 uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
                     + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
                 uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                int32_t core_bipolar = static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]);
+                uint32_t core_uni = static_cast<uint32_t>(static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) + 32768);
                 uint32_t window = (local_phase < 32768) ? (local_phase << 1) : ((65535 - local_phase) << 1);
-                raw_sample = ((core_bipolar * static_cast<int32_t>(window)) >> 16) + 32768;
+                int32_t prod = static_cast<int32_t>((static_cast<uint64_t>(core_uni) * window) >> 16);
+                int32_t centered = ((prod - 16384) * 5) >> 2;
+                if (centered > 32767) centered = 32767;
+                else if (centered < -32768) centered = -32768;
+                raw_sample = centered + 32768;
                 break;
             }
             case Waveform::REZ_TRAP: {
                 uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
                     + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
                 uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                int32_t core_bipolar = static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]);
+                uint32_t core_uni = static_cast<uint32_t>(static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) + 32768);
                 uint32_t window;
                 if (local_phase < 16384) window = local_phase << 2;
                 else if (local_phase > 49152) window = (65535 - local_phase) << 2;
                 else window = 65535;
-                raw_sample = ((core_bipolar * static_cast<int32_t>(window)) >> 16) + 32768;
+                int32_t prod = static_cast<int32_t>((static_cast<uint64_t>(core_uni) * window) >> 16);
+                int32_t centered = prod - 24576;
+                if (centered > 32767) centered = 32767;
+                else if (centered < -32768) centered = -32768;
+                raw_sample = centered + 32768;
                 break;
             }
             case Waveform::REZ_PULSE: {
                 uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
                     + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
                 uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                int32_t core_bipolar = static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]);
+                uint32_t core_uni = static_cast<uint32_t>(static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) + 32768);
                 uint32_t window = (local_phase < 32768) ? 65535 : 0;
-                raw_sample = ((core_bipolar * static_cast<int32_t>(window)) >> 16) + 32768;
+                int32_t prod = static_cast<int32_t>((static_cast<uint64_t>(core_uni) * window) >> 16);
+                int32_t centered = prod - 16384;
+                if (centered > 32767) centered = 32767;
+                else if (centered < -32768) centered = -32768;
+                raw_sample = centered + 32768;
                 break;
             }
             case Waveform::REZ_DBL_SAW: {
                 uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
                     + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
                 uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                int32_t core_bipolar = static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]);
+                uint32_t core_uni = static_cast<uint32_t>(static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) + 32768);
                 uint32_t window = (local_phase < 32768)
                     ? 65535 - (static_cast<uint32_t>(local_phase) << 1)
                     : 65535 - (static_cast<uint32_t>(local_phase - 32768) << 1);
-                raw_sample = ((core_bipolar * static_cast<int32_t>(window)) >> 16) + 32768;
+                int32_t prod = static_cast<int32_t>((static_cast<uint64_t>(core_uni) * window) >> 16);
+                int32_t centered = ((prod - 16384) * 5) >> 2;
+                if (centered > 32767) centered = 32767;
+                else if (centered < -32768) centered = -32768;
+                raw_sample = centered + 32768;
                 break;
             }
         }
@@ -610,7 +631,7 @@ public:
             const bool l1_done = !need_l1 || (line1.dca_eg.current_level < 100);
             const bool l2_done = !need_l2 || (line2.dca_eg.current_level < 100);
             if (l1_done && l2_done) return true;
-            if (samples_since_note_off > sample_rate * 4) return true;
+            if (samples_since_note_off > sample_rate * 12) return true;
         } else {
             samples_since_note_off = 0;
         }
@@ -693,6 +714,8 @@ private:
     bool noise_modulation = false;
     float dc_x1 = 0.0f;
     float dc_y1 = 0.0f;
+    float dc_x1R = 0.0f;
+    float dc_y1R = 0.0f;
 
     // MASTER section (PARAMETERS.md)
     uint8_t master_octave = 1;         // 0-2 (1=center)
@@ -786,6 +809,16 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
         else if (eg_type == 2) osc.dca_eg.stages[stage].rate = internal_rate;
     }
 }
+
+    void setEgRateDirect(int line, int eg_type, int stage, uint32_t internal_rate) {
+        if (stage < 0 || stage > 7) return;
+        for (auto& v : voices) {
+            Oscillator& osc = (line == 1) ? v.line1 : v.line2;
+            if (eg_type == 0) osc.dco_eg.stages[stage].rate = internal_rate;
+            else if (eg_type == 1) osc.dcw_eg.stages[stage].rate = internal_rate;
+            else if (eg_type == 2) osc.dca_eg.stages[stage].rate = internal_rate;
+        }
+    }
 
     void setEgLevel(int line, int eg_type, int stage, uint8_t value) {
         if (stage < 0 || stage > 7) return;
@@ -980,6 +1013,8 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
         }
         dc_x1 = 0.0f;
         dc_y1 = 0.0f;
+        dc_x1R = 0.0f;
+        dc_y1R = 0.0f;
         vibrato_lfo.release();
     }
     void setPitchBendRangeUp(uint8_t semitones) { pitch_bend_up_semitones = semitones > 24 ? 24 : semitones; }
@@ -1251,6 +1286,129 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
             } else {
                 outputBuffer[i] = out_val;
             }
+        }
+
+        for (uint8_t vi = 0; vi < limit; vi++) {
+            if (voices[vi].shouldRelease(numSamples, line_select, ring_modulation)) {
+                voices[vi].is_active = false;
+            }
+        }
+    }
+
+    // Stereo float renderer with subtle per-voice stereo pan spread in Poly modes (center in Mono)
+    void processBlockStereo(float* outL, float* outR, uint32_t numSamples) {
+        const uint8_t limit = mono_mode ? 1 : max_polyphony;
+        const bool has_bend = (pitch_bend_value != 0);
+        float pitch_bend_factor = 1.0f;
+        if (has_bend) {
+            float bend_norm = pitch_bend_value >= 0
+                ? static_cast<float>(pitch_bend_value) / 8191.0f
+                : static_cast<float>(pitch_bend_value) / 8192.0f;
+            float bend_semitones = bend_norm >= 0
+                ? bend_norm * static_cast<float>(pitch_bend_up_semitones)
+                : bend_norm * static_cast<float>(pitch_bend_down_semitones);
+            pitch_bend_factor = __builtin_powf(2.0f, bend_semitones / 12.0f);
+        }
+
+        const bool has_vib = (vibrato_lfo.effectiveDepth() > 0);
+        const bool has_drive = (master_drive > 0);
+        const float drive_amount = 1.0f + static_cast<float>(master_drive) / 99.0f * 3.5f;
+        const float vol = static_cast<float>(master_volume) / 99.0f;
+        const bool do_porta = (portamento_enabled && portamento_time > 0);
+        const uint32_t glide = 1 + static_cast<uint32_t>(portamento_time) * 16;
+
+        // Fixed-point stereo voice pan weights (sum = 512, ±24% width in Poly; dead center in Mono)
+        static constexpr int32_t kPanL[8] = { 210, 302, 190, 322, 228, 284, 198, 314 };
+
+        auto softClip32 = [](int32_t m) -> int32_t {
+            m = m >> 1;
+            if (m > 24576) {
+                int32_t ex = m - 24576;
+                m = 24576 + ((ex * 8192) / (8192 + ex));
+            } else if (m < -24576) {
+                int32_t ex = -m - 24576;
+                m = -24576 - ((ex * 8192) / (8192 + ex));
+            }
+            if (m > 32767) m = 32767;
+            else if (m < -32768) m = -32768;
+            return m;
+        };
+
+        for (uint32_t i = 0; i < numSamples; i++) {
+            int32_t lfo_mod = has_vib ? vibrato_lfo.nextSample() : 0;
+            int32_t mixL = 0, mixR = 0;
+
+            for (uint8_t vi = 0; vi < limit; vi++) {
+                Voice& v = voices[vi];
+                if (!v.is_active) continue;
+
+                if (do_porta) {
+                    int64_t diff1 = static_cast<int64_t>(v.target_line1_base_phase_inc) - v.current_line1_base_phase_inc;
+                    int64_t diff2 = static_cast<int64_t>(v.target_line2_base_phase_inc) - v.current_line2_base_phase_inc;
+                    v.current_line1_base_phase_inc += static_cast<int32_t>(diff1 / glide);
+                    v.current_line2_base_phase_inc += static_cast<int32_t>(diff2 / glide);
+                    if (diff1 > -2 && diff1 < 2) v.current_line1_base_phase_inc = v.target_line1_base_phase_inc;
+                    if (diff2 > -2 && diff2 < 2) v.current_line2_base_phase_inc = v.target_line2_base_phase_inc;
+                } else {
+                    v.current_line1_base_phase_inc = v.target_line1_base_phase_inc;
+                    v.current_line2_base_phase_inc = v.target_line2_base_phase_inc;
+                }
+
+                v.line1.base_phase_inc = v.current_line1_base_phase_inc;
+                v.line2.base_phase_inc = v.current_line2_base_phase_inc;
+
+                uint32_t line1_phase_inc = has_bend
+                    ? static_cast<uint32_t>(v.line1.base_phase_inc * pitch_bend_factor)
+                    : v.line1.base_phase_inc;
+                uint32_t line2_phase_inc = has_bend
+                    ? static_cast<uint32_t>(v.line2.base_phase_inc * pitch_bend_factor)
+                    : v.line2.base_phase_inc;
+
+                const uint32_t dco1_lvl = v.line1.dco_eg.current_level >> 16;
+                const uint32_t dco2_lvl = v.line2.dco_eg.current_level >> 16;
+                if (dco1_lvl > 0) {
+                    line1_phase_inc += static_cast<uint32_t>((static_cast<uint64_t>(line1_phase_inc) * dco1_lvl) >> 16);
+                }
+                if (dco2_lvl > 0) {
+                    line2_phase_inc += static_cast<uint32_t>((static_cast<uint64_t>(line2_phase_inc) * dco2_lvl) >> 16);
+                }
+
+                if (has_vib && lfo_mod != 0) {
+                    int32_t lfo_range1 = static_cast<int32_t>(v.line1.base_phase_inc >> 4);
+                    int32_t lfo_pitch_mod1 = static_cast<int32_t>((static_cast<int64_t>(lfo_mod) * lfo_range1) >> 15);
+                    line1_phase_inc += static_cast<uint32_t>(lfo_pitch_mod1);
+
+                    int32_t lfo_range2 = static_cast<int32_t>(v.line2.base_phase_inc >> 4);
+                    int32_t lfo_pitch_mod2 = static_cast<int32_t>((static_cast<int64_t>(lfo_mod) * lfo_range2) >> 15);
+                    line2_phase_inc += static_cast<uint32_t>(lfo_pitch_mod2);
+                }
+
+                v.line1.phase_inc = line1_phase_inc;
+                v.line2.phase_inc = line2_phase_inc;
+
+                const int32_t vs = v.process(tables, line_select, ring_modulation);
+                if (mono_mode) {
+                    mixL += vs;
+                    mixR += vs;
+                } else {
+                    const int32_t pL = kPanL[vi & 7];
+                    const int32_t pR = 512 - pL;
+                    mixL += (vs * pL) >> 8;
+                    mixR += (vs * pR) >> 8;
+                }
+            }
+
+            const float rawL = static_cast<float>(softClip32(mixL)) * (1.0f / 32768.0f);
+            const float rawR = static_cast<float>(softClip32(mixR)) * (1.0f / 32768.0f);
+            float fL = rawL - dc_x1  + 0.995f * dc_y1;  dc_x1  = rawL; if (fL > -1e-24f && fL < 1e-24f) fL = 0.0f; dc_y1  = fL;
+            float fR = rawR - dc_x1R + 0.995f * dc_y1R; dc_x1R = rawR; if (fR > -1e-24f && fR < 1e-24f) fR = 0.0f; dc_y1R = fR;
+
+            if (has_drive) {
+                const float xL = fL * drive_amount; const float aL = xL < 0.0f ? -xL : xL; fL = xL / (1.0f + 0.65f * aL);
+                const float xR = fR * drive_amount; const float aR = xR < 0.0f ? -xR : xR; fR = xR / (1.0f + 0.65f * aR);
+            }
+            outL[i] = fL * vol;
+            outR[i] = fR * vol;
         }
 
         for (uint8_t vi = 0; vi < limit; vi++) {

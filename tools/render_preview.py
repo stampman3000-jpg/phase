@@ -47,7 +47,7 @@ def main():
         "l2_wave1": 0.0, "l2_wave2": 5/8, "l2_oct": 0.5, "l2_semi": 0.5,
         "voice_mode": 0.0, "l2_fine": (14 + 60) / 120.0, "pitch_env": 0.12, "pitch_dec": 0.14,
         "l2_mix": 0.90, "l2_dcw": 0.88, "l2_env_ofs": 0.58, "glide": 0.0,
-        "vib_rate": 0.34, "vib_depth": 0.14, "vib_delay": 0.38, "vel_sens": 0.52,
+        "vib_rate": 0.34, "vib_depth": 0.14, "space_send": 0.56, "space_decay": 0.76,
     }
 
     for pg, bg, out_name, wave_fi, lbl_txts in [

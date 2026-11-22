@@ -131,13 +131,15 @@ def eval_cz_wave(widx, phase01, dcw=0.86):
         else:
             pd = 65535
         return cos_inv(pd)
-    else:  # REZ SAW (5), REZ TRI (6), REZ TRAP (7)
+    else:  # REZ SAW (5), REZ TRI (6), REZ TRAP (7) — real Casio unipolar (1-cos)*window
         res_p = (local_phase + ((local_phase * rez16 * 10) >> 16)) & 0xFFFF
-        core = cos_inv(res_p) * 0.94
+        core_uni = (1.0 + cos_inv(res_p)) * 0.5
         if widx == 5:
             win = (65535 - local_phase) / 65535.0
+            return max(-1.0, min(1.0, (core_uni * win - 0.25) * 1.9))
         elif widx == 6:
             win = (local_phase * 2 if local_phase < 32768 else (65535 - local_phase) * 2) / 65535.0
+            return max(-1.0, min(1.0, (core_uni * win - 0.25) * 1.9))
         else:
             if local_phase < 16384:
                 win = (local_phase * 4) / 65535.0
@@ -145,7 +147,7 @@ def eval_cz_wave(widx, phase01, dcw=0.86):
                 win = ((65535 - local_phase) * 4) / 65535.0
             else:
                 win = 1.0
-        return core * win
+            return max(-1.0, min(1.0, (core_uni * win - 0.375) * 1.65))
 
 
 def make_cz101_chassis(seed=101):
@@ -649,13 +651,13 @@ def build_page1():
 
 def build_page2():
     img = make_cz101_chassis(seed=102)
-    draw_cz101_header(img, "PAGE 2: LINE 2 DETUNE & LAYER • PITCH EG • VIBRATO • VOICE")
+    draw_cz101_header(img, "PAGE 2: LINE 2 DETUNE & LAYER • PITCH EG • VIB & SPACE FX")
     dr = ImageDraw.Draw(img)
 
     draw_cz_schematic_box(img, 26,  136, 590, 224, "DCO 2",       "LINE 2 WAVE & INTERVAL",     CZ_TEAL,   "BANK 1")
     draw_cz_schematic_box(img, 664, 136, 590, 224, "PITCH / MODE","VOICE • FINE • PITCH EG",    CZ_CORAL,  "BANK 2")
     draw_cz_schematic_box(img, 26,  374, 590, 234, "LINE 2 MIX",  "LAYER BALANCE & ENV OFFSET", CZ_IVORY,  "BANK 3")
-    draw_cz_schematic_box(img, 664, 374, 590, 234, "VIBRATO",     "LFO MODULATION & VELOCITY",  CZ_SILVER, "BANK 4")
+    draw_cz_schematic_box(img, 664, 374, 590, 234, "VIB & SPACE", "VIBRATO & AMBIENT SPACE FX", CZ_TEAL,   "BANK 4")
 
     draw_signal_arrow(img, 622, 658, 254, accent=CZ_CORAL_H)
 
@@ -691,11 +693,11 @@ def build_page2():
         (23, "l2_env_ofs", 394, y_row2, fw, fh, "slider_cz_ivory.png", 65, "L2 ENV OFS", "SLOW", "SNAP", True,  CZ_IVORY),
         (29, "glide",      536, y_row2, fw, fh, "slider_cz_teal.png",  65, "PORTAMENTO", "99",   "OFF",  False, CZ_TEAL_HI),
 
-        # Bank 4: VIBRATO & VELOCITY
-        (26, "vib_rate",   748, y_row2, fw, fh, "slider_cz_ivory.png", 65, "VIB RATE",   "99",   "0",    False, CZ_IVORY),
-        (27, "vib_depth",  890, y_row2, fw, fh, "slider_cz_coral.png", 65, "VIB DEPTH",  "99",   "0",    False, CZ_CORAL_H),
-        (30, "vib_delay", 1032, y_row2, fw, fh, "slider_cz_ivory.png", 65, "VIB DELAY",  "99",   "0",    False, CZ_IVORY),
-        (31, "vel_sens",  1174, y_row2, fw, fh, "slider_cz_teal.png",  65, "VELOCITY",   "99",   "0",    False, CZ_TEAL_HI),
+        # Bank 4: VIBRATO & AMBIENT SPACE FX
+        (26, "vib_rate",     748, y_row2, fw, fh, "slider_cz_ivory.png", 65, "VIB RATE",    "99",   "0",    False, CZ_IVORY),
+        (27, "vib_depth",    890, y_row2, fw, fh, "slider_cz_ivory.png", 65, "VIB DEPTH",   "99",   "0",    False, CZ_IVORY),
+        (30, "space_send",  1032, y_row2, fw, fh, "slider_cz_coral.png", 65, "SPACE SEND",  "99",   "DRY",  False, CZ_CORAL_H),
+        (31, "space_decay", 1174, y_row2, fw, fh, "slider_cz_teal.png",  65, "SPACE DECAY", "WASH", "ROOM", False, CZ_TEAL_HI),
     ]
 
     knobs = []

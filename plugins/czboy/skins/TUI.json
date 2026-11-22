@@ -2966,7 +2966,7 @@
               "componentData": {
                 "version": 1,
                 "name": "vib_depth",
-                "type": "k_slider_cz_coral_44x144_uni",
+                "type": "k_slider_cz_ivory_44x144_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2994,8 +2994,8 @@
               "version": 2,
               "componentData": {
                 "version": 1,
-                "name": "vib_delay",
-                "type": "k_slider_cz_ivory_44x144_uni",
+                "name": "space_send",
+                "type": "k_slider_cz_coral_44x144_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -3023,7 +3023,7 @@
               "version": 2,
               "componentData": {
                 "version": 1,
-                "name": "vel_sens",
+                "name": "space_decay",
                 "type": "k_slider_cz_teal_44x144_uni",
                 "data": {
                   "version": 1,

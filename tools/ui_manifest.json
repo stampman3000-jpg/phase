@@ -385,24 +385,24 @@
         "cy": 496,
         "w": 44,
         "h": 144,
-        "strip": "slider_cz_coral.png",
-        "frames": 65,
-        "bipolar": false
-      },
-      {
-        "param": 30,
-        "id": "vib_delay",
-        "cx": 1032,
-        "cy": 496,
-        "w": 44,
-        "h": 144,
         "strip": "slider_cz_ivory.png",
         "frames": 65,
         "bipolar": false
       },
       {
+        "param": 30,
+        "id": "space_send",
+        "cx": 1032,
+        "cy": 496,
+        "w": 44,
+        "h": 144,
+        "strip": "slider_cz_coral.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
         "param": 31,
-        "id": "vel_sens",
+        "id": "space_decay",
         "cx": 1174,
         "cy": 496,
         "w": 44,

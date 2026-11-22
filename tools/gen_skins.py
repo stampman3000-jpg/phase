@@ -260,7 +260,7 @@ def main():
                         [16, 17, 18, 19], # Bank 1: L2 Wave 1, L2 Wave 2, L2 Octave, L2 Semi
                         [28, 20, 24, 25], # Bank 2: Voice Mode, L2 Fine, Pitch Env, Pitch Dec
                         [21, 22, 23, 29], # Bank 3: L2 Mix, L2 DCW, L2 Env Ofs, Portamento
-                        [26, 27, 30, 31], # Bank 4: Vib Rate, Vib Depth, Vib Delay, Velocity
+                        [26, 27, 30, 31], # Bank 4: Vib Rate, Vib Depth, Space Send, Space Decay
                     ]),
                 },
             ],

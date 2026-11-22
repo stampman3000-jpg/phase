@@ -7,7 +7,7 @@ MPC_SDK="${MPC_SDK:-}"
 TMP="$ROOT/build_tests"
 mkdir -p "$TMP"
 
-echo "== 1/3: Phase Distortion Tuning, Waveforms, Envelopes & 16-Preset Suite =="
+echo "== 1/3: Phase Distortion Tuning, Waveforms, Space FX & 32-Preset Suite =="
 clang++ -std=c++17 -O3 -Wall -Wextra "$ROOT/tests/test_czboy.cpp" -o "$TMP/test_czboy"
 "$TMP/test_czboy"
 
