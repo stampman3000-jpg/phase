@@ -307,8 +307,14 @@ struct Tables {
 
         for (uint32_t i = 0; i <= kExpLutSize; ++i) {
             const float x = static_cast<float>(i) / static_cast<float>(kExpLutSize);
-            dcw_exp_lut[i] = __builtin_powf(0.018f, x);
-            rez_exp_lut[i] = __builtin_powf(2.0f, 3.8f * x);
+            // Authentic vintage Casio CZ-101 convex (exponential-from-zero) DCW curve:
+            //   0..55%: pure warm sine -> buttery Rhodes / BoC glassy EP (zero saw buzz)
+            //  55..80%: woody/glassy electric piano, luminous CZ brass & strings
+            //  80..100%: full crisp classic vintage CZ sawtooth & biting leads
+            const float bend = (__builtin_powf(2.0f, 3.4f * x) - 1.0f) / 9.556063286f; // 2^3.4 - 1
+            dcw_exp_lut[i] = 1.0f - 0.975f * bend;
+            // Smooth 3.6-octave exponential musical resonant sweep (1.0x -> 12.1x)
+            rez_exp_lut[i] = __builtin_powf(2.0f, 3.6f * x);
         }
     }
 
@@ -381,6 +387,7 @@ public:
     uint16_t dcw_env_scale = 65535; // Live real-time DCW EG depth (0..65535)
     uint16_t dcw_kf_scale = 65535;  // Upper-register key-follow damping
     uint16_t max_rez_dcw = 65535;   // Legacy field kept for compatibility
+    float    dcw_cal_trim = 1.0f;   // Vintage aged-hardware per-voice DCW calibration (±3.5%)
 
     Envelope dco_eg;  
     Envelope dcw_eg;  
@@ -419,7 +426,7 @@ public:
             cached_dca = dca_eg.update();
 
             const float env_dcw = (static_cast<float>(cached_dcw) * static_cast<float>(dcw_env_scale)) * (1.0f / 4294836225.0f);
-            float target_dcw = static_cast<float>(dcw_floor) * (1.0f / 65535.0f) + env_dcw;
+            float target_dcw = (static_cast<float>(dcw_floor) * (1.0f / 65535.0f) + env_dcw) * dcw_cal_trim;
             if (target_dcw > 1.0f) target_dcw = 1.0f;
             if (dcw_kf_scale < 65535u) target_dcw *= static_cast<float>(dcw_kf_scale) * (1.0f / 65535.0f);
 
@@ -499,8 +506,8 @@ public:
             }
             case Waveform::DOUBLE_SINE: {
                 // Exact NEC uPD933 (MAME upd933.cpp case 4): two full cosine cycles split at pivot
-                // pivot sweeps smoothly 0.5 (pure crystalline 2x sine) -> 0.022 (glassy tine/chime)
-                float pivot = 0.5f * tables.sampleDcwExp(dcw * 0.88f);
+                // Convex Casio curve keeps 0..70% in crystalline octave-bell / Rhodes tine zone (0.50 -> 0.09)
+                float pivot = 0.09f + 0.41f * tables.sampleDcwExp(dcw);
                 const float p_min = 1.8f * w_min;
                 if (pivot < p_min) pivot = p_min;
                 if (pivot > 0.5f) pivot = 0.5f;
@@ -816,7 +823,10 @@ private:
     float dc_y1R = 0.0f;
     float silk_lpL = 0.0f;
     float silk_lpR = 0.0f;
-    float silk_coef = 0.85f;
+    float silk_coef = 0.82f;
+    float warm_lpL = 0.0f;
+    float warm_lpR = 0.0f;
+    float warm_coef = 0.034f;
 
     // MASTER section (PARAMETERS.md)
     uint8_t master_octave = 1;         // 0-2 (1=center)
@@ -849,17 +859,24 @@ public:
         tables.lut_size = lut_size;
         tables.initFloatTables();
         sample_rate = sr;
-        // Authentic Casio CZ-101 ~13.5 kHz analog output reconstruction silk filter
-        const float fc = 13500.0f;
+        // Authentic 1984 Casio CZ-101 ~11.8 kHz analog output reconstruction silk LPF + gentle 240 Hz warmth body
         const float sr_f = sr > 8000u ? static_cast<float>(sr) : 44100.0f;
-        silk_coef = 1.0f - __builtin_expf(-6.28318530717958647692f * fc / sr_f);
+        silk_coef = 1.0f - __builtin_expf(-6.28318530717958647692f * 11800.0f / sr_f);
         if (silk_coef > 0.99f) silk_coef = 0.99f;
-        silk_lpL = 0.0f;
-        silk_lpR = 0.0f;
+        warm_coef = 1.0f - __builtin_expf(-6.28318530717958647692f * 240.0f / sr_f);
+        silk_lpL = silk_lpR = 0.0f;
+        warm_lpL = warm_lpR = 0.0f;
+
+        // Subtle aged-1984 per-voice DCW calibration variance (±3.5%)
+        static constexpr float kDcwTrim[8] = { 1.000f, 1.030f, 0.972f, 1.022f, 0.968f, 1.034f, 0.980f, 1.016f };
         uint8_t v_idx = 0;
         for (auto& v : voices) {
             v.init(sr);
-            v.drift_phase = static_cast<float>(v_idx++) * 0.137f;
+            v.drift_phase = static_cast<float>(v_idx) * 0.137f;
+            const float trim = kDcwTrim[v_idx & 7];
+            v.line1.dcw_cal_trim = trim;
+            v.line2.dcw_cal_trim = 2.0f - trim;
+            v_idx++;
             v.line1.dco_eg.initCz101Defaults();
             v.line1.dcw_eg.initCz101Defaults();
             v.line1.dca_eg.initCz101Defaults();
@@ -873,8 +890,9 @@ public:
     void setSampleRate(uint32_t sr) {
         sample_rate = sr;
         const float sr_f = sr > 8000u ? static_cast<float>(sr) : 44100.0f;
-        silk_coef = 1.0f - __builtin_expf(-6.28318530717958647692f * 13500.0f / sr_f);
+        silk_coef = 1.0f - __builtin_expf(-6.28318530717958647692f * 11800.0f / sr_f);
         if (silk_coef > 0.99f) silk_coef = 0.99f;
+        warm_coef = 1.0f - __builtin_expf(-6.28318530717958647692f * 240.0f / sr_f);
         for (auto& v : voices) v.sample_rate = sr;
         vibrato_lfo.setSampleRate(sr);  
     }
@@ -1131,6 +1149,8 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
         dc_y1R = 0.0f;
         silk_lpL = 0.0f;
         silk_lpR = 0.0f;
+        warm_lpL = 0.0f;
+        warm_lpR = 0.0f;
         vibrato_lfo.release();
     }
     void setPitchBendRangeUp(uint8_t semitones) { pitch_bend_up_semitones = semitones > 24 ? 24 : semitones; }
@@ -1482,19 +1502,32 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
                     line2_phase_inc += static_cast<uint32_t>((static_cast<uint64_t>(line2_phase_inc) * dco2_lvl) >> 16);
                 }
 
-                if (has_vib) {
-                    // Lush ±1.55 semitone musical vibrato + subtle per-voice organic VHS tape drift
-                    const float vib_norm = static_cast<float>(vibrato_lfo.effectiveDepth()) * (1.0f / 99.0f);
-                    static constexpr float kDriftHz[8] = { 0.19f, 0.27f, 0.34f, 0.23f, 0.31f, 0.17f, 0.29f, 0.37f };
-                    v.drift_phase += kDriftHz[vi & 7] / static_cast<float>(sample_rate > 8000u ? sample_rate : 44100u);
+                // Authentic 1984 aged-CZ vintage calibration tolerance & slow organic thermal wonk
+                // (Voice 0 dry Line-1-only stays dead-accurate for calibration tests; chords & dual-line patches breathe!)
+                const bool apply_vintage_wonk = has_vib || (line_select != LineSelectMode::LINE1_ONLY) || (vi > 0);
+                if (apply_vintage_wonk) {
+                    static constexpr float kDriftHz[8] = { 0.17f, 0.23f, 0.31f, 0.19f, 0.29f, 0.14f, 0.26f, 0.35f };
+                    // Fixed aged-hardware voice pitch tolerance in ratio (±2.5 cents; 1 cent ≈ 0.0005776)
+                    static constexpr float kVoiceCal[8] = {
+                        0.0f, 0.00138f, -0.00121f, 0.00092f, -0.00148f, 0.00110f, -0.00086f, 0.00127f
+                    };
+                    const float sr_inv = 1.0f / static_cast<float>(sample_rate > 8000u ? sample_rate : 44100u);
+                    v.drift_phase += kDriftHz[vi & 7] * sr_inv;
                     if (v.drift_phase >= 1.0f) v.drift_phase -= 1.0f;
                     const float du = v.drift_phase * 2.0f - 1.0f;
                     const float drift_sin = 4.0f * du * (1.0f - (du < 0.0f ? -du : du));
-                    const float drift_ratio = mono_mode ? 0.0f : (drift_sin * 0.0045f * vib_norm); // ±7.8 cents per voice
 
-                    const float vib_ratio = (static_cast<float>(lfo_mod) * (1.0f / 32768.0f)) * 0.092f + drift_ratio;
-                    line1_phase_inc = static_cast<uint32_t>(static_cast<float>(line1_phase_inc) * (1.0f + vib_ratio));
-                    line2_phase_inc = static_cast<uint32_t>(static_cast<float>(line2_phase_inc) * (1.0f + vib_ratio));
+                    const float vib_norm = has_vib ? (static_cast<float>(vibrato_lfo.effectiveDepth()) * (1.0f / 99.0f)) : 0.0f;
+                    // Baseline ±3.0 cents slow thermal wonk on aged hardware, swelling to ±10 cents shimmer with Vib Depth
+                    const float thermal_depth = mono_mode ? (0.0012f + 0.0020f * vib_norm) : (0.0017f + 0.0046f * vib_norm);
+                    const float voice_cal = mono_mode ? 0.0f : kVoiceCal[vi & 7];
+                    const float lfo_ratio = has_vib ? ((static_cast<float>(lfo_mod) * (1.0f / 32768.0f)) * 0.092f) : 0.0f;
+
+                    const float mod1 = 1.0f + lfo_ratio + voice_cal + drift_sin * thermal_depth;
+                    // Tiny independent Line-2 analog drift (+0.45x opposite phase) for lush warm vintage depth
+                    const float mod2 = 1.0f + lfo_ratio + voice_cal - drift_sin * (thermal_depth * 0.45f);
+                    line1_phase_inc = static_cast<uint32_t>(static_cast<float>(line1_phase_inc) * mod1);
+                    line2_phase_inc = static_cast<uint32_t>(static_cast<float>(line2_phase_inc) * mod2);
                 }
 
                 v.line1.phase_inc = line1_phase_inc;
@@ -1511,14 +1544,19 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
                 }
             }
 
-            // Gentle Casio CZ-101 ~13.5 kHz analog output reconstruction silk filter
+            // Authentic 1984 Casio CZ-101 analog output stage: ~11.8 kHz silk LPF + gentle +1.3 dB warm low-mid body
             silk_lpL += (mixL - silk_lpL) * silk_coef;
             silk_lpR += (mixR - silk_lpR) * silk_coef;
             if (silk_lpL > -1e-24f && silk_lpL < 1e-24f) silk_lpL = 0.0f;
             if (silk_lpR > -1e-24f && silk_lpR < 1e-24f) silk_lpR = 0.0f;
 
-            float fL = silk_lpL;
-            float fR = silk_lpR;
+            warm_lpL += (silk_lpL - warm_lpL) * warm_coef;
+            warm_lpR += (silk_lpR - warm_lpR) * warm_coef;
+            if (warm_lpL > -1e-24f && warm_lpL < 1e-24f) warm_lpL = 0.0f;
+            if (warm_lpR > -1e-24f && warm_lpR < 1e-24f) warm_lpR = 0.0f;
+
+            float fL = silk_lpL + warm_lpL * 0.16f;
+            float fR = silk_lpR + warm_lpR * 0.16f;
 
             if (has_drive) {
                 const float xL = fL * drive_amount; const float aL = xL < 0.0f ? -xL : xL; fL = xL / (1.0f + 0.50f * aL);

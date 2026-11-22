@@ -32,12 +32,12 @@ inline const CzPreset* factoryPresets (int& outCount)
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 4; p.l1Wave2 = 0; p.modMode = 0;
-                p.dcwTimbre = 0.04f; p.dcwEnv = 0.22f;
-                p.dcwAtt = 0.04f; p.dcwDec = 0.46f; p.dcwSus = 0.06f; p.dcwRel = 0.38f;
+                p.dcwTimbre = 0.18f; p.dcwEnv = 0.34f;
+                p.dcwAtt = 0.05f; p.dcwDec = 0.46f; p.dcwSus = 0.16f; p.dcwRel = 0.38f;
                 p.dcaAtt = 0.06f; p.dcaDec = 0.62f; p.dcaSus = 0.88f; p.dcaRel = 0.40f;
                 p.chorus = 0.34f; p.volume = 0.88f;
                 p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 7;
-                p.l2Mix = 0.36f; p.l2Dcw = 0.14f; p.l2EnvOfs = 0.08f;
+                p.l2Mix = 0.32f; p.l2Dcw = 0.24f; p.l2EnvOfs = 0.08f;
                 p.pitchEnv = 0.0f; p.pitchDec = 0.18f;
                 p.vibRate = 0.54f; p.vibDepth = 0.30f; // ~1.6 Hz silky sine + subtle VHS tape wow
                 p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.0f; p.spaceDecay = 0.50f;
@@ -51,12 +51,12 @@ inline const CzPreset* factoryPresets (int& outCount)
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 1; p.l1Wave2 = 0; p.modMode = 0;
-                p.dcwTimbre = 0.06f; p.dcwEnv = 0.16f;
-                p.dcwAtt = 0.48f; p.dcwDec = 0.74f; p.dcwSus = 0.20f; p.dcwRel = 0.76f;
+                p.dcwTimbre = 0.24f; p.dcwEnv = 0.28f;
+                p.dcwAtt = 0.48f; p.dcwDec = 0.74f; p.dcwSus = 0.30f; p.dcwRel = 0.76f;
                 p.dcaAtt = 0.44f; p.dcaDec = 0.76f; p.dcaSus = 0.90f; p.dcaRel = 0.78f;
                 p.chorus = 0.56f; p.volume = 0.88f;
-                p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 11;
-                p.l2Mix = 0.44f; p.l2Dcw = 0.18f; p.l2EnvOfs = 0.28f;
+                p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 10;
+                p.l2Mix = 0.38f; p.l2Dcw = 0.28f; p.l2EnvOfs = 0.28f;
                 p.pitchEnv = 0.0f; p.pitchDec = 0.22f;
                 p.vibRate = 0.42f; p.vibDepth = 0.38f; // ~0.95 Hz seasick BoC tape warble!
                 p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.48f; p.spaceDecay = 0.74f;
@@ -70,12 +70,12 @@ inline const CzPreset* factoryPresets (int& outCount)
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 4; p.l1Wave2 = 2; p.modMode = 0;
-                p.dcwTimbre = 0.12f; p.dcwEnv = 0.26f;
-                p.dcwAtt = 0.02f; p.dcwDec = 0.44f; p.dcwSus = 0.18f; p.dcwRel = 0.46f;
+                p.dcwTimbre = 0.30f; p.dcwEnv = 0.34f;
+                p.dcwAtt = 0.02f; p.dcwDec = 0.44f; p.dcwSus = 0.32f; p.dcwRel = 0.46f;
                 p.dcaAtt = 0.03f; p.dcaDec = 0.64f; p.dcaSus = 0.88f; p.dcaRel = 0.48f;
                 p.chorus = 0.26f; p.volume = 0.88f;
                 p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 6;
-                p.l2Mix = 0.30f; p.l2Dcw = 0.12f; p.l2EnvOfs = -0.10f;
+                p.l2Mix = 0.28f; p.l2Dcw = 0.22f; p.l2EnvOfs = -0.10f;
                 p.pitchEnv = 0.0f; p.pitchDec = 0.14f;
                 p.vibRate = 0.66f; p.vibDepth = 0.32f; // ~2.7 Hz expressive vintage vibrato
                 p.voiceMode = 2; p.glide = 0.16f; p.spaceSend = 0.36f; p.spaceDecay = 0.60f;
@@ -89,12 +89,12 @@ inline const CzPreset* factoryPresets (int& outCount)
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 0; p.l1Wave2 = 0; p.modMode = 0;
-                p.dcwTimbre = 0.02f; p.dcwEnv = 0.20f;
-                p.dcwAtt = 0.10f; p.dcwDec = 0.64f; p.dcwSus = 0.08f; p.dcwRel = 0.82f;
+                p.dcwTimbre = 0.10f; p.dcwEnv = 0.30f;
+                p.dcwAtt = 0.08f; p.dcwDec = 0.64f; p.dcwSus = 0.14f; p.dcwRel = 0.82f;
                 p.dcaAtt = 0.08f; p.dcaDec = 0.84f; p.dcaSus = 0.72f; p.dcaRel = 0.84f;
                 p.chorus = 0.50f; p.volume = 0.88f;
                 p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 1; p.l2Semi = 0; p.l2Fine = 8;
-                p.l2Mix = 0.38f; p.l2Dcw = 0.16f; p.l2EnvOfs = -0.30f;
+                p.l2Mix = 0.34f; p.l2Dcw = 0.22f; p.l2EnvOfs = -0.32f;
                 p.pitchEnv = 0.0f; p.pitchDec = 0.20f;
                 p.vibRate = 0.46f; p.vibDepth = 0.40f; // ~1.1 Hz hypnotic crystalline shimmer
                 p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.58f; p.spaceDecay = 0.80f;
@@ -108,12 +108,12 @@ inline const CzPreset* factoryPresets (int& outCount)
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 1; p.l1Wave2 = 0; p.modMode = 0;
-                p.dcwTimbre = 0.10f; p.dcwEnv = 0.14f;
-                p.dcwAtt = 0.22f; p.dcwDec = 0.62f; p.dcwSus = 0.40f; p.dcwRel = 0.66f;
+                p.dcwTimbre = 0.34f; p.dcwEnv = 0.24f;
+                p.dcwAtt = 0.22f; p.dcwDec = 0.62f; p.dcwSus = 0.46f; p.dcwRel = 0.66f;
                 p.dcaAtt = 0.20f; p.dcaDec = 0.64f; p.dcaSus = 0.90f; p.dcaRel = 0.68f;
                 p.chorus = 0.48f; p.volume = 0.86f;
-                p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 12;
-                p.l2Mix = 0.50f; p.l2Dcw = 0.22f; p.l2EnvOfs = 0.16f;
+                p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 11;
+                p.l2Mix = 0.46f; p.l2Dcw = 0.32f; p.l2EnvOfs = 0.16f;
                 p.pitchEnv = 0.0f; p.pitchDec = 0.20f;
                 p.vibRate = 0.34f; p.vibDepth = 0.44f; // ~0.66 Hz authentic 16mm projector wow!
                 p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.46f; p.spaceDecay = 0.72f;
@@ -127,12 +127,12 @@ inline const CzPreset* factoryPresets (int& outCount)
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 4; p.l1Wave2 = 0; p.modMode = 0;
-                p.dcwTimbre = 0.06f; p.dcwEnv = 0.40f;
-                p.dcwAtt = 0.76f; p.dcwDec = 0.86f; p.dcwSus = 0.32f; p.dcwRel = 0.84f;
+                p.dcwTimbre = 0.20f; p.dcwEnv = 0.46f;
+                p.dcwAtt = 0.76f; p.dcwDec = 0.86f; p.dcwSus = 0.38f; p.dcwRel = 0.84f;
                 p.dcaAtt = 0.68f; p.dcaDec = 0.84f; p.dcaSus = 0.90f; p.dcaRel = 0.84f;
                 p.chorus = 0.62f; p.volume = 0.86f;
                 p.l2Wave1 = 6; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 9;
-                p.l2Mix = 0.58f; p.l2Dcw = 0.36f; p.l2EnvOfs = 0.36f;
+                p.l2Mix = 0.50f; p.l2Dcw = 0.44f; p.l2EnvOfs = 0.36f;
                 p.pitchEnv = 0.0f; p.pitchDec = 0.25f;
                 p.vibRate = 0.48f; p.vibDepth = 0.34f; // ~1.2 Hz dreamy cinematic pitch shimmer
                 p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.54f; p.spaceDecay = 0.78f;
@@ -140,21 +140,21 @@ inline const CzPreset* factoryPresets (int& outCount)
             }()
         },
 
-        // 6: Crystal Tine EP (clean, warm & glassy CZ-101 electric piano with silky gentle vibrato)
+        // 6: Crystal Tine EP (authentic siney vintage CZ-101 electric piano — buttery Saw-Pulse sine body + isolated Rez-Tri glassy tine!)
         {
             "Crystal Tine EP",
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 4; p.l1Wave2 = 0; p.modMode = 0;
-                p.dcwTimbre = 0.06f; p.dcwEnv = 0.60f;
-                p.dcwAtt = 0.01f; p.dcwDec = 0.68f; p.dcwSus = 0.10f; p.dcwRel = 0.68f;
+                p.dcwTimbre = 0.14f; p.dcwEnv = 0.44f;
+                p.dcwAtt = 0.01f; p.dcwDec = 0.56f; p.dcwSus = 0.12f; p.dcwRel = 0.66f;
                 p.dcaAtt = 0.01f; p.dcaDec = 0.86f; p.dcaSus = 0.26f; p.dcaRel = 0.70f;
-                p.chorus = 0.38f; p.volume = 0.88f;
-                p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 1; p.l2Semi = 0; p.l2Fine = 6;
-                p.l2Mix = 0.54f; p.l2Dcw = 0.74f; p.l2EnvOfs = -0.60f;
+                p.chorus = 0.34f; p.volume = 0.88f;
+                p.l2Wave1 = 6; p.l2Wave2 = 0; p.l2Oct = 1; p.l2Semi = 0; p.l2Fine = 6;
+                p.l2Mix = 0.36f; p.l2Dcw = 0.48f; p.l2EnvOfs = -0.62f;
                 p.pitchEnv = 0.0f; p.pitchDec = 0.16f;
-                p.vibRate = 0.56f; p.vibDepth = 0.20f;
-                p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.28f; p.spaceDecay = 0.58f;
+                p.vibRate = 0.54f; p.vibDepth = 0.18f;
+                p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.26f; p.spaceDecay = 0.58f;
                 return p;
             }()
         },
