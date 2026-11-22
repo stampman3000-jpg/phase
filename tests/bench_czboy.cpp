@@ -56,17 +56,17 @@ int main()
     std::printf ("%-40s %7s  %7s  %7s  %7s\n", "Scenario", "Avg(us)", "p99(us)", "Avg%128", "p99%128");
     std::printf ("----------------------------------------------------------------------------\n");
 
-    SynthParams pL1Dry = presets[0].p; // Line 1, Saw, dry
-    pL1Dry.dcaSus = 0.9f; pL1Dry.chorus = 0.0f; pL1Dry.drive = 0.0f;
+    SynthParams pL1Dry = presets[15].p; // Init CZ Saw, Line 1 dry
+    pL1Dry.dcaSus = 0.9f; pL1Dry.chorus = 0.0f;
     benchScenario ("Line 1 Only (4 voices, dry)", pL1Dry, 4);
     benchScenario ("Line 1 Only (8 voices, dry)", pL1Dry, 8);
 
-    SynthParams pDual = presets[1].p; // 1+2 Brass, dual-wave, chorus + drive + vibrato
+    SynthParams pDual = presets[0].p; // CZ-101 Brass, dual-wave + chorus + vibrato
     pDual.dcaSus = 0.9f; pDual.vibDepth = 0.2f; pDual.vibDelay = 0.0f;
     benchScenario ("Dual-Line 1+2 + Chorus (4 voices)", pDual, 4);
     benchScenario ("Dual-Line 1+2 + Chorus (8 voices)", pDual, 8);
 
-    SynthParams pRing = presets[4].p; // Ring Mod + Rez Saw + Chorus
+    SynthParams pRing = presets[4].p; // Tubular Bells Ring Mod + Chorus
     pRing.dcaSus = 0.9f; pRing.modMode = 3; // Ring + Noise worst case
     benchScenario ("Dual-Line Ring+Noise+Chorus (8 voices)", pRing, 8);
 

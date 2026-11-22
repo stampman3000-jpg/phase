@@ -130,7 +130,7 @@
           }
         },
         {
-          "key": "k_knob_cz_teal_4way_68x68_uni",
+          "key": "k_dial_cz_teal_4way_66x66_uni",
           "value": {
             "version": 2,
             "actions": [
@@ -180,8 +180,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -196,7 +196,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               },
               {
@@ -208,7 +208,7 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_teal_4way.png",
+                    "filmStrip": "dial_cz_teal_4way.png",
                     "numFrames": 4,
                     "invert": false,
                     "dragOrientation": "Vertical",
@@ -225,14 +225,14 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               }
             ]
           }
         },
         {
-          "key": "k_knob_cz_teal_8way_68x68_uni",
+          "key": "k_dial_cz_teal_8way_66x66_uni",
           "value": {
             "version": 2,
             "actions": [
@@ -282,8 +282,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -298,7 +298,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               },
               {
@@ -310,7 +310,7 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_teal_8way.png",
+                    "filmStrip": "dial_cz_teal_8way.png",
                     "numFrames": 8,
                     "invert": false,
                     "dragOrientation": "Vertical",
@@ -327,14 +327,14 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               }
             ]
           }
         },
         {
-          "key": "k_knob_cz_teal_9way_68x68_uni",
+          "key": "k_dial_cz_teal_9way_66x66_uni",
           "value": {
             "version": 2,
             "actions": [
@@ -384,8 +384,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -400,7 +400,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               },
               {
@@ -412,7 +412,7 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_teal_9way.png",
+                    "filmStrip": "dial_cz_teal_9way.png",
                     "numFrames": 9,
                     "invert": false,
                     "dragOrientation": "Vertical",
@@ -429,14 +429,14 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               }
             ]
           }
         },
         {
-          "key": "k_knob_cz_coral_4way_68x68_uni",
+          "key": "k_dial_cz_coral_4way_66x66_uni",
           "value": {
             "version": 2,
             "actions": [
@@ -486,8 +486,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -502,7 +502,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               },
               {
@@ -514,7 +514,7 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_coral_4way.png",
+                    "filmStrip": "dial_cz_coral_4way.png",
                     "numFrames": 4,
                     "invert": false,
                     "dragOrientation": "Vertical",
@@ -531,14 +531,14 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               }
             ]
           }
         },
         {
-          "key": "k_knob_cz_coral_hero_78x78_uni",
+          "key": "k_dial_cz_coral_hero_72x72_uni",
           "value": {
             "version": 2,
             "actions": [
@@ -588,8 +588,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -604,7 +604,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 78 78"
+                  "bounds": "0 0 72 72"
                 }
               },
               {
@@ -616,7 +616,7 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_coral_hero.png",
+                    "filmStrip": "dial_cz_coral_hero.png",
                     "numFrames": 65,
                     "invert": false,
                     "dragOrientation": "Vertical",
@@ -633,14 +633,14 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 78 78"
+                  "bounds": "0 0 72 72"
                 }
               }
             ]
           }
         },
         {
-          "key": "k_knob_cz_teal_pot_68x68_uni",
+          "key": "k_dial_cz_coral_pot_66x66_uni",
           "value": {
             "version": 2,
             "actions": [
@@ -690,8 +690,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -706,7 +706,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               },
               {
@@ -718,7 +718,7 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_teal_pot.png",
+                    "filmStrip": "dial_cz_coral_pot.png",
                     "numFrames": 65,
                     "invert": false,
                     "dragOrientation": "Vertical",
@@ -735,14 +735,14 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               }
             ]
           }
         },
         {
-          "key": "k_knob_cz_amber_pot_68x68_uni",
+          "key": "k_dial_cz_teal_pot_66x66_uni",
           "value": {
             "version": 2,
             "actions": [
@@ -792,8 +792,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -808,7 +808,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               },
               {
@@ -820,7 +820,7 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_amber_pot.png",
+                    "filmStrip": "dial_cz_teal_pot.png",
                     "numFrames": 65,
                     "invert": false,
                     "dragOrientation": "Vertical",
@@ -837,14 +837,14 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               }
             ]
           }
         },
         {
-          "key": "k_knob_cz_silver_hero_74x74_uni",
+          "key": "k_dial_cz_white_hero_70x70_uni",
           "value": {
             "version": 2,
             "actions": [
@@ -894,8 +894,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -910,7 +910,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 74 74"
+                  "bounds": "0 0 70 70"
                 }
               },
               {
@@ -922,7 +922,7 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_silver_hero.png",
+                    "filmStrip": "dial_cz_white_hero.png",
                     "numFrames": 65,
                     "invert": false,
                     "dragOrientation": "Vertical",
@@ -939,14 +939,14 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 74 74"
+                  "bounds": "0 0 70 70"
                 }
               }
             ]
           }
         },
         {
-          "key": "k_fader_cz_coral_46x276_uni",
+          "key": "k_slider_cz_coral_44x144_uni",
           "value": {
             "version": 2,
             "actions": [
@@ -996,8 +996,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -1012,7 +1012,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 46 276"
+                  "bounds": "0 0 44 144"
                 }
               },
               {
@@ -1024,7 +1024,7 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "fader_cz_coral.png",
+                    "filmStrip": "slider_cz_coral.png",
                     "numFrames": 65,
                     "invert": false,
                     "dragOrientation": "Vertical",
@@ -1041,14 +1041,14 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 46 276"
+                  "bounds": "0 0 44 144"
                 }
               }
             ]
           }
         },
         {
-          "key": "k_fader_cz_amber_46x276_uni",
+          "key": "k_slider_cz_ivory_44x144_uni",
           "value": {
             "version": 2,
             "actions": [
@@ -1098,8 +1098,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -1114,7 +1114,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 46 276"
+                  "bounds": "0 0 44 144"
                 }
               },
               {
@@ -1126,7 +1126,7 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "fader_cz_amber.png",
+                    "filmStrip": "slider_cz_ivory.png",
                     "numFrames": 65,
                     "invert": false,
                     "dragOrientation": "Vertical",
@@ -1143,14 +1143,14 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 46 276"
+                  "bounds": "0 0 44 144"
                 }
               }
             ]
           }
         },
         {
-          "key": "k_knob_cz_coral_pot_68x68_uni",
+          "key": "k_dial_cz_teal_5way_66x66_uni",
           "value": {
             "version": 2,
             "actions": [
@@ -1200,8 +1200,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -1216,7 +1216,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               },
               {
@@ -1228,109 +1228,7 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_coral_pot.png",
-                    "numFrames": 65,
-                    "invert": false,
-                    "dragOrientation": "Vertical",
-                    "handleName": "Data"
-                  }
-                },
-                "handle remapping": {
-                  "version": 1,
-                  "map": []
-                },
-                "bounds": {
-                  "version": 1,
-                  "acceptsHWFocus": "No",
-                  "showWhenDataModelInvalid": "Show",
-                  "whenVisible": "Always",
-                  "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "key": "k_knob_cz_teal_5way_68x68_uni",
-          "value": {
-            "version": 2,
-            "actions": [
-              {
-                "version": 1,
-                "onAction": "Mouse Down",
-                "handler": "Q-Link",
-                "handleName": "Data",
-                "additionalData": ""
-              },
-              {
-                "version": 1,
-                "onAction": "Double Click",
-                "handler": "Show Overlay",
-                "handleName": "Data",
-                "additionalData": "knob overlay"
-              },
-              {
-                "version": 1,
-                "onAction": "Enter Pressed",
-                "handler": "Show Overlay",
-                "handleName": "Data",
-                "additionalData": "knob overlay"
-              }
-            ],
-            "backgroundData": {
-              "version": 1,
-              "focussed": {
-                "version": 1,
-                "colour": "0",
-                "image": ""
-              },
-              "unfocussed": {
-                "version": 1,
-                "colour": "0",
-                "image": ""
-              }
-            },
-            "ignoreMousePresses": false,
-            "disableCoarseDataWheel": false,
-            "componentsData": [
-              {
-                "version": 2,
-                "componentData": {
-                  "version": 1,
-                  "name": "focus",
-                  "type": "Focus",
-                  "data": {
-                    "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
-                    "backgroundInset": 1.0,
-                    "outlineThickness": 1.5
-                  }
-                },
-                "handle remapping": {
-                  "version": 1,
-                  "map": []
-                },
-                "bounds": {
-                  "version": 1,
-                  "acceptsHWFocus": "No",
-                  "showWhenDataModelInvalid": "Show",
-                  "whenVisible": "WhenFocussed",
-                  "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
-                }
-              },
-              {
-                "version": 2,
-                "componentData": {
-                  "version": 1,
-                  "name": "knob",
-                  "type": "Knob",
-                  "data": {
-                    "version": 3,
-                    "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_teal_5way.png",
+                    "filmStrip": "dial_cz_teal_5way.png",
                     "numFrames": 5,
                     "invert": false,
                     "dragOrientation": "Vertical",
@@ -1347,14 +1245,14 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               }
             ]
           }
         },
         {
-          "key": "k_knob_cz_silver_pot_68x68_bi",
+          "key": "k_dial_cz_white_pot_66x66_bi",
           "value": {
             "version": 2,
             "actions": [
@@ -1404,8 +1302,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -1420,7 +1318,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               },
               {
@@ -1432,7 +1330,7 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_silver_pot.png",
+                    "filmStrip": "dial_cz_white_pot.png",
                     "numFrames": 65,
                     "invert": false,
                     "dragOrientation": "Vertical",
@@ -1449,14 +1347,14 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               }
             ]
           }
         },
         {
-          "key": "k_knob_cz_amber_4way_68x68_uni",
+          "key": "k_dial_cz_teal_3way_66x66_uni",
           "value": {
             "version": 2,
             "actions": [
@@ -1506,8 +1404,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -1522,7 +1420,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               },
               {
@@ -1534,109 +1432,7 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_amber_4way.png",
-                    "numFrames": 4,
-                    "invert": false,
-                    "dragOrientation": "Vertical",
-                    "handleName": "Data"
-                  }
-                },
-                "handle remapping": {
-                  "version": 1,
-                  "map": []
-                },
-                "bounds": {
-                  "version": 1,
-                  "acceptsHWFocus": "No",
-                  "showWhenDataModelInvalid": "Show",
-                  "whenVisible": "Always",
-                  "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "key": "k_knob_cz_teal_3way_68x68_uni",
-          "value": {
-            "version": 2,
-            "actions": [
-              {
-                "version": 1,
-                "onAction": "Mouse Down",
-                "handler": "Q-Link",
-                "handleName": "Data",
-                "additionalData": ""
-              },
-              {
-                "version": 1,
-                "onAction": "Double Click",
-                "handler": "Show Overlay",
-                "handleName": "Data",
-                "additionalData": "knob overlay"
-              },
-              {
-                "version": 1,
-                "onAction": "Enter Pressed",
-                "handler": "Show Overlay",
-                "handleName": "Data",
-                "additionalData": "knob overlay"
-              }
-            ],
-            "backgroundData": {
-              "version": 1,
-              "focussed": {
-                "version": 1,
-                "colour": "0",
-                "image": ""
-              },
-              "unfocussed": {
-                "version": 1,
-                "colour": "0",
-                "image": ""
-              }
-            },
-            "ignoreMousePresses": false,
-            "disableCoarseDataWheel": false,
-            "componentsData": [
-              {
-                "version": 2,
-                "componentData": {
-                  "version": 1,
-                  "name": "focus",
-                  "type": "Focus",
-                  "data": {
-                    "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
-                    "backgroundInset": 1.0,
-                    "outlineThickness": 1.5
-                  }
-                },
-                "handle remapping": {
-                  "version": 1,
-                  "map": []
-                },
-                "bounds": {
-                  "version": 1,
-                  "acceptsHWFocus": "No",
-                  "showWhenDataModelInvalid": "Show",
-                  "whenVisible": "WhenFocussed",
-                  "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
-                }
-              },
-              {
-                "version": 2,
-                "componentData": {
-                  "version": 1,
-                  "name": "knob",
-                  "type": "Knob",
-                  "data": {
-                    "version": 3,
-                    "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_teal_3way.png",
+                    "filmStrip": "dial_cz_teal_3way.png",
                     "numFrames": 3,
                     "invert": false,
                     "dragOrientation": "Vertical",
@@ -1653,14 +1449,14 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 66 66"
                 }
               }
             ]
           }
         },
         {
-          "key": "k_knob_cz_silver_pot_68x68_uni",
+          "key": "k_slider_cz_teal_44x144_uni",
           "value": {
             "version": 2,
             "actions": [
@@ -1710,8 +1506,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -1726,7 +1522,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 44 144"
                 }
               },
               {
@@ -1738,7 +1534,7 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_silver_pot.png",
+                    "filmStrip": "slider_cz_teal.png",
                     "numFrames": 65,
                     "invert": false,
                     "dragOrientation": "Vertical",
@@ -1755,14 +1551,14 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 44 144"
                 }
               }
             ]
           }
         },
         {
-          "key": "k_knob_cz_amber_2way_68x68_uni",
+          "key": "k_slider_cz_ivory_44x144_bi",
           "value": {
             "version": 2,
             "actions": [
@@ -1778,14 +1574,14 @@
                 "onAction": "Double Click",
                 "handler": "Show Overlay",
                 "handleName": "Data",
-                "additionalData": "knob overlay"
+                "additionalData": "knob overlay bipolar"
               },
               {
                 "version": 1,
                 "onAction": "Enter Pressed",
                 "handler": "Show Overlay",
                 "handleName": "Data",
-                "additionalData": "knob overlay"
+                "additionalData": "knob overlay bipolar"
               }
             ],
             "backgroundData": {
@@ -1812,8 +1608,8 @@
                   "type": "Focus",
                   "data": {
                     "version": 1,
-                    "backgroundColour": "1426b0b0",
-                    "outlineColour": "ff4ed6d2",
+                    "backgroundColour": "141eaeb4",
+                    "outlineColour": "ff48d4d8",
                     "backgroundInset": 1.0,
                     "outlineThickness": 1.5
                   }
@@ -1828,7 +1624,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "WhenFocussed",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 44 144"
                 }
               },
               {
@@ -1840,8 +1636,8 @@
                   "data": {
                     "version": 3,
                     "knobType": "FilmStrip",
-                    "filmStrip": "knob_cz_amber_2way.png",
-                    "numFrames": 2,
+                    "filmStrip": "slider_cz_ivory.png",
+                    "numFrames": 65,
                     "invert": false,
                     "dragOrientation": "Vertical",
                     "handleName": "Data"
@@ -1857,7 +1653,7 @@
                   "showWhenDataModelInvalid": "Show",
                   "whenVisible": "Always",
                   "boundsType": "Absolute",
-                  "bounds": "0 0 68 68"
+                  "bounds": "0 0 44 144"
                 }
               }
             ]
@@ -1891,20 +1687,12 @@
         "value": ["Off", "Saw", "Square", "Pulse", "Dbl Sine", "Saw-Pulse", "Rez Saw", "Rez Tri", "Rez Trap"]
       },
       {
-        "key": "Parameter 19",
+        "key": "Parameter 18",
         "value": ["-2", "-1", "0", "+1", "+2"]
-      },
-      {
-        "key": "Parameter 24",
-        "value": ["Tri", "Square", "Saw Up", "Saw Dn"]
       },
       {
         "key": "Parameter 28",
         "value": ["Poly 8", "Poly 4", "Mono"]
-      },
-      {
-        "key": "Parameter 31",
-        "value": ["Linear", "Exp"]
       }
     ],
     "info": {
@@ -1914,7 +1702,7 @@
     "tabs": [
       {
         "version": 1,
-        "tabName": "CZBOY",
+        "tabName": "CZ-101",
         "fnKeyIndex": 0,
         "fnKeySubIndex": 0,
         "componentDefinition": {
@@ -1924,12 +1712,12 @@
             "version": 1,
             "focussed": {
               "version": 1,
-              "colour": "ff1e2227",
+              "colour": "ff1a1d21",
               "image": ""
             },
             "unfocussed": {
               "version": 1,
-              "colour": "ff1e2227",
+              "colour": "ff1a1d21",
               "image": ""
             }
           },
@@ -1987,7 +1775,7 @@
                 "showWhenDataModelInvalid": "Show",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "363 23 424 76"
+                "bounds": "616 23 200 76"
               }
             },
             {
@@ -2015,7 +1803,7 @@
                 "showWhenDataModelInvalid": "Show",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "1135 25 26 62"
+                "bounds": "824 25 20 62"
               }
             },
             {
@@ -2043,7 +1831,7 @@
                 "showWhenDataModelInvalid": "Show",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "1175 25 26 62"
+                "bounds": "852 25 20 62"
               }
             },
             {
@@ -2062,7 +1850,7 @@
                       "style": "SemiBold",
                       "height": 17.0
                     },
-                    "colour": "ff182a1a",
+                    "colour": "ff162418",
                     "justification": "horizontallyCentred verticallyCentred",
                     "case": "Original"
                   },
@@ -2080,7 +1868,7 @@
                 "showWhenDataModelInvalid": "Show",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "40 69 288 34"
+                "bounds": "350 24 254 34"
               }
             },
             {
@@ -2097,9 +1885,9 @@
                       "version": 1,
                       "name": "Titillium Web",
                       "style": "SemiBold",
-                      "height": 17.0
+                      "height": 16.0
                     },
-                    "colour": "ff182a1a",
+                    "colour": "ff162418",
                     "justification": "horizontallyCentred verticallyCentred",
                     "case": "Original"
                   },
@@ -2117,7 +1905,7 @@
                 "showWhenDataModelInvalid": "Show",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "824 44 298 44"
+                "bounds": "350 65 254 34"
               }
             },
             {
@@ -2125,7 +1913,7 @@
               "componentData": {
                 "version": 1,
                 "name": "line_mode",
-                "type": "k_knob_cz_teal_4way_68x68_uni",
+                "type": "k_dial_cz_teal_4way_66x66_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2146,7 +1934,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "68 224 68 68"
+                "bounds": "71 221 66 66"
               }
             },
             {
@@ -2154,7 +1942,7 @@
               "componentData": {
                 "version": 1,
                 "name": "l1_wave1",
-                "type": "k_knob_cz_teal_8way_68x68_uni",
+                "type": "k_dial_cz_teal_8way_66x66_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2175,7 +1963,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "214 224 68 68"
+                "bounds": "217 221 66 66"
               }
             },
             {
@@ -2183,7 +1971,7 @@
               "componentData": {
                 "version": 1,
                 "name": "l1_wave2",
-                "type": "k_knob_cz_teal_9way_68x68_uni",
+                "type": "k_dial_cz_teal_9way_66x66_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2204,7 +1992,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "68 434 68 68"
+                "bounds": "363 221 66 66"
               }
             },
             {
@@ -2212,7 +2000,7 @@
               "componentData": {
                 "version": 1,
                 "name": "mod_mode",
-                "type": "k_knob_cz_coral_4way_68x68_uni",
+                "type": "k_dial_cz_coral_4way_66x66_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2233,15 +2021,15 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "214 434 68 68"
+                "bounds": "509 221 66 66"
               }
             },
             {
               "version": 2,
               "componentData": {
                 "version": 1,
-                "name": "dcw_depth",
-                "type": "k_knob_cz_coral_hero_78x78_uni",
+                "name": "dcw_timbre",
+                "type": "k_dial_cz_coral_hero_72x72_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2262,44 +2050,15 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "999 219 78 78"
+                "bounds": "706 218 72 72"
               }
             },
             {
               "version": 2,
               "componentData": {
                 "version": 1,
-                "name": "chorus",
-                "type": "k_knob_cz_teal_pot_68x68_uni",
-                "data": {
-                  "version": 1,
-                  "handleName": "Data"
-                }
-              },
-              "handle remapping": {
-                "version": 1,
-                "map": [
-                  {
-                    "key": "Data",
-                    "value": "Parameter 14"
-                  }
-                ]
-              },
-              "bounds": {
-                "version": 1,
-                "acceptsHWFocus": "Yes",
-                "showWhenDataModelInvalid": "Hide",
-                "whenVisible": "Always",
-                "boundsType": "Absolute",
-                "bounds": "1150 224 68 68"
-              }
-            },
-            {
-              "version": 2,
-              "componentData": {
-                "version": 1,
-                "name": "drive",
-                "type": "k_knob_cz_amber_pot_68x68_uni",
+                "name": "dcw_env",
+                "type": "k_dial_cz_coral_pot_66x66_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2320,7 +2079,36 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "1004 434 68 68"
+                "bounds": "855 221 66 66"
+              }
+            },
+            {
+              "version": 2,
+              "componentData": {
+                "version": 1,
+                "name": "chorus",
+                "type": "k_dial_cz_teal_pot_66x66_uni",
+                "data": {
+                  "version": 1,
+                  "handleName": "Data"
+                }
+              },
+              "handle remapping": {
+                "version": 1,
+                "map": [
+                  {
+                    "key": "Data",
+                    "value": "Parameter 14"
+                  }
+                ]
+              },
+              "bounds": {
+                "version": 1,
+                "acceptsHWFocus": "Yes",
+                "showWhenDataModelInvalid": "Hide",
+                "whenVisible": "Always",
+                "boundsType": "Absolute",
+                "bounds": "1001 221 66 66"
               }
             },
             {
@@ -2328,7 +2116,7 @@
               "componentData": {
                 "version": 1,
                 "name": "volume",
-                "type": "k_knob_cz_silver_hero_74x74_uni",
+                "type": "k_dial_cz_white_hero_70x70_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2349,7 +2137,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "1147 431 74 74"
+                "bounds": "1145 219 70 70"
               }
             },
             {
@@ -2357,7 +2145,7 @@
               "componentData": {
                 "version": 1,
                 "name": "dcw_att",
-                "type": "k_fader_cz_coral_46x276_uni",
+                "type": "k_slider_cz_coral_44x144_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2378,7 +2166,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "363 230 46 276"
+                "bounds": "88 424 44 144"
               }
             },
             {
@@ -2386,7 +2174,7 @@
               "componentData": {
                 "version": 1,
                 "name": "dcw_dec",
-                "type": "k_fader_cz_coral_46x276_uni",
+                "type": "k_slider_cz_coral_44x144_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2407,7 +2195,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "431 230 46 276"
+                "bounds": "230 424 44 144"
               }
             },
             {
@@ -2415,7 +2203,7 @@
               "componentData": {
                 "version": 1,
                 "name": "dcw_sus",
-                "type": "k_fader_cz_coral_46x276_uni",
+                "type": "k_slider_cz_coral_44x144_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2436,7 +2224,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "499 230 46 276"
+                "bounds": "372 424 44 144"
               }
             },
             {
@@ -2444,7 +2232,7 @@
               "componentData": {
                 "version": 1,
                 "name": "dcw_rel",
-                "type": "k_fader_cz_coral_46x276_uni",
+                "type": "k_slider_cz_coral_44x144_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2465,7 +2253,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "567 230 46 276"
+                "bounds": "514 424 44 144"
               }
             },
             {
@@ -2473,7 +2261,7 @@
               "componentData": {
                 "version": 1,
                 "name": "dca_att",
-                "type": "k_fader_cz_amber_46x276_uni",
+                "type": "k_slider_cz_ivory_44x144_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2494,7 +2282,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "677 230 46 276"
+                "bounds": "726 424 44 144"
               }
             },
             {
@@ -2502,7 +2290,7 @@
               "componentData": {
                 "version": 1,
                 "name": "dca_dec",
-                "type": "k_fader_cz_amber_46x276_uni",
+                "type": "k_slider_cz_ivory_44x144_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2523,7 +2311,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "745 230 46 276"
+                "bounds": "868 424 44 144"
               }
             },
             {
@@ -2531,7 +2319,7 @@
               "componentData": {
                 "version": 1,
                 "name": "dca_sus",
-                "type": "k_fader_cz_amber_46x276_uni",
+                "type": "k_slider_cz_ivory_44x144_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2552,7 +2340,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "813 230 46 276"
+                "bounds": "1010 424 44 144"
               }
             },
             {
@@ -2560,7 +2348,7 @@
               "componentData": {
                 "version": 1,
                 "name": "dca_rel",
-                "type": "k_fader_cz_amber_46x276_uni",
+                "type": "k_slider_cz_ivory_44x144_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2581,7 +2369,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "881 230 46 276"
+                "bounds": "1152 424 44 144"
               }
             }
           ]
@@ -2600,12 +2388,12 @@
             "version": 1,
             "focussed": {
               "version": 1,
-              "colour": "ff1e2227",
+              "colour": "ff1a1d21",
               "image": ""
             },
             "unfocussed": {
               "version": 1,
-              "colour": "ff1e2227",
+              "colour": "ff1a1d21",
               "image": ""
             }
           },
@@ -2663,7 +2451,7 @@
                 "showWhenDataModelInvalid": "Show",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "363 23 424 76"
+                "bounds": "616 23 200 76"
               }
             },
             {
@@ -2691,7 +2479,7 @@
                 "showWhenDataModelInvalid": "Show",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "1135 25 26 62"
+                "bounds": "824 25 20 62"
               }
             },
             {
@@ -2719,7 +2507,7 @@
                 "showWhenDataModelInvalid": "Show",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "1175 25 26 62"
+                "bounds": "852 25 20 62"
               }
             },
             {
@@ -2738,7 +2526,7 @@
                       "style": "SemiBold",
                       "height": 17.0
                     },
-                    "colour": "ff182a1a",
+                    "colour": "ff162418",
                     "justification": "horizontallyCentred verticallyCentred",
                     "case": "Original"
                   },
@@ -2756,7 +2544,7 @@
                 "showWhenDataModelInvalid": "Show",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "40 69 288 34"
+                "bounds": "350 24 254 34"
               }
             },
             {
@@ -2773,9 +2561,9 @@
                       "version": 1,
                       "name": "Titillium Web",
                       "style": "SemiBold",
-                      "height": 17.0
+                      "height": 16.0
                     },
-                    "colour": "ff182a1a",
+                    "colour": "ff162418",
                     "justification": "horizontallyCentred verticallyCentred",
                     "case": "Original"
                   },
@@ -2793,7 +2581,7 @@
                 "showWhenDataModelInvalid": "Show",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "824 44 298 44"
+                "bounds": "350 65 254 34"
               }
             },
             {
@@ -2801,7 +2589,7 @@
               "componentData": {
                 "version": 1,
                 "name": "l2_wave1",
-                "type": "k_knob_cz_teal_8way_68x68_uni",
+                "type": "k_dial_cz_teal_8way_66x66_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2822,7 +2610,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "68 224 68 68"
+                "bounds": "71 221 66 66"
               }
             },
             {
@@ -2830,7 +2618,7 @@
               "componentData": {
                 "version": 1,
                 "name": "l2_wave2",
-                "type": "k_knob_cz_teal_9way_68x68_uni",
+                "type": "k_dial_cz_teal_9way_66x66_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2851,15 +2639,15 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "214 224 68 68"
+                "bounds": "217 221 66 66"
               }
             },
             {
               "version": 2,
               "componentData": {
                 "version": 1,
-                "name": "l2_dcw",
-                "type": "k_knob_cz_coral_pot_68x68_uni",
+                "name": "l2_oct",
+                "type": "k_dial_cz_teal_5way_66x66_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2880,15 +2668,15 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "68 434 68 68"
+                "bounds": "363 221 66 66"
               }
             },
             {
               "version": 2,
               "componentData": {
                 "version": 1,
-                "name": "l2_oct",
-                "type": "k_knob_cz_teal_5way_68x68_uni",
+                "name": "l2_semi",
+                "type": "k_dial_cz_white_pot_66x66_bi",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -2909,239 +2697,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "214 434 68 68"
-              }
-            },
-            {
-              "version": 2,
-              "componentData": {
-                "version": 1,
-                "name": "l2_semi",
-                "type": "k_knob_cz_silver_pot_68x68_bi",
-                "data": {
-                  "version": 1,
-                  "handleName": "Data"
-                }
-              },
-              "handle remapping": {
-                "version": 1,
-                "map": [
-                  {
-                    "key": "Data",
-                    "value": "Parameter 20"
-                  }
-                ]
-              },
-              "bounds": {
-                "version": 1,
-                "acceptsHWFocus": "Yes",
-                "showWhenDataModelInvalid": "Hide",
-                "whenVisible": "Always",
-                "boundsType": "Absolute",
-                "bounds": "382 224 68 68"
-              }
-            },
-            {
-              "version": 2,
-              "componentData": {
-                "version": 1,
-                "name": "l2_fine",
-                "type": "k_knob_cz_silver_pot_68x68_bi",
-                "data": {
-                  "version": 1,
-                  "handleName": "Data"
-                }
-              },
-              "handle remapping": {
-                "version": 1,
-                "map": [
-                  {
-                    "key": "Data",
-                    "value": "Parameter 21"
-                  }
-                ]
-              },
-              "bounds": {
-                "version": 1,
-                "acceptsHWFocus": "Yes",
-                "showWhenDataModelInvalid": "Hide",
-                "whenVisible": "Always",
-                "boundsType": "Absolute",
-                "bounds": "528 224 68 68"
-              }
-            },
-            {
-              "version": 2,
-              "componentData": {
-                "version": 1,
-                "name": "pitch_env",
-                "type": "k_knob_cz_coral_pot_68x68_uni",
-                "data": {
-                  "version": 1,
-                  "handleName": "Data"
-                }
-              },
-              "handle remapping": {
-                "version": 1,
-                "map": [
-                  {
-                    "key": "Data",
-                    "value": "Parameter 22"
-                  }
-                ]
-              },
-              "bounds": {
-                "version": 1,
-                "acceptsHWFocus": "Yes",
-                "showWhenDataModelInvalid": "Hide",
-                "whenVisible": "Always",
-                "boundsType": "Absolute",
-                "bounds": "382 434 68 68"
-              }
-            },
-            {
-              "version": 2,
-              "componentData": {
-                "version": 1,
-                "name": "pitch_dec",
-                "type": "k_knob_cz_coral_pot_68x68_uni",
-                "data": {
-                  "version": 1,
-                  "handleName": "Data"
-                }
-              },
-              "handle remapping": {
-                "version": 1,
-                "map": [
-                  {
-                    "key": "Data",
-                    "value": "Parameter 23"
-                  }
-                ]
-              },
-              "bounds": {
-                "version": 1,
-                "acceptsHWFocus": "Yes",
-                "showWhenDataModelInvalid": "Hide",
-                "whenVisible": "Always",
-                "boundsType": "Absolute",
-                "bounds": "528 434 68 68"
-              }
-            },
-            {
-              "version": 2,
-              "componentData": {
-                "version": 1,
-                "name": "vib_wave",
-                "type": "k_knob_cz_amber_4way_68x68_uni",
-                "data": {
-                  "version": 1,
-                  "handleName": "Data"
-                }
-              },
-              "handle remapping": {
-                "version": 1,
-                "map": [
-                  {
-                    "key": "Data",
-                    "value": "Parameter 24"
-                  }
-                ]
-              },
-              "bounds": {
-                "version": 1,
-                "acceptsHWFocus": "Yes",
-                "showWhenDataModelInvalid": "Hide",
-                "whenVisible": "Always",
-                "boundsType": "Absolute",
-                "bounds": "696 224 68 68"
-              }
-            },
-            {
-              "version": 2,
-              "componentData": {
-                "version": 1,
-                "name": "vib_rate",
-                "type": "k_knob_cz_amber_pot_68x68_uni",
-                "data": {
-                  "version": 1,
-                  "handleName": "Data"
-                }
-              },
-              "handle remapping": {
-                "version": 1,
-                "map": [
-                  {
-                    "key": "Data",
-                    "value": "Parameter 25"
-                  }
-                ]
-              },
-              "bounds": {
-                "version": 1,
-                "acceptsHWFocus": "Yes",
-                "showWhenDataModelInvalid": "Hide",
-                "whenVisible": "Always",
-                "boundsType": "Absolute",
-                "bounds": "842 224 68 68"
-              }
-            },
-            {
-              "version": 2,
-              "componentData": {
-                "version": 1,
-                "name": "vib_depth",
-                "type": "k_knob_cz_amber_pot_68x68_uni",
-                "data": {
-                  "version": 1,
-                  "handleName": "Data"
-                }
-              },
-              "handle remapping": {
-                "version": 1,
-                "map": [
-                  {
-                    "key": "Data",
-                    "value": "Parameter 26"
-                  }
-                ]
-              },
-              "bounds": {
-                "version": 1,
-                "acceptsHWFocus": "Yes",
-                "showWhenDataModelInvalid": "Hide",
-                "whenVisible": "Always",
-                "boundsType": "Absolute",
-                "bounds": "696 434 68 68"
-              }
-            },
-            {
-              "version": 2,
-              "componentData": {
-                "version": 1,
-                "name": "vib_delay",
-                "type": "k_knob_cz_amber_pot_68x68_uni",
-                "data": {
-                  "version": 1,
-                  "handleName": "Data"
-                }
-              },
-              "handle remapping": {
-                "version": 1,
-                "map": [
-                  {
-                    "key": "Data",
-                    "value": "Parameter 27"
-                  }
-                ]
-              },
-              "bounds": {
-                "version": 1,
-                "acceptsHWFocus": "Yes",
-                "showWhenDataModelInvalid": "Hide",
-                "whenVisible": "Always",
-                "boundsType": "Absolute",
-                "bounds": "842 434 68 68"
+                "bounds": "509 221 66 66"
               }
             },
             {
@@ -3149,7 +2705,7 @@
               "componentData": {
                 "version": 1,
                 "name": "voice_mode",
-                "type": "k_knob_cz_teal_3way_68x68_uni",
+                "type": "k_dial_cz_teal_3way_66x66_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -3170,7 +2726,181 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "1004 224 68 68"
+                "bounds": "709 221 66 66"
+              }
+            },
+            {
+              "version": 2,
+              "componentData": {
+                "version": 1,
+                "name": "l2_fine",
+                "type": "k_dial_cz_white_pot_66x66_bi",
+                "data": {
+                  "version": 1,
+                  "handleName": "Data"
+                }
+              },
+              "handle remapping": {
+                "version": 1,
+                "map": [
+                  {
+                    "key": "Data",
+                    "value": "Parameter 20"
+                  }
+                ]
+              },
+              "bounds": {
+                "version": 1,
+                "acceptsHWFocus": "Yes",
+                "showWhenDataModelInvalid": "Hide",
+                "whenVisible": "Always",
+                "boundsType": "Absolute",
+                "bounds": "855 221 66 66"
+              }
+            },
+            {
+              "version": 2,
+              "componentData": {
+                "version": 1,
+                "name": "pitch_env",
+                "type": "k_dial_cz_coral_pot_66x66_uni",
+                "data": {
+                  "version": 1,
+                  "handleName": "Data"
+                }
+              },
+              "handle remapping": {
+                "version": 1,
+                "map": [
+                  {
+                    "key": "Data",
+                    "value": "Parameter 24"
+                  }
+                ]
+              },
+              "bounds": {
+                "version": 1,
+                "acceptsHWFocus": "Yes",
+                "showWhenDataModelInvalid": "Hide",
+                "whenVisible": "Always",
+                "boundsType": "Absolute",
+                "bounds": "1001 221 66 66"
+              }
+            },
+            {
+              "version": 2,
+              "componentData": {
+                "version": 1,
+                "name": "pitch_dec",
+                "type": "k_dial_cz_coral_pot_66x66_uni",
+                "data": {
+                  "version": 1,
+                  "handleName": "Data"
+                }
+              },
+              "handle remapping": {
+                "version": 1,
+                "map": [
+                  {
+                    "key": "Data",
+                    "value": "Parameter 25"
+                  }
+                ]
+              },
+              "bounds": {
+                "version": 1,
+                "acceptsHWFocus": "Yes",
+                "showWhenDataModelInvalid": "Hide",
+                "whenVisible": "Always",
+                "boundsType": "Absolute",
+                "bounds": "1147 221 66 66"
+              }
+            },
+            {
+              "version": 2,
+              "componentData": {
+                "version": 1,
+                "name": "l2_mix",
+                "type": "k_slider_cz_teal_44x144_uni",
+                "data": {
+                  "version": 1,
+                  "handleName": "Data"
+                }
+              },
+              "handle remapping": {
+                "version": 1,
+                "map": [
+                  {
+                    "key": "Data",
+                    "value": "Parameter 21"
+                  }
+                ]
+              },
+              "bounds": {
+                "version": 1,
+                "acceptsHWFocus": "Yes",
+                "showWhenDataModelInvalid": "Hide",
+                "whenVisible": "Always",
+                "boundsType": "Absolute",
+                "bounds": "88 424 44 144"
+              }
+            },
+            {
+              "version": 2,
+              "componentData": {
+                "version": 1,
+                "name": "l2_dcw",
+                "type": "k_slider_cz_coral_44x144_uni",
+                "data": {
+                  "version": 1,
+                  "handleName": "Data"
+                }
+              },
+              "handle remapping": {
+                "version": 1,
+                "map": [
+                  {
+                    "key": "Data",
+                    "value": "Parameter 22"
+                  }
+                ]
+              },
+              "bounds": {
+                "version": 1,
+                "acceptsHWFocus": "Yes",
+                "showWhenDataModelInvalid": "Hide",
+                "whenVisible": "Always",
+                "boundsType": "Absolute",
+                "bounds": "230 424 44 144"
+              }
+            },
+            {
+              "version": 2,
+              "componentData": {
+                "version": 1,
+                "name": "l2_env_ofs",
+                "type": "k_slider_cz_ivory_44x144_bi",
+                "data": {
+                  "version": 1,
+                  "handleName": "Data"
+                }
+              },
+              "handle remapping": {
+                "version": 1,
+                "map": [
+                  {
+                    "key": "Data",
+                    "value": "Parameter 23"
+                  }
+                ]
+              },
+              "bounds": {
+                "version": 1,
+                "acceptsHWFocus": "Yes",
+                "showWhenDataModelInvalid": "Hide",
+                "whenVisible": "Always",
+                "boundsType": "Absolute",
+                "bounds": "372 424 44 144"
               }
             },
             {
@@ -3178,7 +2908,7 @@
               "componentData": {
                 "version": 1,
                 "name": "glide",
-                "type": "k_knob_cz_silver_pot_68x68_uni",
+                "type": "k_slider_cz_teal_44x144_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -3199,15 +2929,73 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "1150 224 68 68"
+                "bounds": "514 424 44 144"
               }
             },
             {
               "version": 2,
               "componentData": {
                 "version": 1,
-                "name": "vel_sens",
-                "type": "k_knob_cz_silver_pot_68x68_uni",
+                "name": "vib_rate",
+                "type": "k_slider_cz_ivory_44x144_uni",
+                "data": {
+                  "version": 1,
+                  "handleName": "Data"
+                }
+              },
+              "handle remapping": {
+                "version": 1,
+                "map": [
+                  {
+                    "key": "Data",
+                    "value": "Parameter 26"
+                  }
+                ]
+              },
+              "bounds": {
+                "version": 1,
+                "acceptsHWFocus": "Yes",
+                "showWhenDataModelInvalid": "Hide",
+                "whenVisible": "Always",
+                "boundsType": "Absolute",
+                "bounds": "726 424 44 144"
+              }
+            },
+            {
+              "version": 2,
+              "componentData": {
+                "version": 1,
+                "name": "vib_depth",
+                "type": "k_slider_cz_coral_44x144_uni",
+                "data": {
+                  "version": 1,
+                  "handleName": "Data"
+                }
+              },
+              "handle remapping": {
+                "version": 1,
+                "map": [
+                  {
+                    "key": "Data",
+                    "value": "Parameter 27"
+                  }
+                ]
+              },
+              "bounds": {
+                "version": 1,
+                "acceptsHWFocus": "Yes",
+                "showWhenDataModelInvalid": "Hide",
+                "whenVisible": "Always",
+                "boundsType": "Absolute",
+                "bounds": "868 424 44 144"
+              }
+            },
+            {
+              "version": 2,
+              "componentData": {
+                "version": 1,
+                "name": "vib_delay",
+                "type": "k_slider_cz_ivory_44x144_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -3228,15 +3016,15 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "1004 434 68 68"
+                "bounds": "1010 424 44 144"
               }
             },
             {
               "version": 2,
               "componentData": {
                 "version": 1,
-                "name": "dca_curve",
-                "type": "k_knob_cz_amber_2way_68x68_uni",
+                "name": "vel_sens",
+                "type": "k_slider_cz_teal_44x144_uni",
                 "data": {
                   "version": 1,
                   "handleName": "Data"
@@ -3257,7 +3045,7 @@
                 "showWhenDataModelInvalid": "Hide",
                 "whenVisible": "Always",
                 "boundsType": "Absolute",
-                "bounds": "1150 434 68 68"
+                "bounds": "1152 424 44 144"
               }
             }
           ]

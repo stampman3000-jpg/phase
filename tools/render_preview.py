@@ -40,19 +40,19 @@ def main():
         m = json.load(fh)
 
     vals = {
-        "line_mode": 2/3, "l1_wave1": 5/7, "l1_wave2": 5/8, "mod_mode": 0.0,
-        "dcw_depth": 0.86, "dcw_att": 0.16, "dcw_dec": 0.48, "dcw_sus": 0.54, "dcw_rel": 0.34,
-        "dca_att": 0.10, "dca_dec": 0.42, "dca_sus": 0.88, "dca_rel": 0.36,
-        "chorus": 0.34, "drive": 0.16, "volume": 0.82,
-        "l2_wave1": 0.0, "l2_wave2": 5/8, "l2_dcw": 0.85, "l2_oct": 0.5,
-        "l2_semi": 0.5, "l2_fine": (14 + 60) / 120.0, "pitch_env": 0.10, "pitch_dec": 0.18,
-        "vib_wave": 0.0, "vib_rate": 0.34, "vib_depth": 0.14, "vib_delay": 0.35,
-        "voice_mode": 0.0, "glide": 0.0, "vel_sens": 0.55, "dca_curve": 1.0,
+        "line_mode": 2/3, "l1_wave1": 2/7, "l1_wave2": 5/8, "mod_mode": 0.0,
+        "dcw_timbre": 0.28, "dcw_env": 0.76, "chorus": 0.34, "volume": 0.82,
+        "dcw_att": 0.14, "dcw_dec": 0.42, "dcw_sus": 0.48, "dcw_rel": 0.22,
+        "dca_att": 0.06, "dca_dec": 0.40, "dca_sus": 0.88, "dca_rel": 0.20,
+        "l2_wave1": 0.0, "l2_wave2": 5/8, "l2_oct": 0.5, "l2_semi": 0.5,
+        "voice_mode": 0.0, "l2_fine": (14 + 60) / 120.0, "pitch_env": 0.12, "pitch_dec": 0.14,
+        "l2_mix": 0.90, "l2_dcw": 0.88, "l2_env_ofs": 0.58, "glide": 0.0,
+        "vib_rate": 0.34, "vib_depth": 0.14, "vib_delay": 0.38, "vel_sens": 0.52,
     }
 
     for pg, bg, out_name, wave_fi, lbl_txts in [
-        ("page1", "bg_czboy.png", "page1_czboy.png", 5, ["CZ Brass Ens | 1+2 | V:4", "RZ-S+S-PL • POLY8"]),
-        ("page2", "bg_line2.png", "page2_line2.png", 0, ["CZ Brass Ens | 1+2 | V:4", "RZ-S+S-PL • POLY8"]),
+        ("page1", "bg_czboy.png", "page1_czboy.png", 5, ["CZ-101 Brass | 1+2 | V:4", "PLS+S-PL | POLY8"]),
+        ("page2", "bg_line2.png", "page2_line2.png", 0, ["CZ-101 Brass | 1+2 | V:4", "PLS+S-PL | POLY8"]),
     ]:
         im = Image.open(os.path.join(SKIN_DIR, bg)).convert("RGBA")
         for st in m[pg].get("strips", []):
@@ -74,7 +74,7 @@ def main():
         im.convert("RGB").save(out_path)
         if pg == "page1":
             shutil.copy2(out_path, os.path.join(SHOT_DIR, "czboy.png"))
-    print(f"Rendered CZboy previews to {OUT_DIR}/ and screenshots/czboy.png")
+    print(f"Rendered CZ-101 previews to {OUT_DIR}/ and screenshots/czboy.png")
 
 
 if __name__ == "__main__":

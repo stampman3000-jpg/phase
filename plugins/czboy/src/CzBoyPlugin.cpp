@@ -23,12 +23,12 @@ enum ParamIdx : int
 {
     P_VOLUME = 0, // Harmless master level when MPC nudges param 0 on load
 
-    // Page 1: Core CZ Voice, Waveforms, DCW & DCA (1..15 + 0)
+    // Page 1: Core CZ Voice, Waveforms, Live DCW Timbre & ADSR Envelopes (1..15 + 0)
     P_LINE_MODE = 1,
     P_L1_WAVE1,
     P_L1_WAVE2,
     P_MOD_MODE,
-    P_DCW_DEPTH,
+    P_DCW_TIMBRE,
     P_DCW_ATT,
     P_DCW_DEC,
     P_DCW_SUS,
@@ -38,25 +38,25 @@ enum ParamIdx : int
     P_DCA_REL,
     P_DCW_REL,
     P_CHORUS,
-    P_DRIVE,
+    P_DCW_ENV,
 
-    // Page 2: Line 2, Detune, Pitch EG, Vibrato & Voice (16..31)
+    // Page 2: Line 2 Layer, Detune, Pitch EG, Vibrato & Voice (16..31)
     P_L2_WAVE1 = 16,
     P_L2_WAVE2,
-    P_L2_DCW,
     P_L2_OCT,
     P_L2_SEMI,
     P_L2_FINE,
+    P_L2_MIX,
+    P_L2_DCW,
+    P_L2_ENV_OFS,
     P_PITCH_ENV,
     P_PITCH_DEC,
-    P_VIB_WAVE,
     P_VIB_RATE,
     P_VIB_DEPTH,
-    P_VIB_DELAY,
     P_VOICE_MODE,
     P_GLIDE,
+    P_VIB_DELAY,
     P_VEL_SENS,
-    P_DCA_CURVE,
 
     // Non-automatable UI Telemetry (32..35)
     P_METER_L = 32,
@@ -92,7 +92,7 @@ public:
         info.name         = "CZboy";
         info.vendor       = "Stampman3000";
         info.uniqueId     = MPC_FOURCC ('C', 'Z', 'B', 'Y');
-        info.version      = 1000;
+        info.version      = 1001;
         info.isInstrument = true;
         info.numInputs    = 0;
         info.numOutputs   = 2;
@@ -141,15 +141,15 @@ public:
         {
             static const char* kWaves[8]  = { "SAW", "SQR", "PLS", "DSIN", "S-PL", "RZ-S", "RZ-T", "RZ-P" };
             static const char* kVoices[3] = { "POLY8", "POLY4", "MONO" };
-            static const char* kMods[4]   = { "", " • RING", " • NOISE", " • R+N" };
+            static const char* kMods[4]   = { "", " RING", " NOISE", " R+N" };
             const int w1 = clampi (getInt (P_L1_WAVE1), 0, 7);
             const int w2 = clampi (getInt (P_L1_WAVE2), 0, 8);
             const int vm = clampi (getInt (P_VOICE_MODE), 0, 2);
             const int mm = clampi (getInt (P_MOD_MODE), 0, 3);
             if (w2 > 0)
-                std::snprintf (buf, sizeof (buf), "%s+%s • %s%s", kWaves[w1], kWaves[w2 - 1], kVoices[vm], kMods[mm]);
+                std::snprintf (buf, sizeof (buf), "%s+%s | %s%s", kWaves[w1], kWaves[w2 - 1], kVoices[vm], kMods[mm]);
             else
-                std::snprintf (buf, sizeof (buf), "%s • %s%s", kWaves[w1], kVoices[vm], kMods[mm]);
+                std::snprintf (buf, sizeof (buf), "%s | %s%s", kWaves[w1], kVoices[vm], kMods[mm]);
             out = buf;
             return true;
         }
@@ -164,6 +164,13 @@ public:
         {
             const int v = (int) std::lround (plainValue);
             std::snprintf (buf, sizeof (buf), "%+d ct", v);
+            out = buf;
+            return true;
+        }
+        if (index == P_L2_ENV_OFS)
+        {
+            const int v = (int) std::lround (plainValue);
+            std::snprintf (buf, sizeof (buf), "%+d%%", v);
             out = buf;
             return true;
         }
@@ -236,7 +243,7 @@ private:
         p.l1Wave2   = getInt (P_L1_WAVE2);
         p.modMode   = getInt (P_MOD_MODE);
 
-        p.dcwDepth  = get (P_DCW_DEPTH) * 0.01f;
+        p.dcwTimbre = get (P_DCW_TIMBRE) * 0.01f;
         p.dcwAtt    = get (P_DCW_ATT) * 0.01f;
         p.dcwDec    = get (P_DCW_DEC) * 0.01f;
         p.dcwSus    = get (P_DCW_SUS) * 0.01f;
@@ -248,27 +255,25 @@ private:
         p.dcaRel    = get (P_DCA_REL) * 0.01f;
 
         p.chorus    = get (P_CHORUS) * 0.01f;
-        p.drive     = get (P_DRIVE) * 0.01f;
+        p.dcwEnv    = get (P_DCW_ENV) * 0.01f;
 
         p.l2Wave1   = getInt (P_L2_WAVE1);
         p.l2Wave2   = getInt (P_L2_WAVE2);
-        p.l2Dcw     = get (P_L2_DCW) * 0.01f;
         p.l2Oct     = getInt (P_L2_OCT) - 2;
         p.l2Semi    = getInt (P_L2_SEMI);
         p.l2Fine    = getInt (P_L2_FINE);
+        p.l2Mix     = get (P_L2_MIX) * 0.01f;
+        p.l2Dcw     = get (P_L2_DCW) * 0.01f;
+        p.l2EnvOfs  = get (P_L2_ENV_OFS) * 0.01f;
 
         p.pitchEnv  = get (P_PITCH_ENV) * 0.01f;
         p.pitchDec  = get (P_PITCH_DEC) * 0.01f;
-
-        p.vibWave   = getInt (P_VIB_WAVE);
         p.vibRate   = get (P_VIB_RATE) * 0.01f;
         p.vibDepth  = get (P_VIB_DEPTH) * 0.01f;
-        p.vibDelay  = get (P_VIB_DELAY) * 0.01f;
-
         p.voiceMode = getInt (P_VOICE_MODE);
         p.glide     = get (P_GLIDE) * 0.01f;
+        p.vibDelay  = get (P_VIB_DELAY) * 0.01f;
         p.velSens   = get (P_VEL_SENS) * 0.01f;
-        p.dcaCurve  = getInt (P_DCA_CURVE);
         return p;
     }
 
@@ -285,42 +290,42 @@ private:
         };
 
         // 0: Master Volume
-        addParam (floatParam  ("volume",     "Master Vol",  0.0f, 100.0f, 82.0f, "%", 0));
+        addParam (floatParam  ("volume",     "Master Vol",   0.0f, 100.0f, 82.0f, "%", 0));
 
-        // 1..15: Page 1 Core CZ Voice, DCW, DCA, FX
-        addParam (choiceParam ("line_mode",  "Line Mode",   { "Line 1", "Line 2", "1 + 2", "1 + 2'" }, 0));
-        addParam (choiceParam ("l1_wave1",   "L1 Wave 1",   w1Names, 0));
-        addParam (choiceParam ("l1_wave2",   "L1 Wave 2",   w2Names, 0));
-        addParam (choiceParam ("mod_mode",   "Mod Mode",    { "Off", "Ring Mod", "Noise", "Ring+N" }, 0));
-        addParam (floatParam  ("dcw_depth",  "DCW Depth",   0.0f, 100.0f, 72.0f, "%", 0));
-        addParam (floatParam  ("dcw_att",    "DCW Attack",  0.0f, 100.0f,  2.0f, "%", 0));
-        addParam (floatParam  ("dcw_dec",    "DCW Decay",   0.0f, 100.0f, 36.0f, "%", 0));
-        addParam (floatParam  ("dcw_sus",    "DCW Sustain", 0.0f, 100.0f, 45.0f, "%", 0));
-        addParam (floatParam  ("dca_att",    "DCA Attack",  0.0f, 100.0f,  1.0f, "%", 0));
-        addParam (floatParam  ("dca_dec",    "DCA Decay",   0.0f, 100.0f, 35.0f, "%", 0));
-        addParam (floatParam  ("dca_sus",    "DCA Sustain", 0.0f, 100.0f, 80.0f, "%", 0));
-        addParam (floatParam  ("dca_rel",    "DCA Release", 0.0f, 100.0f, 22.0f, "%", 0));
-        addParam (floatParam  ("dcw_rel",    "DCW Release", 0.0f, 100.0f, 25.0f, "%", 0));
-        addParam (floatParam  ("chorus",     "Chorus",      0.0f, 100.0f,  0.0f, "%", 0));
-        addParam (floatParam  ("drive",      "Drive",       0.0f, 100.0f,  0.0f, "%", 0));
+        // 1..15: Page 1 Core CZ Voice, Live DCW Timbre & ADSR Envelopes
+        addParam (choiceParam ("line_mode",  "Line Mode",    { "Line 1", "Line 2", "1 + 2", "1 + 2'" }, 2));
+        addParam (choiceParam ("l1_wave1",   "L1 Wave 1",    w1Names, 2));
+        addParam (choiceParam ("l1_wave2",   "L1 Wave 2",    w2Names, 5));
+        addParam (choiceParam ("mod_mode",   "Mod Mode",     { "Off", "Ring Mod", "Noise", "Ring+N" }, 0));
+        addParam (floatParam  ("dcw_timbre", "DCW Timbre",   0.0f, 100.0f, 24.0f, "%", 0));
+        addParam (floatParam  ("dcw_att",    "DCW Attack",   0.0f, 100.0f, 14.0f, "%", 0));
+        addParam (floatParam  ("dcw_dec",    "DCW Decay",    0.0f, 100.0f, 42.0f, "%", 0));
+        addParam (floatParam  ("dcw_sus",    "DCW Sustain",  0.0f, 100.0f, 48.0f, "%", 0));
+        addParam (floatParam  ("dca_att",    "DCA Attack",   0.0f, 100.0f,  6.0f, "%", 0));
+        addParam (floatParam  ("dca_dec",    "DCA Decay",    0.0f, 100.0f, 40.0f, "%", 0));
+        addParam (floatParam  ("dca_sus",    "DCA Sustain",  0.0f, 100.0f, 88.0f, "%", 0));
+        addParam (floatParam  ("dca_rel",    "DCA Release",  0.0f, 100.0f, 20.0f, "%", 0));
+        addParam (floatParam  ("dcw_rel",    "DCW Release",  0.0f, 100.0f, 22.0f, "%", 0));
+        addParam (floatParam  ("chorus",     "Chorus",       0.0f, 100.0f, 34.0f, "%", 0));
+        addParam (floatParam  ("dcw_env",    "DCW Env",      0.0f, 100.0f, 76.0f, "%", 0));
 
-        // 16..31: Page 2 Line 2, Detune, Pitch EG, Vibrato, Voice
-        addParam (choiceParam ("l2_wave1",   "L2 Wave 1",   w1Names, 0));
-        addParam (choiceParam ("l2_wave2",   "L2 Wave 2",   w2Names, 0));
-        addParam (floatParam  ("l2_dcw",     "L2 DCW",      0.0f, 100.0f, 90.0f, "%", 0));
-        addParam (choiceParam ("l2_oct",     "L2 Octave",   { "-2", "-1", "0", "+1", "+2" }, 2));
-        addParam (intParam    ("l2_semi",    "L2 Semi",     -12, 12, 0));
-        addParam (intParam    ("l2_fine",    "L2 Fine",     -60, 60, 8));
-        addParam (floatParam  ("pitch_env",  "Pitch Env",   0.0f, 100.0f,  0.0f, "%", 0));
-        addParam (floatParam  ("pitch_dec",  "Pitch Dec",   0.0f, 100.0f, 20.0f, "%", 0));
-        addParam (choiceParam ("vib_wave",   "Vib Wave",    { "Tri", "Square", "Saw Up", "Saw Dn" }, 0));
-        addParam (floatParam  ("vib_rate",   "Vib Rate",    0.0f, 100.0f, 32.0f, "%", 0));
-        addParam (floatParam  ("vib_depth",  "Vib Depth",   0.0f, 100.0f,  0.0f, "%", 0));
-        addParam (floatParam  ("vib_delay",  "Vib Delay",   0.0f, 100.0f, 20.0f, "%", 0));
-        addParam (choiceParam ("voice_mode", "Voice Mode",  { "Poly 8", "Poly 4", "Mono" }, 0));
-        addParam (floatParam  ("glide",      "Glide",       0.0f, 100.0f,  0.0f, "%", 0));
-        addParam (floatParam  ("vel_sens",   "Vel Sens",    0.0f, 100.0f, 45.0f, "%", 0));
-        addParam (choiceParam ("dca_curve",  "DCA Curve",   { "Linear", "Exp" }, 1));
+        // 16..31: Page 2 Line 2 Layer, Detune, Pitch EG, Vibrato & Voice
+        addParam (choiceParam ("l2_wave1",   "L2 Wave 1",    w1Names, 0));
+        addParam (choiceParam ("l2_wave2",   "L2 Wave 2",    w2Names, 5));
+        addParam (choiceParam ("l2_oct",     "L2 Octave",    { "-2", "-1", "0", "+1", "+2" }, 2));
+        addParam (intParam    ("l2_semi",    "L2 Semi",      -12, 12, 0));
+        addParam (intParam    ("l2_fine",    "L2 Fine",      -60, 60, 14));
+        addParam (floatParam  ("l2_mix",     "L2 Mix",       0.0f, 100.0f, 90.0f, "%", 0));
+        addParam (floatParam  ("l2_dcw",     "L2 DCW",       0.0f, 100.0f, 88.0f, "%", 0));
+        addParam (floatParam  ("l2_env_ofs", "L2 Env Ofs", -100.0f, 100.0f, 16.0f, "%", 0));
+        addParam (floatParam  ("pitch_env",  "Pitch Env",    0.0f, 100.0f,  7.0f, "%", 0));
+        addParam (floatParam  ("pitch_dec",  "Pitch Dec",    0.0f, 100.0f, 11.0f, "%", 0));
+        addParam (floatParam  ("vib_rate",   "Vib Rate",     0.0f, 100.0f, 34.0f, "%", 0));
+        addParam (floatParam  ("vib_depth",  "Vib Depth",    0.0f, 100.0f,  8.0f, "%", 0));
+        addParam (choiceParam ("voice_mode", "Voice Mode",   { "Poly 8", "Poly 4", "Mono" }, 0));
+        addParam (floatParam  ("glide",      "Glide",        0.0f, 100.0f,  0.0f, "%", 0));
+        addParam (floatParam  ("vib_delay",  "Vib Delay",    0.0f, 100.0f, 38.0f, "%", 0));
+        addParam (floatParam  ("vel_sens",   "Vel Sens",     0.0f, 100.0f, 52.0f, "%", 0));
 
         // 32..35: Non-automatable UI Telemetry
         addNonAuto (intParam ("meter_l",   "Meter L", 0, 7, 0));
@@ -342,7 +347,7 @@ private:
             vals[P_L1_WAVE1]   = (float) p.l1Wave1;
             vals[P_L1_WAVE2]   = (float) p.l1Wave2;
             vals[P_MOD_MODE]   = (float) p.modMode;
-            vals[P_DCW_DEPTH]  = p.dcwDepth * 100.0f;
+            vals[P_DCW_TIMBRE] = p.dcwTimbre * 100.0f;
             vals[P_DCW_ATT]    = p.dcwAtt * 100.0f;
             vals[P_DCW_DEC]    = p.dcwDec * 100.0f;
             vals[P_DCW_SUS]    = p.dcwSus * 100.0f;
@@ -352,24 +357,24 @@ private:
             vals[P_DCA_REL]    = p.dcaRel * 100.0f;
             vals[P_DCW_REL]    = p.dcwRel * 100.0f;
             vals[P_CHORUS]     = p.chorus * 100.0f;
-            vals[P_DRIVE]      = p.drive * 100.0f;
+            vals[P_DCW_ENV]    = p.dcwEnv * 100.0f;
 
             vals[P_L2_WAVE1]   = (float) p.l2Wave1;
             vals[P_L2_WAVE2]   = (float) p.l2Wave2;
-            vals[P_L2_DCW]     = p.l2Dcw * 100.0f;
             vals[P_L2_OCT]     = (float) (p.l2Oct + 2);
             vals[P_L2_SEMI]    = (float) p.l2Semi;
             vals[P_L2_FINE]    = (float) p.l2Fine;
+            vals[P_L2_MIX]     = p.l2Mix * 100.0f;
+            vals[P_L2_DCW]     = p.l2Dcw * 100.0f;
+            vals[P_L2_ENV_OFS] = p.l2EnvOfs * 100.0f;
             vals[P_PITCH_ENV]  = p.pitchEnv * 100.0f;
             vals[P_PITCH_DEC]  = p.pitchDec * 100.0f;
-            vals[P_VIB_WAVE]   = (float) p.vibWave;
             vals[P_VIB_RATE]   = p.vibRate * 100.0f;
             vals[P_VIB_DEPTH]  = p.vibDepth * 100.0f;
-            vals[P_VIB_DELAY]  = p.vibDelay * 100.0f;
             vals[P_VOICE_MODE] = (float) p.voiceMode;
             vals[P_GLIDE]      = p.glide * 100.0f;
+            vals[P_VIB_DELAY]  = p.vibDelay * 100.0f;
             vals[P_VEL_SENS]   = p.velSens * 100.0f;
-            vals[P_DCA_CURVE]  = (float) p.dcaCurve;
 
             addProgram (presets[i].name, vals);
         }

@@ -280,6 +280,11 @@ public:
     Waveform wave2 = Waveform::REZ_SAW;  
     DcaCurveMode dca_curve_mode = DcaCurveMode::LINEAR;
 
+    uint16_t dcw_floor = 0;         // Live real-time base phase distortion (0..65535)
+    uint16_t dcw_env_scale = 65535; // Live real-time DCW EG depth (0..65535)
+    uint16_t dcw_kf_scale = 65535;  // Upper-register key-follow damping
+    uint16_t max_rez_dcw = 65535;   // Per-note Nyquist-safe cap for REZ_* sweep
+
     Envelope dco_eg;  
     Envelope dcw_eg;  
     Envelope dca_eg;  
@@ -304,7 +309,7 @@ public:
         wave_cycle_toggle = false;
     }
 
-    inline int32_t nextSample(const Tables& tables) {
+    inline int32_t nextRawSample(const Tables& tables, uint16_t& out_dca) {
         if (++eg_divider >= 32) {
             eg_divider = 0;
             cached_dco = dco_eg.update();
@@ -316,9 +321,14 @@ public:
         phase += phase_inc;
         if (phase < previous_phase) wave_cycle_toggle = !wave_cycle_toggle;
 
-        uint16_t dcw = scaleDcw(cached_dcw, 56000);
-        uint16_t rez_dcw = scaleDcw(dcw, 44000);
-        uint16_t dca = applyDcaCurve(cached_dca, dca_curve_mode);
+        uint32_t env_dcw = (static_cast<uint32_t>(cached_dcw) * dcw_env_scale) >> 16;
+        uint32_t total_dcw = static_cast<uint32_t>(dcw_floor) + env_dcw;
+        if (total_dcw > 65535u) total_dcw = 65535u;
+        if (dcw_kf_scale < 65535u) total_dcw = (total_dcw * dcw_kf_scale) >> 16;
+
+        uint16_t dcw = scaleDcw(static_cast<uint16_t>(total_dcw), 64200);
+        uint16_t rez_dcw = static_cast<uint16_t>(total_dcw > max_rez_dcw ? max_rez_dcw : total_dcw);
+        out_dca = applyDcaCurve(cached_dca, dca_curve_mode);
 
         uint16_t phase_16 = phase >> 16;
         int32_t raw_sample = 0;
@@ -335,7 +345,6 @@ public:
 
         switch (current_wave) {
             case Waveform::SAW: {
-                // dcw=0 gives symmetric shape at 32768, dcw=65535 drives the bend point to maximum asymmetry at 65535
                 uint32_t xp_saw = 32768 + ((static_cast<uint32_t>(dcw) * 32767) >> 16);
                 if (local_phase < xp_saw) {
                     pd_phase = (static_cast<uint32_t>(local_phase) * 32768) / xp_saw;
@@ -348,8 +357,8 @@ public:
                 break;
             }
             case Waveform::SQUARE: {
-                // Trim the first half pulse width with dcw. Scale safely with 31120/65536 to avoid overflow
-                uint32_t xp_sq = 32768 - ((static_cast<uint32_t>(dcw) * 31120) >> 16);
+                uint32_t xp_sq = 32768 - ((static_cast<uint32_t>(dcw) * 31600) >> 16);
+                if (xp_sq < 64) xp_sq = 64;
                 if (local_phase < xp_sq) {
                     pd_phase = (static_cast<uint32_t>(local_phase) * 32768) / xp_sq;
                 } else if (local_phase < 32768) {
@@ -363,8 +372,8 @@ public:
                 break;
             }
             case Waveform::PULSE: {
-                // Use safe fixed-point multiplication scaling to eliminate bit overflow seen in JS
-                uint32_t xp_pulse = 65535 - ((static_cast<uint32_t>(dcw) * 63487) >> 16);
+                uint32_t xp_pulse = 65535 - ((static_cast<uint32_t>(dcw) * 63800) >> 16);
+                if (xp_pulse < 128) xp_pulse = 128;
                 if (local_phase < xp_pulse) {
                     pd_phase = (static_cast<uint32_t>(local_phase) * 65535) / xp_pulse;
                 } else {
@@ -378,7 +387,7 @@ public:
                 break;
             }
             case Waveform::PULSE2: {
-                uint32_t xp_pulse2 = 65535 - ((static_cast<uint32_t>(dcw) * 50000) >> 16);
+                uint32_t xp_pulse2 = 65535 - ((static_cast<uint32_t>(dcw) * 52000) >> 16);
                 if (local_phase < xp_pulse2) {
                     pd_phase = (static_cast<uint32_t>(local_phase) * 65535) / xp_pulse2;
                 } else {
@@ -388,7 +397,7 @@ public:
                 break;
             }
             case Waveform::DOUBLE_SINE: {
-                uint32_t xp_dsin = 65535 - ((static_cast<uint32_t>(dcw) * 49151) >> 16);
+                uint32_t xp_dsin = 65535 - ((static_cast<uint32_t>(dcw) * 54000) >> 16);
                 if (local_phase < xp_dsin) {
                     pd_phase = (static_cast<uint32_t>(local_phase) * 65535) / xp_dsin;
                 } else {
@@ -400,54 +409,49 @@ public:
                 break;
             }
             case Waveform::SAW_PULSE: {
-
                 uint32_t xp_sp = 65535 - ((static_cast<uint32_t>(dcw) * 32767) >> 16);
-
-                uint32_t t_peak_16 = 32768 + ((static_cast<uint32_t>(dcw) * 29491) >> 16);
+                uint32_t t_peak_16 = 32768 + ((static_cast<uint32_t>(dcw) * 30500) >> 16);
                 uint32_t peak_pos = (static_cast<uint64_t>(xp_sp) * t_peak_16) >> 16;
                 if (peak_pos == 0) peak_pos = 1;
 
                 if (local_phase < xp_sp) {
                     if (local_phase < peak_pos) {
-
                         pd_phase = (static_cast<uint32_t>(local_phase) * 32768) / peak_pos;
                     } else {
-                        // B. Steep descent zone: fall from highest point (32768) to lowest point (65535)
                         uint32_t denom = xp_sp - peak_pos;
                         if (denom == 0) denom = 1;
                         pd_phase = 32768 + ((static_cast<uint32_t>(local_phase - peak_pos) * 32767) / denom);
                     }
                 } else {
-                    // C. Flat second half: hold the inverse cosine table at its lowest point (65535)
                     pd_phase = 65535;
                 }
-
                 raw_sample = static_cast<int32_t>(tables.sin_lut[pd_phase >> shift_bits]) + 32768;
                 break;
             }
             case Waveform::REZ_SAW: {
+                // Authentic CZ 1x..15x resonant harmonic sweep under sawtooth window
                 uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
-                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 7) >> 16);
+                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
                 uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                int32_t core_bipolar = (static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) * 5) >> 3;
+                int32_t core_bipolar = static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]);
                 uint32_t window = 65535 - local_phase;
                 raw_sample = ((core_bipolar * static_cast<int32_t>(window)) >> 16) + 32768;
                 break;
             }
             case Waveform::REZ_TRI: {
                 uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
-                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 7) >> 16);
+                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
                 uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                int32_t core_bipolar = (static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) * 5) >> 3;
+                int32_t core_bipolar = static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]);
                 uint32_t window = (local_phase < 32768) ? (local_phase << 1) : ((65535 - local_phase) << 1);
                 raw_sample = ((core_bipolar * static_cast<int32_t>(window)) >> 16) + 32768;
                 break;
             }
             case Waveform::REZ_TRAP: {
                 uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
-                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 7) >> 16);
+                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
                 uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                int32_t core_bipolar = (static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) * 5) >> 3;
+                int32_t core_bipolar = static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]);
                 uint32_t window;
                 if (local_phase < 16384) window = local_phase << 2;
                 else if (local_phase > 49152) window = (65535 - local_phase) << 2;
@@ -457,18 +461,18 @@ public:
             }
             case Waveform::REZ_PULSE: {
                 uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
-                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 7) >> 16);
+                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
                 uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                int32_t core_bipolar = (static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) * 5) >> 3;
+                int32_t core_bipolar = static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]);
                 uint32_t window = (local_phase < 32768) ? 65535 : 0;
                 raw_sample = ((core_bipolar * static_cast<int32_t>(window)) >> 16) + 32768;
                 break;
             }
             case Waveform::REZ_DBL_SAW: {
                 uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
-                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 7) >> 16);
+                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
                 uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                int32_t core_bipolar = (static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) * 5) >> 3;
+                int32_t core_bipolar = static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]);
                 uint32_t window = (local_phase < 32768)
                     ? 65535 - (static_cast<uint32_t>(local_phase) << 1)
                     : 65535 - (static_cast<uint32_t>(local_phase - 32768) << 1);
@@ -476,9 +480,13 @@ public:
                 break;
             }
         }
-        
-        int32_t sample = (raw_sample * dca) >> 16;
-        return sample - (static_cast<int32_t>(dca) >> 1);
+        return raw_sample - 32768;
+    }
+
+    inline int32_t nextSample(const Tables& tables) {
+        uint16_t dca = 0;
+        int32_t raw_bipolar = nextRawSample(tables, dca);
+        return (raw_bipolar * static_cast<int32_t>(dca)) >> 16;
     }
 };
 
@@ -495,6 +503,7 @@ public:
     bool sustained = false;
     uint64_t age = 0;
     uint16_t velocity_gain = 65535;
+    uint16_t line2_mix = 65535;
     uint32_t current_line1_base_phase_inc = 0;
     uint32_t current_line2_base_phase_inc = 0;
     uint32_t target_line1_base_phase_inc = 0;
@@ -531,6 +540,32 @@ public:
         return octave_factor * note_factor * fine_factor;
     }
 
+    static inline uint16_t computeMaxRezDcw(uint32_t base_inc) {
+        if (base_inc == 0) return 65535;
+        // Keep resonant harmonic carrier safely below 0.42 * sr to avoid harsh upper-register aliasing
+        const uint32_t max_ratio = 0x6B851EB8u / base_inc;
+        if (max_ratio >= 15u) return 65535;
+        if (max_ratio <= 1u)  return 0;
+        return static_cast<uint16_t>(((max_ratio - 1u) * 65535u) / 14u);
+    }
+
+    static inline uint16_t computeKeyFollowScale(uint8_t midi_note) {
+        // Gentle Casio CZ-style high-note damping above E5 (MIDI 76)
+        if (midi_note <= 76) return 65535;
+        int over = static_cast<int>(midi_note) - 76;
+        int pct = 100 - over * 2;
+        if (pct < 42) pct = 42;
+        return static_cast<uint16_t>((pct * 65535) / 100);
+    }
+
+    void updateVoiceGuards() {
+        line1.max_rez_dcw = computeMaxRezDcw(target_line1_base_phase_inc);
+        line2.max_rez_dcw = computeMaxRezDcw(target_line2_base_phase_inc);
+        const uint16_t kf = computeKeyFollowScale(current_note);
+        line1.dcw_kf_scale = kf;
+        line2.dcw_kf_scale = kf;
+    }
+
     void noteOn(uint8_t note, uint32_t p_inc, bool portamento_enabled = false, uint32_t previous_line1_phase_inc = 0) {
         current_note = note;
         is_active = true;
@@ -548,6 +583,7 @@ public:
 
         line1.base_phase_inc = current_line1_base_phase_inc;
         line2.base_phase_inc = current_line2_base_phase_inc;
+        updateVoiceGuards();
     }
 
     void noteOff() {
@@ -585,41 +621,52 @@ public:
         if (!is_active) return 0;
         const bool need_l1 = ring_modulation || mode != LineSelectMode::LINE2_ONLY;
         const bool need_l2 = ring_modulation || mode != LineSelectMode::LINE1_ONLY;
-        int32_t s1 = need_l1 ? line1.nextSample(tables) : 0;
-        int32_t s2 = need_l2 ? line2.nextSample(tables) : 0;
+        uint16_t dca1 = 0, dca2 = 0;
+        int32_t raw1 = need_l1 ? line1.nextRawSample(tables, dca1) : 0;
+        int32_t raw2 = need_l2 ? line2.nextRawSample(tables, dca2) : 0;
+
+        int32_t s1 = (raw1 * static_cast<int32_t>(dca1)) >> 16;
+        int32_t s2 = (raw2 * static_cast<int32_t>(dca2)) >> 16;
 
         if (noise_modulation) {
             noise_phase = noise_phase * 1103515245u + 12345u;
             int32_t n_bipolar = static_cast<int32_t>((noise_phase >> 16) & 0xFFFF) - 32768;
             if (need_l1) {
-                int32_t n1 = (n_bipolar * static_cast<int32_t>(line1.dca_eg.current_level >> 16)) >> 16;
-                s1 = (s1 * 7 + n1 * 2) >> 3;
+                int32_t n1 = (n_bipolar * static_cast<int32_t>(dca1)) >> 16;
+                s1 = (s1 * 6 + n1 * 2) >> 3;
             }
             if (need_l2) {
-                int32_t n2 = (n_bipolar * static_cast<int32_t>(line2.dca_eg.current_level >> 16)) >> 16;
-                s2 = (s2 * 7 + n2 * 2) >> 3;
+                int32_t n2 = (n_bipolar * static_cast<int32_t>(dca2)) >> 16;
+                s2 = (s2 * 6 + n2 * 2) >> 3;
             }
         }
 
         int32_t out = 0;
         if (ring_modulation) {
-            out = (s1 * s2) >> 14;
-            if (out > 32767) out = 32767;
-            else if (out < -32768) out = -32768;
+            // Post-ring DCA staging preserves full sustain & metallic bell shimmer (no DCA^2 choke)
+            int32_t ring_raw = (raw1 * raw2) >> 15;
+            int32_t ring_amp = (ring_raw * static_cast<int32_t>(dca1)) >> 16;
+            if (mode == LineSelectMode::LINE1_2) {
+                int32_t ring_wet = (ring_amp * static_cast<int32_t>(line2_mix)) >> 16;
+                out = (s1 + ring_wet) >> 1;
+            } else {
+                out = ring_amp;
+            }
         } else {
+            int32_t s2_mix = (s2 * static_cast<int32_t>(line2_mix)) >> 16;
             switch (mode) {
                 case LineSelectMode::LINE1_ONLY:
                     out = s1;
                     break;
                 case LineSelectMode::LINE2_ONLY:
-                    out = s2;
+                    out = s2_mix;
                     break;
                 case LineSelectMode::LINE1_2_INV:
-                    out = (s1 - s2) >> 1;
+                    out = (s1 - s2_mix) >> 1;
                     break;
                 case LineSelectMode::LINE1_2:
                 default:
-                    out = (s1 + s2) >> 1;
+                    out = (s1 + s2_mix) >> 1;
                     break;
             }
         }
@@ -839,6 +886,7 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
                 if (!portamento_enabled || portamento_time == 0) {
                     v.current_line2_base_phase_inc = v.target_line2_base_phase_inc;
                 }
+                v.updateVoiceGuards();
             }
         }
     }
@@ -846,6 +894,22 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
     void setDetuneNote(uint8_t note) { for (auto& v : voices) v.detune_note = note > 11 ? 11 : note; updateLiveDetune(); }
     void setDetuneFine(uint8_t fine) { for (auto& v : voices) v.detune_fine = fine > 60 ? 60 : fine; updateLiveDetune(); }
     void setDetuneSign(int8_t sign) { for (auto& v : voices) v.detune_sign = sign >= 0 ? 1 : -1; updateLiveDetune(); }
+
+    void setDcwFloor(int line, uint16_t floor16) {
+        for (auto& v : voices) {
+            if (line == 1) v.line1.dcw_floor = floor16;
+            else v.line2.dcw_floor = floor16;
+        }
+    }
+    void setDcwEnvScale(int line, uint16_t scale16) {
+        for (auto& v : voices) {
+            if (line == 1) v.line1.dcw_env_scale = scale16;
+            else v.line2.dcw_env_scale = scale16;
+        }
+    }
+    void setLine2Mix(uint16_t mix16) {
+        for (auto& v : voices) v.line2_mix = mix16;
+    }
 
     void setDCWKeyFollow(uint8_t amount) { for (auto& v : voices) v.dcw_key_follow = amount; }
     void setDCAKeyFollow(uint8_t amount) { for (auto& v : voices) v.dca_key_follow = amount; }

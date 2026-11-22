@@ -22,51 +22,49 @@ inline int   clampi (int x, int lo, int hi) noexcept       { return x < lo ? lo 
 struct SynthParams
 {
     // Master / Output
-    float volume    = 0.80f; // 0..1 (Param 0)
+    float volume    = 0.82f; // 0..1 (Param 0)
 
-    // Page 1: Core CZ Voice, Waveforms, DCW & DCA
+    // Page 1: Core CZ Voice, Waveforms, Live DCW Timbre & Envelopes
     int   lineMode  = 2;     // 0=Line1, 1=Line2, 2=1+2, 3=1+2'
-    int   l1Wave1   = 0;     // 0..7 -> CrispyZebra::Waveform 1..8
-    int   l1Wave2   = 0;     // 0=Off, 1..8 -> Waveform 1..8
+    int   l1Wave1   = 2;     // 0..7 -> CrispyZebra::Waveform 1..8
+    int   l1Wave2   = 5;     // 0=Off, 1..8 -> Waveform 1..8
     int   modMode   = 0;     // 0=Off, 1=Ring, 2=Noise, 3=Ring+Noise
 
-    float dcwDepth  = 0.72f; // 0..1 peak DCW phase distortion depth
-    float dcwAtt    = 0.04f; // 0..1 fast..slow
-    float dcwDec    = 0.42f; // 0..1 fast..slow
-    float dcwSus    = 0.35f; // 0..1 fraction of dcwDepth
-    float dcwRel    = 0.35f; // 0..1 fast..slow
+    float dcwTimbre = 0.25f; // 0..1 live real-time Phase Distortion floor/cutoff
+    float dcwAtt    = 0.14f; // 0..1 fast..slow
+    float dcwDec    = 0.44f; // 0..1 fast..slow
+    float dcwSus    = 0.45f; // 0..1 sustain level
+    float dcwRel    = 0.30f; // 0..1 fast..slow
 
-    float dcaAtt    = 0.02f; // 0..1 fast..slow
-    float dcaDec    = 0.40f; // 0..1 fast..slow
-    float dcaSus    = 0.75f; // 0..1 sustain level
-    float dcaRel    = 0.28f; // 0..1 fast..slow
+    float dcaAtt    = 0.06f; // 0..1 fast..slow
+    float dcaDec    = 0.42f; // 0..1 fast..slow
+    float dcaSus    = 0.85f; // 0..1 sustain level
+    float dcaRel    = 0.24f; // 0..1 fast..slow
 
-    float chorus    = 0.18f; // 0..1 CZ-style stereo BBD chorus
-    float drive     = 0.08f; // 0..1 soft saturation
+    float chorus    = 0.32f; // 0..1 CZ-5000 stereo BBD chorus
+    float dcwEnv    = 0.72f; // 0..1 live real-time DCW EG depth
 
-    // Page 2: Line 2, Detune, Pitch EG, Vibrato & Voice
+    // Page 2: Line 2 Layer, Detune, Pitch EG, Vibrato & Voice
     int   l2Wave1   = 0;     // 0..7 -> Waveform 1..8
-    int   l2Wave2   = 0;     // 0=Off, 1..8 -> Waveform 1..8
-    float l2Dcw     = 0.90f; // 0..1 Line 2 DCW trim relative to Line 1
+    int   l2Wave2   = 5;     // 0=Off, 1..8 -> Waveform 1..8
     int   l2Oct     = 0;     // -2..+2
     int   l2Semi    = 0;     // -12..+12
-    int   l2Fine    = 10;    // -60..+60 cents
+    int   l2Fine    = 14;    // -60..+60 cents
+    float l2Mix     = 0.85f; // 0..1 Line 2 level / Ring blend
+    float l2Dcw     = 0.85f; // 0..1 Line 2 DCW trim relative to Line 1
+    float l2EnvOfs  = 0.0f;  // -1..+1 bipolar Line 2 envelope time offset (faster pluck <-> slower swell)
 
     float pitchEnv  = 0.0f;  // 0..1 DCO pitch blip depth
-    float pitchDec  = 0.22f; // 0..1 DCO pitch blip decay time
-
-    int   vibWave   = 0;     // 0=Tri, 1=Sqr, 2=SawUp, 3=SawDn
-    float vibRate   = 0.32f; // 0..1
+    float pitchDec  = 0.18f; // 0..1 DCO pitch blip decay time
+    float vibRate   = 0.34f; // 0..1
     float vibDepth  = 0.0f;  // 0..1
-    float vibDelay  = 0.20f; // 0..1
-
     int   voiceMode = 0;     // 0=Poly 8, 1=Poly 4, 2=Mono
     float glide     = 0.0f;  // 0..1 portamento
-    float velSens   = 0.50f; // 0..1 velocity sensitivity
-    int   dcaCurve  = 1;     // 0=Linear, 1=Pseudo-Exp (classic CZ loudness)
+    float vibDelay  = 0.30f; // 0..1 vibrato delay
+    float velSens   = 0.55f; // 0..1 velocity sensitivity
 };
 
-// Lightweight CZ-5000 style dual-tap stereo BBD chorus (zero CPU when mix <= 0.005)
+// Lush 1985 Casio CZ-5000 style dual-tap stereo BBD ensemble chorus (zero CPU when mix <= 0.005)
 class CzStereoChorus
 {
 public:
@@ -76,6 +74,7 @@ public:
     void prepare (float sr)
     {
         sr_ = sr > 8000.0f ? sr : 44100.0f;
+        lpCoef_ = 1.0f - std::exp (-kTwoPi * 7200.0f / sr_);
         reset();
     }
 
@@ -83,14 +82,15 @@ public:
     {
         buf_.fill (0.0f);
         pos_ = 0;
-        ph_  = 0.0f;
+        ph1_ = 0.0f;
+        ph2_ = 0.37f;
+        lpL_ = lpR_ = 0.0f;
     }
 
     inline void process (float* outL, float* outR, int n, float mix)
     {
         if (mix <= 0.005f)
         {
-            // Keep delay ring quietly tracking input so raising chorus never pops
             for (int i = 0; i < n; ++i)
             {
                 buf_[(size_t) pos_] = outL[i];
@@ -99,30 +99,37 @@ public:
             return;
         }
 
-        const float ms    = sr_ * 0.001f;
-        const float inc   = 0.62f / sr_;
-        const float wet   = 0.62f * mix;
-        const float dry   = 1.0f - 0.22f * mix;
+        const float ms   = sr_ * 0.001f;
+        const float inc1 = 0.52f / sr_;
+        const float inc2 = 1.18f / sr_;
+        const float wet  = 0.72f * mix;
+        const float dry  = 1.0f - 0.18f * mix;
 
         for (int i = 0; i < n; ++i)
         {
             const float x = outL[i];
             buf_[(size_t) pos_] = x;
 
-            ph_ += inc;
-            if (ph_ >= 1.0f) ph_ -= 1.0f;
+            ph1_ += inc1; if (ph1_ >= 1.0f) ph1_ -= 1.0f;
+            ph2_ += inc2; if (ph2_ >= 1.0f) ph2_ -= 1.0f;
 
-            // Fast triangle LFOs in quadrature (zero per-sample sinf)
-            const float t1 = 4.0f * std::fabs (ph_ - 0.5f) - 1.0f;
-            float p2 = ph_ + 0.25f;
-            if (p2 >= 1.0f) p2 -= 1.0f;
-            const float t2 = 4.0f * std::fabs (p2 - 0.5f) - 1.0f;
+            const float t1L = 4.0f * std::fabs (ph1_ - 0.5f) - 1.0f;
+            float p1R = ph1_ + 0.333f; if (p1R >= 1.0f) p1R -= 1.0f;
+            const float t1R = 4.0f * std::fabs (p1R - 0.5f) - 1.0f;
+            const float t2  = 4.0f * std::fabs (ph2_ - 0.5f) - 1.0f;
 
-            const float cL = readDelay ((7.8f + 2.6f * t1) * ms);
-            const float cR = readDelay ((8.6f + 2.6f * t2) * ms);
+            const float tapL = 0.65f * readDelay ((7.4f + 2.8f * t1L) * ms)
+                             + 0.35f * readDelay ((13.2f + 1.5f * t2) * ms);
+            const float tapR = 0.65f * readDelay ((8.9f + 2.8f * t1R) * ms)
+                             - 0.35f * readDelay ((12.1f - 1.5f * t2) * ms);
 
-            outL[i] = x * dry + cL * wet;
-            outR[i] = x * dry + cR * wet;
+            lpL_ += (tapL - lpL_) * lpCoef_;
+            lpR_ += (tapR - lpR_) * lpCoef_;
+            if (std::fabs (lpL_) < 1e-24f) lpL_ = 0.0f;
+            if (std::fabs (lpR_) < 1e-24f) lpR_ = 0.0f;
+
+            outL[i] = x * dry + lpL_ * wet;
+            outR[i] = x * dry + lpR_ * wet;
             pos_ = (pos_ + 1) & kMask;
         }
     }
@@ -139,9 +146,11 @@ private:
     }
 
     float sr_ = 44100.0f;
+    float lpCoef_ = 0.65f;
     std::array<float, kBuf> buf_ {};
     int   pos_ = 0;
-    float ph_  = 0.0f;
+    float ph1_ = 0.0f, ph2_ = 0.37f;
+    float lpL_ = 0.0f, lpR_ = 0.0f;
 };
 
 class CzBoyEngine
@@ -166,8 +175,11 @@ public:
         core_.setMasterOctave (1);
         core_.setMasterNote (0);
         core_.setMasterFine (30);
+        core_.setMasterDrive (8); // Subtle 1984 CZ analog output warmth
         core_.setPitchBendRangeUp (2);
         core_.setPitchBendRangeDown (2);
+        core_.setVibratoWaveform (CrispyZebra::LfoWaveform::TRIANGLE);
+        core_.setDcaCurveMode (CrispyZebra::DcaCurveMode::PSEUDO_EXP);
         chorus_.prepare ((float) sr_);
         paramsApplied_ = false;
         outPeakL_ = outPeakR_ = 0.0f;
@@ -253,23 +265,24 @@ private:
     static uint8_t timeToCzRate (float norm0To1)
     {
         const float t = clampf (norm0To1, 0.0f, 1.0f);
-        const int r = 99 - static_cast<int> (std::lround (std::pow (t, 0.72f) * 76.0f));
-        return static_cast<uint8_t> (clampi (r, 23, 99));
+        const int r = 99 - static_cast<int> (std::lround (std::pow (t, 0.72f) * 74.0f));
+        return static_cast<uint8_t> (clampi (r, 25, 99));
     }
 
     static bool paramsEqual (const SynthParams& a, const SynthParams& b)
     {
         return a.volume == b.volume && a.lineMode == b.lineMode
             && a.l1Wave1 == b.l1Wave1 && a.l1Wave2 == b.l1Wave2 && a.modMode == b.modMode
-            && a.dcwDepth == b.dcwDepth && a.dcwAtt == b.dcwAtt && a.dcwDec == b.dcwDec
-            && a.dcwSus == b.dcwSus && a.dcwRel == b.dcwRel
+            && a.dcwTimbre == b.dcwTimbre && a.dcwEnv == b.dcwEnv
+            && a.dcwAtt == b.dcwAtt && a.dcwDec == b.dcwDec && a.dcwSus == b.dcwSus && a.dcwRel == b.dcwRel
             && a.dcaAtt == b.dcaAtt && a.dcaDec == b.dcaDec && a.dcaSus == b.dcaSus && a.dcaRel == b.dcaRel
-            && a.chorus == b.chorus && a.drive == b.drive
-            && a.l2Wave1 == b.l2Wave1 && a.l2Wave2 == b.l2Wave2 && a.l2Dcw == b.l2Dcw
+            && a.chorus == b.chorus
+            && a.l2Wave1 == b.l2Wave1 && a.l2Wave2 == b.l2Wave2
             && a.l2Oct == b.l2Oct && a.l2Semi == b.l2Semi && a.l2Fine == b.l2Fine
+            && a.l2Mix == b.l2Mix && a.l2Dcw == b.l2Dcw && a.l2EnvOfs == b.l2EnvOfs
             && a.pitchEnv == b.pitchEnv && a.pitchDec == b.pitchDec
-            && a.vibWave == b.vibWave && a.vibRate == b.vibRate && a.vibDepth == b.vibDepth && a.vibDelay == b.vibDelay
-            && a.voiceMode == b.voiceMode && a.glide == b.glide && a.velSens == b.velSens && a.dcaCurve == b.dcaCurve;
+            && a.vibRate == b.vibRate && a.vibDepth == b.vibDepth && a.vibDelay == b.vibDelay
+            && a.voiceMode == b.voiceMode && a.glide == b.glide && a.velSens == b.velSens;
     }
 
     void syncParams (const SynthParams& p)
@@ -297,7 +310,7 @@ private:
                              + clampi (p.l2Fine, -60, 60);
         const int8_t sign = totalCents < 0 ? -1 : 1;
         const int absCents = std::abs (totalCents);
-        const int oct = std::min (3, absCents / 1200);
+        const int oct  = std::min (3, absCents / 1200);
         const int rem1 = absCents - oct * 1200;
         const int semi = std::min (11, rem1 / 100);
         const int rem2 = rem1 - semi * 100;
@@ -307,50 +320,76 @@ private:
         core_.setDetuneNote (static_cast<uint8_t> (semi));
         core_.setDetuneFine (static_cast<uint8_t> (fine));
 
-        // DCW Envelopes (Line 1 full depth, Line 2 scaled by l2Dcw)
-        const uint8_t dcwAttR = timeToCzRate (p.dcwAtt);
-        const uint8_t dcwDecR = timeToCzRate (p.dcwDec);
-        const uint8_t dcwRelR = timeToCzRate (p.dcwRel);
-        const float   d1      = clampf (p.dcwDepth, 0.0f, 1.0f);
-        const float   d2      = d1 * clampf (p.l2Dcw, 0.0f, 1.0f);
-        const float   ds      = clampf (p.dcwSus, 0.0f, 1.0f);
+        // Live real-time DCW Timbre (base floor) & DCW Env Depth + Line 2 scaling
+        const float l2Dcw  = clampf (p.l2Dcw, 0.0f, 1.0f);
+        const float timbre = clampf (p.dcwTimbre, 0.0f, 1.0f);
+        const float envAmt = clampf (p.dcwEnv, 0.0f, 1.0f);
+        core_.setDcwFloor    (1, static_cast<uint16_t> (timbre * 65535.0f));
+        core_.setDcwFloor    (2, static_cast<uint16_t> (timbre * l2Dcw * 65535.0f));
+        core_.setDcwEnvScale (1, static_cast<uint16_t> (envAmt * 65535.0f));
+        core_.setDcwEnvScale (2, static_cast<uint16_t> (envAmt * l2Dcw * 65535.0f));
+        core_.setLine2Mix    (static_cast<uint16_t> (clampf (p.l2Mix, 0.0f, 1.0f) * 65535.0f));
 
-        auto applyDcw = [&] (int line, float depth) {
-            const uint8_t peakLvl = static_cast<uint8_t> (clampi ((int) std::lround (depth * 99.0f), 0, 99));
-            const uint8_t susLvl  = static_cast<uint8_t> (clampi ((int) std::lround (depth * ds * 99.0f), 0, 99));
-            core_.setEgRate (line, 1, 0, dcwAttR);
-            core_.setEgLevel (line, 1, 0, peakLvl);
-            core_.setEgRate (line, 1, 1, dcwDecR);
-            core_.setEgLevel (line, 1, 1, susLvl);
-            core_.setEgRate (line, 1, 2, dcwRelR);
-            core_.setEgLevel (line, 1, 2, 0);
-            core_.setEgSustainPoint (line, 1, 1);
-            core_.setEgEndPoint (line, 1, 2);
+        // Bipolar Line 2 Envelope Offset (-1 = snappy transient/tine on L2; +1 = slow evolving swell on L2)
+        const float ofs = clampf (p.l2EnvOfs, -1.0f, 1.0f);
+        auto shiftTime = [ofs] (float baseT, bool isAttack) -> float {
+            if (ofs < 0.0f)
+            {
+                // Faster transient/pluck on Line 2
+                const float factor = 1.0f + ofs * (isAttack ? 0.85f : 0.72f);
+                return clampf (baseT * factor, 0.0f, 1.0f);
+            }
+            // Slower blooming layer on Line 2
+            return clampf (baseT + ofs * (isAttack ? 0.48f : 0.36f), 0.0f, 1.0f);
         };
-        applyDcw (1, d1);
-        applyDcw (2, d2);
 
-        // DCA Envelopes (Line 1 & Line 2)
-        const uint8_t dcaAttR = timeToCzRate (p.dcaAtt);
-        const uint8_t dcaDecR = timeToCzRate (p.dcaDec);
-        const uint8_t dcaRelR = timeToCzRate (p.dcaRel);
-        const uint8_t dcaSusL = static_cast<uint8_t> (clampi ((int) std::lround (clampf (p.dcaSus, 0.0f, 1.0f) * 99.0f), 0, 99));
+        // DCW Envelopes (Line 1 normalized 0..99 peak, scaled live by dcw_env_scale!)
+        const uint8_t dcwSusL = static_cast<uint8_t> (clampi ((int) std::lround (clampf (p.dcwSus, 0.0f, 1.0f) * 99.0f), 0, 99));
+        // When L2 Env Offset is strongly negative, also lower L2 DCW & DCA sustain so L2 acts as a true transient/tine layer!
+        const float l2SusScale = ofs < -0.05f ? clampf (1.0f + ofs * 0.88f, 0.08f, 1.0f) : 1.0f;
+        const uint8_t dcwSusL2 = static_cast<uint8_t> (clampi ((int) std::lround ((float) dcwSusL * l2SusScale), 0, 99));
 
-        for (int line = 1; line <= 2; ++line)
-        {
-            core_.setEgRate (line, 2, 0, dcaAttR);
-            core_.setEgLevel (line, 2, 0, 99);
-            core_.setEgRate (line, 2, 1, dcaDecR);
-            core_.setEgLevel (line, 2, 1, dcaSusL);
-            core_.setEgRate (line, 2, 2, dcaRelR);
-            core_.setEgLevel (line, 2, 2, 0);
-            core_.setEgSustainPoint (line, 2, 1);
-            core_.setEgEndPoint (line, 2, 2);
-        }
-        core_.setDcaCurveMode (p.dcaCurve == 0 ? CrispyZebra::DcaCurveMode::LINEAR
-                                               : CrispyZebra::DcaCurveMode::PSEUDO_EXP);
+        core_.setEgRate (1, 1, 0, timeToCzRate (p.dcwAtt));
+        core_.setEgLevel (1, 1, 0, 99);
+        core_.setEgRate (1, 1, 1, timeToCzRate (p.dcwDec));
+        core_.setEgLevel (1, 1, 1, dcwSusL);
+        core_.setEgRate (1, 1, 2, timeToCzRate (p.dcwRel));
+        core_.setEgLevel (1, 1, 2, 0);
+        core_.setEgSustainPoint (1, 1, 1);
+        core_.setEgEndPoint (1, 1, 2);
 
-        // DCO Pitch Envelope (0% = zero pitch deviation; >0% = classic CZ upward pitch blip decaying to 0)
+        core_.setEgRate (2, 1, 0, timeToCzRate (shiftTime (p.dcwAtt, true)));
+        core_.setEgLevel (2, 1, 0, 99);
+        core_.setEgRate (2, 1, 1, timeToCzRate (shiftTime (p.dcwDec, false)));
+        core_.setEgLevel (2, 1, 1, dcwSusL2);
+        core_.setEgRate (2, 1, 2, timeToCzRate (shiftTime (p.dcwRel, false)));
+        core_.setEgLevel (2, 1, 2, 0);
+        core_.setEgSustainPoint (2, 1, 1);
+        core_.setEgEndPoint (2, 1, 2);
+
+        // DCA Envelopes (Line 1 & independent Line 2 offset)
+        const uint8_t dcaSusL  = static_cast<uint8_t> (clampi ((int) std::lround (clampf (p.dcaSus, 0.0f, 1.0f) * 99.0f), 0, 99));
+        const uint8_t dcaSusL2 = static_cast<uint8_t> (clampi ((int) std::lround ((float) dcaSusL * l2SusScale), 0, 99));
+
+        core_.setEgRate (1, 2, 0, timeToCzRate (p.dcaAtt));
+        core_.setEgLevel (1, 2, 0, 99);
+        core_.setEgRate (1, 2, 1, timeToCzRate (p.dcaDec));
+        core_.setEgLevel (1, 2, 1, dcaSusL);
+        core_.setEgRate (1, 2, 2, timeToCzRate (p.dcaRel));
+        core_.setEgLevel (1, 2, 2, 0);
+        core_.setEgSustainPoint (1, 2, 1);
+        core_.setEgEndPoint (1, 2, 2);
+
+        core_.setEgRate (2, 2, 0, timeToCzRate (shiftTime (p.dcaAtt, true)));
+        core_.setEgLevel (2, 2, 0, 99);
+        core_.setEgRate (2, 2, 1, timeToCzRate (shiftTime (p.dcaDec, false)));
+        core_.setEgLevel (2, 2, 1, dcaSusL2);
+        core_.setEgRate (2, 2, 2, timeToCzRate (shiftTime (p.dcaRel, false)));
+        core_.setEgLevel (2, 2, 2, 0);
+        core_.setEgSustainPoint (2, 2, 1);
+        core_.setEgEndPoint (2, 2, 2);
+
+        // DCO Pitch Envelope (0% = dead-accurate pitch; >0% = classic CZ upward pitch blip decaying to 0)
         const float pEnv = clampf (p.pitchEnv, 0.0f, 1.0f);
         const uint8_t pPeak = pEnv <= 0.005f ? 0 : static_cast<uint8_t> (clampi ((int) std::lround (pEnv * 99.0f), 1, 99));
         const uint8_t pDecR = timeToCzRate (p.pitchDec);
@@ -364,13 +403,12 @@ private:
             core_.setEgEndPoint (line, 0, 1);
         }
 
-        // Vibrato LFO
-        core_.setVibratoWaveform (static_cast<CrispyZebra::LfoWaveform> (clampi (p.vibWave, 0, 3)));
-        core_.setVibratoRate (static_cast<uint16_t> (clampi ((int) std::lround (clampf (p.vibRate, 0.0f, 1.0f) * 99.0f), 0, 99)));
+        // Vibrato LFO (classic Casio CZ Triangle vibrato with Rate, Depth & Delay)
+        core_.setVibratoRate  (static_cast<uint16_t> (clampi ((int) std::lround (clampf (p.vibRate,  0.0f, 1.0f) * 99.0f), 0, 99)));
         core_.setVibratoDepth (static_cast<uint16_t> (clampi ((int) std::lround (clampf (p.vibDepth, 0.0f, 1.0f) * 99.0f), 0, 99)));
         core_.setVibratoDelay (static_cast<uint16_t> (clampi ((int) std::lround (clampf (p.vibDelay, 0.0f, 1.0f) * 99.0f), 0, 99)));
 
-        // Voice mode, portamento, velocity, drive, volume
+        // Voice mode, portamento, velocity, volume
         const int vm = clampi (p.voiceMode, 0, 2);
         if (vm == 2)
         {
@@ -383,11 +421,9 @@ private:
             core_.setMaxPolyphony (vm == 1 ? 4 : 8);
         }
 
-        const bool portaOn = p.glide > 0.01f;
-        core_.setPortamentoEnabled (portaOn);
+        core_.setPortamentoEnabled (p.glide > 0.01f);
         core_.setPortamentoTime (static_cast<uint8_t> (clampi ((int) std::lround (clampf (p.glide, 0.0f, 1.0f) * 99.0f), 0, 99)));
         core_.setVelocitySensitivity (static_cast<uint8_t> (clampi ((int) std::lround (clampf (p.velSens, 0.0f, 1.0f) * 99.0f), 0, 99)));
-        core_.setMasterDrive (static_cast<uint8_t> (clampi ((int) std::lround (clampf (p.drive, 0.0f, 1.0f) * 99.0f), 0, 99)));
         core_.setMasterVolume (static_cast<uint8_t> (clampi ((int) std::lround (clampf (p.volume, 0.0f, 1.0f) * 99.0f), 0, 99)));
     }
 

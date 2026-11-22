@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate valid Akai MPC TUI.json and Q-Links.json for CZboy."""
+"""Generate valid Akai MPC TUI.json and Q-Links.json for CZboy (CZ-101 schematic layout)."""
 import json
 import os
 
@@ -103,7 +103,7 @@ def make_knob_component_def(strip, frames, w, h, bipolar=False):
         "componentsData": [
             make_entry(
                 "focus", "Focus",
-                {"version": 1, "backgroundColour": "1426b0b0", "outlineColour": "ff4ed6d2",
+                {"version": 1, "backgroundColour": "141eaeb4", "outlineColour": "ff48d4d8",
                  "backgroundInset": 1.0, "outlineThickness": 1.5},
                 make_bounds(0, 0, w, h, focus="No", invalid="Show", when="WhenFocussed"),
             ),
@@ -118,7 +118,7 @@ def make_knob_component_def(strip, frames, w, h, bipolar=False):
     }
 
 
-def make_qlink_dict(cols_top_to_bottom):
+def make_qlink_dict(banks_left_to_right):
     slots = [
         [13, 9, 5, 1],
         [14, 10, 6, 2],
@@ -126,9 +126,9 @@ def make_qlink_dict(cols_top_to_bottom):
         [16, 12, 8, 4],
     ]
     out = {}
-    for c in range(4):
-        for r in range(4):
-            out[f"Q-Link {slots[c][r]}"] = cols_top_to_bottom[c][r]
+    for b in range(4):
+        for k in range(4):
+            out[f"Q-Link {slots[b][k]}"] = banks_left_to_right[b][k]
     return {f"Q-Link {i}": out[f"Q-Link {i}"] for i in range(1, 17)}
 
 
@@ -162,15 +162,13 @@ def main():
         (4,  ["Off", "Ring Mod", "Noise", "Ring+N"]),
         (16, w1_names),
         (17, w2_names),
-        (19, ["-2", "-1", "0", "+1", "+2"]),
-        (24, ["Tri", "Square", "Saw Up", "Saw Dn"]),
+        (18, ["-2", "-1", "0", "+1", "+2"]),
         (28, ["Poly 8", "Poly 4", "Mono"]),
-        (31, ["Linear", "Exp"]),
     ]
 
     tabs = []
     for tname, fn_key, fn_sub, bg_file, spec in [
-        ("CZBOY",      0, 0, "bg_czboy.png", m["page1"]),
+        ("CZ-101",     0, 0, "bg_czboy.png", m["page1"]),
         ("LINE 2/MOD", 1, 0, "bg_line2.png", m["page2"]),
     ]:
         comps = [
@@ -219,7 +217,7 @@ def main():
             "componentDefinition": {
                 "version": 2,
                 "actions": [],
-                "backgroundData": {"version": 1, "focussed": {"version": 1, "colour": "ff1e2227", "image": ""}, "unfocussed": {"version": 1, "colour": "ff1e2227", "image": ""}},
+                "backgroundData": {"version": 1, "focussed": {"version": 1, "colour": "ff1a1d21", "image": ""}, "unfocussed": {"version": 1, "colour": "ff1a1d21", "image": ""}},
                 "ignoreMousePresses": False,
                 "disableCoarseDataWheel": False,
                 "componentsData": comps,
@@ -250,28 +248,28 @@ def main():
                 {
                     "Tab": 1, "SubTab": 1, "Bank Direction": "Column",
                     "Q-Links": make_qlink_dict([
-                        [1, 2, 3, 4],     # Line Mode, L1 Wave 1, L1 Wave 2, Mod Mode
-                        [6, 7, 8, 13],    # DCW Attack, Decay, Sustain, Release
-                        [9, 10, 11, 12],  # DCA Attack, Decay, Sustain, Release
-                        [5, 14, 15, 0],   # DCW Depth, Chorus, Drive, Master Vol
+                        [1, 2, 3, 4],     # Bank 1: Line Mode, L1 Wave 1, L1 Wave 2, Ring/Noise
+                        [5, 15, 14, 0],   # Bank 2: DCW Timbre, DCW Env, Chorus, Volume
+                        [6, 7, 8, 13],    # Bank 3: DCW Attack, Decay, Sustain, Release
+                        [9, 10, 11, 12],  # Bank 4: DCA Attack, Decay, Sustain, Release
                     ]),
                 },
                 {
                     "Tab": 2, "SubTab": 1, "Bank Direction": "Column",
                     "Q-Links": make_qlink_dict([
-                        [16, 17, 18, 19], # L2 Wave 1, L2 Wave 2, L2 DCW, L2 Octave
-                        [20, 21, 22, 23], # L2 Semi, L2 Fine, Pitch Env, Pitch Dec
-                        [24, 25, 26, 27], # Vib Wave, Vib Rate, Vib Depth, Vib Delay
-                        [28, 29, 30, 31], # Voice Mode, Glide, Vel Sens, DCA Curve
+                        [16, 17, 18, 19], # Bank 1: L2 Wave 1, L2 Wave 2, L2 Octave, L2 Semi
+                        [28, 20, 24, 25], # Bank 2: Voice Mode, L2 Fine, Pitch Env, Pitch Dec
+                        [21, 22, 23, 29], # Bank 3: L2 Mix, L2 DCW, L2 Env Ofs, Portamento
+                        [26, 27, 30, 31], # Bank 4: Vib Rate, Vib Depth, Vib Delay, Velocity
                     ]),
                 },
             ],
         },
         "Program Mode Q-Links": {
-            "Q-Link 1": 5,   # DCW Depth
-            "Q-Link 2": 2,   # L1 Wave 1
-            "Q-Link 3": 3,   # L1 Wave 2
-            "Q-Link 4": 1,   # Line Mode
+            "Q-Link 1": 5,   # DCW Timbre
+            "Q-Link 2": 15,  # DCW Env
+            "Q-Link 3": 2,   # L1 Wave 1
+            "Q-Link 4": 3,   # L1 Wave 2
             "Q-Link 5": 6,   # DCW Attack
             "Q-Link 6": 7,   # DCW Decay
             "Q-Link 7": 8,   # DCW Sustain
@@ -281,9 +279,9 @@ def main():
             "Q-Link 11": 11, # DCA Sustain
             "Q-Link 12": 12, # DCA Release
             "Q-Link 13": 14, # Chorus
-            "Q-Link 14": 15, # Drive
-            "Q-Link 15": 26, # Vib Depth
-            "Q-Link 16": 0,  # Master Vol
+            "Q-Link 14": 21, # L2 Mix
+            "Q-Link 15": 23, # L2 Env Ofs
+            "Q-Link 16": 0,  # Volume
         },
     }
 

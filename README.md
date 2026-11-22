@@ -2,34 +2,33 @@
 
 ![CZboy](screenshots/czboy.png)
 
-**CZboy** (`UID: CZBY`, vendor `Stampman3000`) is a standalone 1980s CZ-style Phase Distortion synthesizer for Akai MPC OS 3.10.1+ (32-bit ARM32 Cortex-A17 & 64-bit ARM64), based on the fixed-point C++ [**CrispyZebra**](https://github.com/hugelton/CrispyZebra) Phase Distortion engine by Leo Kuroshita (`@kurogedelic`).
+**CZboy** (`UID: CZBY`, vendor `Stampman3000`) is a standalone 1984 CZ-101-style Phase Distortion synthesizer for Akai MPC OS 3.10.1+ (32-bit ARM32 Cortex-A17 & 64-bit ARM64), based on the fixed-point C++ [**CrispyZebra**](https://github.com/hugelton/CrispyZebra) Phase Distortion engine by Leo Kuroshita (`@kurogedelic`).
 
 Licensed under the **GNU General Public License v3.0 or later (GPL-3.0-or-later)** — see [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md).
 
 ## Highlights
-- **CrispyZebra Fixed-Point Phase Distortion Core (`dsp/CrispyZebra.h`, `dsp/CzBoyEngine.h`)**:
-  - All 8 classic CZ waveforms (**Saw**, **Square**, **Pulse**, **Double Sine**, **Saw-Pulse**, **Rez Saw**, **Rez Tri**, **Rez Trap**) with authentic per-cycle **Wave 1 + Wave 2** alternation on both lines.
-  - Dual-line architecture (`Line 1`, `Line 2`, `1 + 2`, `1 + 2'` phase-inverted) with **Ring Modulation**, **Noise Modulation**, and independent **Line 2 Octave / Semitone / Fine Detune** + **L2 DCW** trim.
-  - Musical **DCW** (timbre/phase-distortion depth + ADSR) and **DCA** (amplitude ADSR + selectable **Linear / Exp** curve) envelopes mapped onto CrispyZebra's Q16 8-stage envelope core, plus a **DCO Pitch Env** blip/sweep for classic CZ brass, bass, and electronic percussion.
-  - **Vibrato LFO** (`Tri / Square / Saw Up / Saw Dn` with Rate, Depth, Delay, plus MIDI Mod Wheel CC1), **Portamento / Glide**, **Velocity Sensitivity**, Sustain Pedal (CC64), **Master Drive**, and a lightweight CZ-style **Stereo Chorus**.
-  - **CPU-Safe Polyphony**: Selectable **`Poly 8`**, **`Poly 4`**, and **`Mono`** voice modes.
-- **16 Factory Presets (`bridge/CzBoyPresets.h`)**:
-  - *Init CZ Saw*, *CZ Brass Ens*, *Hollow Glass EP*, *Solid PD Bass*, *Metallic Bell*, *80s Synth Str*, *Rez Acid Lead*, *Drawbar Organ*, *CZ Harpsichord*, *Velvet PD Pad*, *Square Sub Bass*, *Cyber Ring Arp*, *Noise Flute*, *Marimba Pluck*, *Poly Rez Choir*, and *Zap Synth Tom*.
-- **1984 Casio CZ Hardware Console UI (`1280 × 628`, `tools/gen_ui_assets.py`)**:
-  - 2 clean tabs (**`CZBOY`** and **`LINE 2/MOD`**) covering all 32 automatable parameters 1:1 across 4×4 hardware Q-Link banks, backlit olive-mint dot-matrix LCD with a live 8-waveform Phase Distortion vector scope, stereo LCD peak meters, fluted rotary knobs, and vertical DCW/DCA ADSR faders.
+- **Unthrottled CrispyZebra Fixed-Point Phase Distortion Core (`dsp/CrispyZebra.h`, `dsp/CzBoyEngine.h`)**:
+  - All 8 classic CZ waveforms (**Saw**, **Square**, **Pulse**, **Double Sine**, **Saw-Pulse**, **Rez Saw**, **Rez Tri**, **Rez Trap**) with authentic 2048-entry inverted-cosine LUT, full phase-distortion bend, screaming **1×–15×** resonant harmonic sweeps (with per-note Nyquist guard), and per-cycle **Wave 1 + Wave 2** alternation on both lines.
+  - **Live Real-Time Timbre Control:** Dedicated **`DCW Timbre`** (instant live phase-distortion floor/cutoff) + **`DCW Env`** (live DCW envelope modulation depth) alongside full **DCW** and **DCA** ADSR envelopes.
+  - **Dual-Line Layering & Post-Ring Modulation:** `Line 1`, `Line 2`, `1 + 2`, `1 + 2'` (phase-inverted), **Ring Mod** (with post-ring DCA staging so bells and clavs ring out cleanly), **Noise Mod**, **L2 Octave / Semi / Fine**, **`L2 Mix`**, **`L2 DCW`**, and bipolar **`L2 Env Ofs`** (turn negative for glassy bell/tine transients on Line 2, or positive for slow blooming pad layers).
+  - **DCO Pitch Env**, **Triangle Vibrato LFO** (Rate / Depth / Delay + MIDI Mod Wheel CC1), **Portamento**, **Velocity Sensitivity**, Sustain Pedal (CC64), lush CZ-5000-style **Stereo BBD Chorus**, and CPU-safe **`Poly 8` / `Poly 4` / `Mono`** voice modes.
+- **16 Classic CZ-101 Factory Presets (`bridge/CzBoyPresets.h`)**:
+  - *CZ-101 Brass*, *Glass Tine EP*, *Rez Acid Squelch*, *Slap Funk Bass*, *Tubular Bells*, *80s CZ Strings*, *Hollow Rez Pad*, *Jazz Drawbar Org*, *CZ Harpsichord*, *Woody Marimba*, *Cosmic Ring Pad*, *Funky CZ Clav*, *Breathy Pan Pipe*, *Detuned CZ Lead*, *80s Electro Tom*, and *Init CZ Saw*.
+- **1984 Casio CZ-101 Hardware Faceplate UI (`1280 × 628`, `tools/gen_ui_assets.py`)**:
+  - Matte jet-charcoal ABS faceplate with hairline `DCO → DCW → DCA` schematic framing, brushed-silver chamfered green-grey LCD (2-line readout + live 8-waveform PD scope + stereo LCD meters), printed 8-waveform legend chart, flat matte-black CZ-style rotary dials, and compact Casio mini-sliders across 2 tabs (**`CZ-101`** and **`LINE 2/MOD`**) with 100% 4×4 hardware Q-Link coverage.
 - **Roadmap (post-v1)**:
   - CZ `.syx` SysEx patch loading (`pdsynth`-style) and full 8-stage envelope point editing are planned for a later release, not v1.
 
 ## Desktop CPU Reference (44.1 kHz, 128-frame = 2902.5 µs)
-*(On-device Gen1 MPC One ARMv7 benchmarks pending hardware test; fixed-point CrispyZebra math with per-block hoisting and single-line skipping is built to stay well within Gen1 Cortex-A17 headroom even at 8 voices.)*
+*(On-device Gen1 MPC One ARMv7 benchmarks pending hardware capture.)*
 
 | Scenario | Avg (µs) | p99 (µs) | Desktop % of 128-frame |
 | :--- | ---: | ---: | ---: |
-| Line 1 Only (4 voices, dry) | 3.1 µs | 3.4 µs | **0.11%** |
-| Line 1 Only (8 voices, dry) | 5.0 µs | 6.8 µs | **0.17%** |
-| Dual-Line 1+2 + Chorus (4 voices) | 6.1 µs | 7.8 µs | **0.21%** |
-| Dual-Line 1+2 + Chorus (8 voices) | 10.7 µs | 19.2 µs | **0.37%** |
-| Dual-Line Ring+Noise+Chorus (8 voices) | 10.9 µs | 21.0 µs | **0.37%** |
+| Line 1 Only (4 voices, dry) | 5.0 µs | 6.3 µs | **0.17%** |
+| Line 1 Only (8 voices, dry) | 7.9 µs | 13.9 µs | **0.27%** |
+| Dual-Line 1+2 + Chorus (4 voices) | 9.9 µs | 17.9 µs | **0.34%** |
+| Dual-Line 1+2 + Chorus (8 voices) | 14.5 µs | 25.2 µs | **0.50%** |
+| Dual-Line Ring+Noise+Chorus (8 voices) | 11.0 µs | 18.8 µs | **0.38%** |
 
 ## Build & Verify
 Set `MPC_SDK` to a checkout of the official [Akai MPC Plugin Builder SDK](https://github.com/inmusic-software/mpc-plugin-builder-sdk), then:
