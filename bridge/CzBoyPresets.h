@@ -34,7 +34,7 @@ inline const CzPreset* factoryPresets (int& outCount)
                 p.lineMode = 2; p.l1Wave1 = 4; p.l1Wave2 = 0; p.modMode = 0;
                 p.dcwTimbre = 0.18f; p.dcwEnv = 0.34f;
                 p.dcwAtt = 0.05f; p.dcwDec = 0.46f; p.dcwSus = 0.16f; p.dcwRel = 0.38f;
-                p.dcaAtt = 0.06f; p.dcaDec = 0.62f; p.dcaSus = 0.88f; p.dcaRel = 0.40f;
+                p.dcaAtt = 0.11f; p.dcaDec = 0.62f; p.dcaSus = 0.88f; p.dcaRel = 0.40f;
                 p.chorus = 0.34f; p.volume = 0.88f;
                 p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 7;
                 p.l2Mix = 0.32f; p.l2Dcw = 0.24f; p.l2EnvOfs = 0.08f;

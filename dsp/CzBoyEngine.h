@@ -387,11 +387,11 @@ public:
         {
             float l = std::isfinite (outL[i]) ? outL[i] : 0.0f;
             float r = std::isfinite (outR[i]) ? outR[i] : 0.0f;
-            // Smooth output limiter above 0.90 so big ambient chords + Space never clip harshly
-            if (std::fabs (l) > 0.90f)
-                l = (l > 0.0f ? 1.0f : -1.0f) * (0.90f + 0.09f * std::tanh ((std::fabs (l) - 0.90f) * 4.0f));
-            if (std::fabs (r) > 0.90f)
-                r = (r > 0.0f ? 1.0f : -1.0f) * (0.90f + 0.09f * std::tanh ((std::fabs (r) - 0.90f) * 4.0f));
+            // Exact C1/C2-smooth output protector above 0.86 (slope = 1.000 at knee, zero kink/click!)
+            if (std::fabs (l) > 0.86f)
+                l = (l > 0.0f ? 1.0f : -1.0f) * (0.86f + 0.13f * std::tanh ((std::fabs (l) - 0.86f) * (1.0f / 0.13f)));
+            if (std::fabs (r) > 0.86f)
+                r = (r > 0.0f ? 1.0f : -1.0f) * (0.86f + 0.13f * std::tanh ((std::fabs (r) - 0.86f) * (1.0f / 0.13f)));
             outL[i] = std::fabs (l) < 1e-24f ? 0.0f : l;
             outR[i] = std::fabs (r) < 1e-24f ? 0.0f : r;
             pkL = std::max (pkL, std::fabs (outL[i]));

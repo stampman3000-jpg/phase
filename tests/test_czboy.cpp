@@ -282,6 +282,38 @@ int main()
                "Glassy sine purity & click-free Wave1+Wave2 splice", msg);
     }
 
+    // 9. Zero-Click Retrigger, Voice-Steal, Vibrato Release & Smooth Limiter on BoC Glassy Sine
+    {
+        int cnt = 0;
+        SynthParams p = factoryPresets (cnt)[0].p; // BoC Glassy Sine
+        CzBoyEngine eng;
+        eng.prepare (sr);
+        std::vector<float> L, R;
+        auto run = [&] (int n) {
+            const size_t o = L.size();
+            L.resize (o + (size_t) n); R.resize (o + (size_t) n);
+            for (int i = 0; i < n; i += 128)
+                eng.render (L.data() + o + i, R.data() + o + i, std::min (128, n - i), p, 120.0);
+        };
+        for (int k = 0; k < 4; ++k) { eng.noteOn (60, 0.9f, p); run (4096); eng.noteOff (60); run (2048); }
+        double tapD2 = 0.0;
+        for (size_t i = 2; i < L.size(); ++i)
+            tapD2 = std::max (tapD2, (double) std::fabs (L[i] - 2.0f * L[i - 1] + L[i - 2]));
+
+        const size_t cStart = L.size();
+        const int notes[10] = { 48, 52, 55, 59, 60, 64, 67, 71, 72, 76 };
+        for (int n : notes) { eng.noteOn (n, 0.9f, p); run (1024); }
+        for (int n : notes) eng.noteOff (n);
+        run (8192);
+        double chordD2 = 0.0;
+        for (size_t i = cStart + 2; i < L.size(); ++i)
+            chordD2 = std::max (chordD2, (double) std::fabs (L[i] - 2.0f * L[i - 1] + L[i - 2]));
+
+        std::snprintf (msg, sizeof (msg), "tapMaxD2=%.5f, 10vStealMaxD2=%.5f", tapD2, chordD2);
+        check (tapD2 < 0.005 && chordD2 < 0.015 && allFinite (L),
+               "Zero-click retrigger, voice-steal & vibrato release", msg);
+    }
+
     std::printf ("\nSummary: %d passed, %d failed\n", gPass, gFail);
     return gFail == 0 ? 0 : 1;
 }

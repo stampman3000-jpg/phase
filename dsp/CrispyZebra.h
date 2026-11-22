@@ -595,8 +595,9 @@ public:
                 break;
         }
 
-        // Clean per-oscillator DC blocker centers continuous unipolar uPD933 waves around 0.0
-        const float x = uni * 2.0f;
+        // Center unipolar uPD933 waves around 0.0 analytically (zero DC thump on fast attacks,
+        // identical -1.0 shift across all waves preserves zero-step Wave1+Wave2 cycle splicing!)
+        const float x = uni * 2.0f - 1.0f;
         float y = x - osc_dc_x + 0.9965f * osc_dc_y;
         osc_dc_x = x;
         if (y > -1e-24f && y < 1e-24f) y = 0.0f;
@@ -657,6 +658,8 @@ public:
     bool noise_modulation = false;  
     uint32_t noise_phase = 0;       
     float drift_phase = 0.0f;       // Per-voice slow organic tape drift phase (active when vibrato > 0)
+    float last_out = 0.0f;          // Previous rendered voice sample for zero-click voice steal
+    float declick_val = 0.0f;       // Smooth ~3 ms exponential anti-click fade on voice steal/retrigger
 
     void init(uint32_t sr) { sample_rate = sr; }
 
@@ -788,7 +791,14 @@ public:
                     break;
             }
         }
-        return out * (static_cast<float>(velocity_gain) * (1.0f / 65535.0f));
+        float res = out * (static_cast<float>(velocity_gain) * (1.0f / 65535.0f));
+        if (declick_val != 0.0f) {
+            declick_val *= 0.972f; // ~3 ms silky zero-click steal crossfade
+            if (declick_val > -1e-24f && declick_val < 1e-24f) declick_val = 0.0f;
+            res += declick_val;
+        }
+        last_out = res;
+        return res;
     }
 
     inline int32_t process(const Tables& tables, LineSelectMode mode = LineSelectMode::LINE1_2, bool ring_modulation = false) {
@@ -1133,13 +1143,14 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
         for (auto& v : voices) {
             if (v.is_active) v.noteOff();
         }
-        vibrato_lfo.release();
     }
     void forceSilence() {
         sustain_pedal = false;
         for (auto& v : voices) {
             v.is_active = false;
             v.sustained = false;
+            v.last_out = 0.0f;
+            v.declick_val = 0.0f;
             v.line1.resetForNoteOn();
             v.line2.resetForNoteOn();
         }
@@ -1221,22 +1232,29 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
         Voice* target = nullptr;
         if (mono_mode) {
             target = &voices[0];
-            for (uint8_t i = 1; i < MaxVoices; i++) voices[i].is_active = false;
+            for (uint8_t i = 1; i < MaxVoices; i++) {
+                voices[i].is_active = false;
+                voices[i].last_out = 0.0f;
+                voices[i].declick_val = 0.0f;
+            }
         } else {
+            // 1. Prefer a genuinely FREE voice first so repeated taps let previous release tails ring click-free!
             for (uint8_t i = 0; i < limit; i++) {
-                if (voices[i].is_active && voices[i].current_note == note) {
+                if (!voices[i].is_active) {
                     target = &voices[i];
                     break;
                 }
             }
+            // 2. Otherwise prefer reusing a releasing instance of the same note
             if (!target) {
                 for (uint8_t i = 0; i < limit; i++) {
-                    if (!voices[i].is_active) {
+                    if (voices[i].is_active && voices[i].current_note == note && !voices[i].isKeyHeld()) {
                         target = &voices[i];
                         break;
                     }
                 }
             }
+            // 3. Otherwise steal the quietest releasing voice
             if (!target) {
                 for (uint8_t i = 0; i < limit; i++) {
                     if (!voices[i].isKeyHeld()) {
@@ -1246,12 +1264,23 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
                     }
                 }
             }
+            // 4. Finally steal the oldest held voice
             if (!target) {
                 target = &voices[0];
                 for (uint8_t i = 1; i < limit; i++) {
                     if (voices[i].age < target->age) target = &voices[i];
                 }
             }
+        }
+
+        // Capture last rendered sample for smooth ~3 ms anti-click crossfade if stealing/retriggering an active voice
+        if (target->is_active) {
+            target->declick_val = target->last_out;
+            if (target->declick_val > 1.5f) target->declick_val = 1.5f;
+            else if (target->declick_val < -1.5f) target->declick_val = -1.5f;
+        } else {
+            target->declick_val = 0.0f;
+            target->last_out = 0.0f;
         }
 
         float freq = 440.0f * __builtin_powf(2.0f, (static_cast<int>(note) - 69) / 12.0f) * master_factor;
@@ -1290,14 +1319,7 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
                 else v.noteOff();
             }
         }
-        bool any_held = false;
-        for (auto& v : voices) {
-            if (v.is_active && v.isKeyHeld()) {
-                any_held = true;
-                break;
-            }
-        }
-        if (!any_held) vibrato_lfo.release();
+        // Keep vibrato LFO gliding smoothly through release tails (released once active voices hit 0)
     }
 
     template <typename SampleType, bool Stereo = true>
@@ -1429,11 +1451,16 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
             }
         }
 
+        bool any_active = false;
         for (uint8_t vi = 0; vi < limit; vi++) {
             if (voices[vi].shouldRelease(numSamples, line_select, ring_modulation)) {
                 voices[vi].is_active = false;
+                voices[vi].last_out = 0.0f;
+                voices[vi].declick_val = 0.0f;
             }
+            if (voices[vi].is_active) any_active = true;
         }
+        if (!any_active) vibrato_lfo.release();
     }
 
     // Studio-clean high-headroom stereo float renderer with subtle per-voice pan spread & CZ-101 silk LPF
@@ -1566,11 +1593,16 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
             outR[i] = fR * vol;
         }
 
+        bool any_active = false;
         for (uint8_t vi = 0; vi < limit; vi++) {
             if (voices[vi].shouldRelease(numSamples, line_select, ring_modulation)) {
                 voices[vi].is_active = false;
+                voices[vi].last_out = 0.0f;
+                voices[vi].declick_val = 0.0f;
             }
+            if (voices[vi].is_active) any_active = true;
         }
+        if (!any_active) vibrato_lfo.release();
     }
 };
 
