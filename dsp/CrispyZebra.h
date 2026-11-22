@@ -254,15 +254,70 @@ public:
 };
 
 // ==========================================
-// Waveform tables 
+// Waveform & NEC uPD933 Exponential Tables
 // ==========================================
 struct Tables {
-    const int16_t* sin_lut;
-    uint16_t lut_size;
+    static constexpr uint32_t kCosLutSize = 2048u;
+    static constexpr uint32_t kExpLutSize = 256u;
+
+    const int16_t* sin_lut = nullptr;
+    uint16_t lut_size = 0;
+
+    // 24-bit float unipolar cosine table: 0.5 * (1 - cos(2*pi*i/2048)) in [0, 1], exact 0 at endpoints
+    float cos_lut[kCosLutSize + 1] = {};
+    // Exponential Casio CZ DCW knee curve: pow(0.018, x) in [1.0 .. 0.018]
+    float dcw_exp_lut[kExpLutSize + 1] = {};
+    // Exponential 3.8-octave musical resonant multiplier: pow(2.0, 3.8*x) in [1.0 .. 13.93]
+    float rez_exp_lut[kExpLutSize + 1] = {};
+
+    void initFloatTables() {
+        constexpr float kTwoPi = 6.28318530717958647692f;
+        for (uint32_t i = 0; i <= kCosLutSize; ++i) {
+            const float ph = (kTwoPi * static_cast<float>(i)) / static_cast<float>(kCosLutSize);
+            cos_lut[i] = 0.5f * (1.0f - __builtin_cosf(ph));
+        }
+        cos_lut[0] = 0.0f;
+        cos_lut[kCosLutSize] = 0.0f;
+
+        for (uint32_t i = 0; i <= kExpLutSize; ++i) {
+            const float x = static_cast<float>(i) / static_cast<float>(kExpLutSize);
+            dcw_exp_lut[i] = __builtin_powf(0.018f, x);
+            rez_exp_lut[i] = __builtin_powf(2.0f, 3.8f * x);
+        }
+    }
+
+    inline float sampleCos(float ph01) const {
+        float p = ph01 - static_cast<float>(static_cast<int32_t>(ph01));
+        if (p < 0.0f) p += 1.0f;
+        const float pos = p * static_cast<float>(kCosLutSize);
+        const uint32_t idx = static_cast<uint32_t>(pos) & (kCosLutSize - 1u);
+        const float frac = pos - static_cast<float>(static_cast<uint32_t>(pos));
+        return cos_lut[idx] + (cos_lut[idx + 1u] - cos_lut[idx]) * frac;
+    }
+
+    inline float sampleDcwExp(float x01) const {
+        const float c = x01 < 0.0f ? 0.0f : (x01 > 1.0f ? 1.0f : x01);
+        const float pos = c * static_cast<float>(kExpLutSize);
+        const uint32_t idx = static_cast<uint32_t>(pos);
+        if (idx >= kExpLutSize) return dcw_exp_lut[kExpLutSize];
+        const float frac = pos - static_cast<float>(idx);
+        return dcw_exp_lut[idx] + (dcw_exp_lut[idx + 1u] - dcw_exp_lut[idx]) * frac;
+    }
+
+    inline float sampleRezExp(float x01) const {
+        const float c = x01 < 0.0f ? 0.0f : (x01 > 1.0f ? 1.0f : x01);
+        const float pos = c * static_cast<float>(kExpLutSize);
+        const uint32_t idx = static_cast<uint32_t>(pos);
+        if (idx >= kExpLutSize) return rez_exp_lut[kExpLutSize];
+        const float frac = pos - static_cast<float>(idx);
+        return rez_exp_lut[idx] + (rez_exp_lut[idx + 1u] - rez_exp_lut[idx]) * frac;
+    }
 };
 
 // ==========================================
 // CZ-style Oscillator Core with 3 independent EGs
+// Upgraded with NEC uPD933 exponential DCW/Resonance, linear-interpolated cosine LUT,
+// zero-discontinuity Wave1+Wave2 unipolar splicing, per-sample smoothed EGs & pitched LFSR noise.
 // ==========================================
 class Oscillator {
 private:
@@ -272,6 +327,22 @@ private:
     uint16_t cached_dcw = 0;  
     uint16_t cached_dca = 0;  
     bool wave_cycle_toggle = false;
+
+    // Per-sample linear ramp for DCW & DCA (eliminates 32-sample / 1.38 kHz zipper noise)
+    float smooth_dcw = 0.0f;
+    float dcw_step = 0.0f;
+    float smooth_dca = 0.0f;
+    float dca_step = 0.0f;
+
+    // Clean per-oscillator DC blocker (centers continuous unipolar uPD933 waves around 0.0)
+    float osc_dc_x = 0.0f;
+    float osc_dc_y = 0.0f;
+
+    // Pitch-tracked 16-bit Galois LFSR for authentic Casio CZ phase-noise modulation
+    uint16_t lfsr = 0xACE1u;
+    uint8_t last_noise_bucket = 0;
+    float noise_jitter = 0.0f;
+
 public:
     uint32_t base_phase_inc = 0;  
     uint32_t phase_inc = 0;  
@@ -283,21 +354,17 @@ public:
     uint16_t dcw_floor = 0;         // Live real-time base phase distortion (0..65535)
     uint16_t dcw_env_scale = 65535; // Live real-time DCW EG depth (0..65535)
     uint16_t dcw_kf_scale = 65535;  // Upper-register key-follow damping
-    uint16_t max_rez_dcw = 65535;   // Per-note Nyquist-safe cap for REZ_* sweep
+    uint16_t max_rez_dcw = 65535;   // Legacy field kept for compatibility
 
     Envelope dco_eg;  
     Envelope dcw_eg;  
     Envelope dca_eg;  
 
-    static inline uint16_t scaleDcw(uint16_t value, uint16_t max_value) {
-        return static_cast<uint16_t>((static_cast<uint32_t>(value) * max_value) >> 16);
-    }
-
-    static inline uint16_t applyDcaCurve(uint16_t value, DcaCurveMode mode) {
+    static inline float applyDcaCurveFloat(float v01, DcaCurveMode mode) {
         if (mode == DcaCurveMode::PSEUDO_EXP) {
-            return static_cast<uint16_t>(((static_cast<uint32_t>(value) * value) + 32768) >> 16);
+            return v01 * v01;
         }
-        return value;
+        return v01;
     }
 
     void resetForNoteOn() {
@@ -307,201 +374,211 @@ public:
         cached_dcw = 0;
         cached_dca = 0;
         wave_cycle_toggle = false;
+        smooth_dcw = static_cast<float>(dcw_floor) * (1.0f / 65535.0f);
+        dcw_step = 0.0f;
+        smooth_dca = 0.0f;
+        dca_step = 0.0f;
+        osc_dc_x = 0.0f;
+        osc_dc_y = 0.0f;
+        lfsr = 0xACE1u;
+        last_noise_bucket = 0;
+        noise_jitter = 0.0f;
     }
 
-    inline int32_t nextRawSample(const Tables& tables, uint16_t& out_dca) {
+    inline float nextRawSampleFloat(const Tables& tables, float& out_dca, bool noise_mod = false) {
         if (++eg_divider >= 32) {
             eg_divider = 0;
             cached_dco = dco_eg.update();
             cached_dcw = dcw_eg.update();
             cached_dca = dca_eg.update();
+
+            const float env_dcw = (static_cast<float>(cached_dcw) * static_cast<float>(dcw_env_scale)) * (1.0f / 4294836225.0f);
+            float target_dcw = static_cast<float>(dcw_floor) * (1.0f / 65535.0f) + env_dcw;
+            if (target_dcw > 1.0f) target_dcw = 1.0f;
+            if (dcw_kf_scale < 65535u) target_dcw *= static_cast<float>(dcw_kf_scale) * (1.0f / 65535.0f);
+
+            const float target_dca = applyDcaCurveFloat(static_cast<float>(cached_dca) * (1.0f / 65535.0f), dca_curve_mode);
+            dcw_step = (target_dcw - smooth_dcw) * (1.0f / 32.0f);
+            dca_step = (target_dca - smooth_dca) * (1.0f / 32.0f);
         }
 
-        uint32_t previous_phase = phase;
+        smooth_dcw += dcw_step;
+        smooth_dca += dca_step;
+        const float dcw = smooth_dcw < 0.0f ? 0.0f : (smooth_dcw > 1.0f ? 1.0f : smooth_dcw);
+        out_dca = smooth_dca < 0.0f ? 0.0f : (smooth_dca > 1.0f ? 1.0f : smooth_dca);
+
+        const uint32_t previous_phase = phase;
         phase += phase_inc;
         if (phase < previous_phase) wave_cycle_toggle = !wave_cycle_toggle;
 
-        uint32_t env_dcw = (static_cast<uint32_t>(cached_dcw) * dcw_env_scale) >> 16;
-        uint32_t total_dcw = static_cast<uint32_t>(dcw_floor) + env_dcw;
-        if (total_dcw > 65535u) total_dcw = 65535u;
-        if (dcw_kf_scale < 65535u) total_dcw = (total_dcw * dcw_kf_scale) >> 16;
+        float p = static_cast<float>(phase) * (1.0f / 4294967296.0f);
 
-        uint16_t dcw = scaleDcw(static_cast<uint16_t>(total_dcw), 64200);
-        uint16_t rez_dcw = static_cast<uint16_t>(total_dcw > max_rez_dcw ? max_rez_dcw : total_dcw);
-        out_dca = applyDcaCurve(cached_dca, dca_curve_mode);
+        // Authentic Casio CZ-101 pitch-tracked LFSR phase-noise modulation
+        if (noise_mod) {
+            const uint8_t bucket = static_cast<uint8_t>(phase >> 28); // 16 pitch-locked steps per cycle
+            if (bucket != last_noise_bucket) {
+                last_noise_bucket = bucket;
+                lfsr = static_cast<uint16_t>((lfsr >> 1) ^ (-(lfsr & 1u) & 0xB400u));
+                const float r = (static_cast<float>(lfsr) * (1.0f / 65535.0f)) - 0.5f;
+                noise_jitter = r * (0.28f + 0.52f * dcw);
+            }
+            p += noise_jitter;
+            if (p >= 1.0f) p -= 1.0f;
+            else if (p < 0.0f) p += 1.0f;
+        }
 
-        uint16_t phase_16 = phase >> 16;
-        int32_t raw_sample = 0;
-        uint8_t shift_bits = 16 - (32 - __builtin_clz(tables.lut_size - 1));
-
-        uint16_t local_phase = phase_16;
         Waveform current_wave = wave1;
-
         if (wave2 != Waveform(0) && wave2 != wave1) {
             current_wave = wave_cycle_toggle ? wave2 : wave1;
         }
 
-        uint32_t pd_phase = local_phase;
+        // Normalized fundamental frequency for silky alias-free upper octaves
+        const float f_norm = static_cast<float>(phase_inc) * (1.0f / 4294967296.0f);
+        float w_min = 1.30f * f_norm;
+        if (w_min < 0.005f) w_min = 0.005f;
+        else if (w_min > 0.24f) w_min = 0.24f;
 
+        // Every waveform evaluates in continuous unipolar [0..~1.35] starting & ending at 0.0f
+        // so alternating ANY Wave 1 + Wave 2 pair has ZERO cycle-boundary step click!
+        float uni = 0.0f;
         switch (current_wave) {
             case Waveform::SAW: {
-                uint32_t xp_saw = 32768 + ((static_cast<uint32_t>(dcw) * 32767) >> 16);
-                if (local_phase < xp_saw) {
-                    pd_phase = (static_cast<uint32_t>(local_phase) * 32768) / xp_saw;
-                } else {
-                    uint32_t denom = 65535 - xp_saw;
-                    if (denom == 0) denom = 1;
-                    pd_phase = 32768 + ((static_cast<uint32_t>(local_phase) - xp_saw) * 32767) / denom;
-                }
-                raw_sample = static_cast<int32_t>(tables.sin_lut[pd_phase >> shift_bits]) + 32768;
+                float d = 0.5f * tables.sampleDcwExp(dcw);
+                if (d < w_min) d = w_min;
+                const float pd = (p < d)
+                    ? (0.5f * p / d)
+                    : (0.5f + 0.5f * (p - d) / (1.0f - d));
+                uni = tables.sampleCos(pd);
                 break;
             }
             case Waveform::SQUARE: {
-                uint32_t xp_sq = 32768 - ((static_cast<uint32_t>(dcw) * 31600) >> 16);
-                if (xp_sq < 64) xp_sq = 64;
-                if (local_phase < xp_sq) {
-                    pd_phase = (static_cast<uint32_t>(local_phase) * 32768) / xp_sq;
-                } else if (local_phase < 32768) {
-                    pd_phase = 32768;
-                } else if (local_phase < 32768 + xp_sq) {
-                    pd_phase = 32768 + ((static_cast<uint32_t>(local_phase) - 32768) * 32767) / xp_sq;
-                } else {
-                    pd_phase = 65535;
-                }
-                raw_sample = static_cast<int32_t>(tables.sin_lut[pd_phase >> shift_bits]) + 32768;
+                float d = 0.5f * tables.sampleDcwExp(dcw * 0.96f);
+                if (d < w_min) d = w_min;
+                float pd;
+                if (p < d)             pd = 0.5f * p / d;
+                else if (p < 0.5f)     pd = 0.5f;
+                else if (p < 0.5f + d) pd = 0.5f + 0.5f * (p - 0.5f) / d;
+                else                   pd = 1.0f;
+                uni = tables.sampleCos(pd);
                 break;
             }
             case Waveform::PULSE: {
-                uint32_t xp_pulse = 65535 - ((static_cast<uint32_t>(dcw) * 63800) >> 16);
-                if (xp_pulse < 128) xp_pulse = 128;
-                if (local_phase < xp_pulse) {
-                    pd_phase = (static_cast<uint32_t>(local_phase) * 65535) / xp_pulse;
-                } else {
-                    pd_phase = 65535;
-                }
-                raw_sample = static_cast<int32_t>(tables.sin_lut[pd_phase >> shift_bits]) + 32768;
-                break;
-            }
-            case Waveform::NULL_WAVE: {
-                raw_sample = 32768;
-                break;
-            }
-            case Waveform::PULSE2: {
-                uint32_t xp_pulse2 = 65535 - ((static_cast<uint32_t>(dcw) * 52000) >> 16);
-                if (local_phase < xp_pulse2) {
-                    pd_phase = (static_cast<uint32_t>(local_phase) * 65535) / xp_pulse2;
-                } else {
-                    pd_phase = 65535;
-                }
-                raw_sample = static_cast<int32_t>(tables.sin_lut[pd_phase >> shift_bits]) + 32768;
+                // Keep rich fundamental body even at high DCW (sweeps 1.0 -> ~0.115 exponentially)
+                float d = 0.10f + 0.90f * tables.sampleDcwExp(dcw * 0.94f);
+                const float d_min = 2.0f * w_min;
+                if (d < d_min) d = d_min;
+                const float pd = (p < d) ? (p / d) : 1.0f;
+                uni = tables.sampleCos(pd);
                 break;
             }
             case Waveform::DOUBLE_SINE: {
-                uint32_t xp_dsin = 65535 - ((static_cast<uint32_t>(dcw) * 54000) >> 16);
-                if (local_phase < xp_dsin) {
-                    pd_phase = (static_cast<uint32_t>(local_phase) * 65535) / xp_dsin;
-                } else {
-                    uint32_t denom = 65535 - xp_dsin;
-                    if (denom == 0) denom = 1;
-                    pd_phase = ((static_cast<uint32_t>(local_phase) - xp_dsin) * 65535) / denom;
-                }
-                raw_sample = static_cast<int32_t>(tables.sin_lut[pd_phase >> shift_bits]) + 32768;
+                // Exact NEC uPD933 (MAME upd933.cpp case 4): two full cosine cycles split at pivot
+                // pivot sweeps smoothly 0.5 (pure crystalline 2x sine) -> 0.022 (glassy tine/chime)
+                float pivot = 0.5f * tables.sampleDcwExp(dcw * 0.88f);
+                const float p_min = 1.8f * w_min;
+                if (pivot < p_min) pivot = p_min;
+                if (pivot > 0.5f) pivot = 0.5f;
+                const float pd = (p < pivot)
+                    ? (p / pivot)
+                    : ((p - pivot) / (1.0f - pivot));
+                uni = tables.sampleCos(pd);
                 break;
             }
             case Waveform::SAW_PULSE: {
-                uint32_t xp_sp = 65535 - ((static_cast<uint32_t>(dcw) * 32767) >> 16);
-                uint32_t t_peak_16 = 32768 + ((static_cast<uint32_t>(dcw) * 30500) >> 16);
-                uint32_t peak_pos = (static_cast<uint64_t>(xp_sp) * t_peak_16) >> 16;
-                if (peak_pos == 0) peak_pos = 1;
-
-                if (local_phase < xp_sp) {
-                    if (local_phase < peak_pos) {
-                        pd_phase = (static_cast<uint32_t>(local_phase) * 32768) / peak_pos;
-                    } else {
-                        uint32_t denom = xp_sp - peak_pos;
-                        if (denom == 0) denom = 1;
-                        pd_phase = 32768 + ((static_cast<uint32_t>(local_phase - peak_pos) * 32767) / denom);
-                    }
-                } else {
-                    pd_phase = 65535;
-                }
-                raw_sample = static_cast<int32_t>(tables.sin_lut[pd_phase >> shift_bits]) + 32768;
+                // Authentic Casio CZ-101 Wave 5: warm half-cosine swell + crisp exponential pulse edge
+                float d = 0.5f * tables.sampleDcwExp(dcw * 0.95f);
+                if (d < w_min) d = w_min;
+                float pd;
+                if (p < 0.5f)          pd = p;
+                else if (p < 0.5f + d) pd = 0.5f + 0.5f * (p - 0.5f) / d;
+                else                   pd = 1.0f;
+                uni = tables.sampleCos(pd);
                 break;
             }
             case Waveform::REZ_SAW: {
-                // Authentic Casio uPD933 unipolar resonant formula: (1 - cos(k*phi)) * window(phi)
-                // Preserves full fat sawtooth fundamental PLUS screaming 1x..15x resonant sweep!
-                uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
-                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
-                uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                uint32_t core_uni = static_cast<uint32_t>(static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) + 32768);
-                uint32_t window = 65535 - local_phase;
-                int32_t prod = static_cast<int32_t>((static_cast<uint64_t>(core_uni) * window) >> 16);
-                int32_t centered = ((prod - 16384) * 5) >> 2;
-                if (centered > 32767) centered = 32767;
-                else if (centered < -32768) centered = -32768;
-                raw_sample = centered + 32768;
+                float k = tables.sampleRezExp(dcw);
+                if (f_norm > 1e-6f) {
+                    const float k_max = 0.42f / f_norm;
+                    if (k > k_max) k = k_max < 1.0f ? 1.0f : k_max;
+                }
+                const float win = 1.0f - p;
+                uni = tables.sampleCos(k * p) * win * 1.40f;
                 break;
             }
             case Waveform::REZ_TRI: {
-                uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
-                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
-                uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                uint32_t core_uni = static_cast<uint32_t>(static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) + 32768);
-                uint32_t window = (local_phase < 32768) ? (local_phase << 1) : ((65535 - local_phase) << 1);
-                int32_t prod = static_cast<int32_t>((static_cast<uint64_t>(core_uni) * window) >> 16);
-                int32_t centered = ((prod - 16384) * 5) >> 2;
-                if (centered > 32767) centered = 32767;
-                else if (centered < -32768) centered = -32768;
-                raw_sample = centered + 32768;
+                float k = tables.sampleRezExp(dcw);
+                if (f_norm > 1e-6f) {
+                    const float k_max = 0.42f / f_norm;
+                    if (k > k_max) k = k_max < 1.0f ? 1.0f : k_max;
+                }
+                const float win = (p < 0.5f) ? (2.0f * p) : (2.0f * (1.0f - p));
+                uni = tables.sampleCos(k * p) * win * 1.40f;
                 break;
             }
             case Waveform::REZ_TRAP: {
-                uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
-                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
-                uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                uint32_t core_uni = static_cast<uint32_t>(static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) + 32768);
-                uint32_t window;
-                if (local_phase < 16384) window = local_phase << 2;
-                else if (local_phase > 49152) window = (65535 - local_phase) << 2;
-                else window = 65535;
-                int32_t prod = static_cast<int32_t>((static_cast<uint64_t>(core_uni) * window) >> 16);
-                int32_t centered = prod - 24576;
-                if (centered > 32767) centered = 32767;
-                else if (centered < -32768) centered = -32768;
-                raw_sample = centered + 32768;
+                float k = tables.sampleRezExp(dcw);
+                if (f_norm > 1e-6f) {
+                    const float k_max = 0.42f / f_norm;
+                    if (k > k_max) k = k_max < 1.0f ? 1.0f : k_max;
+                }
+                float win;
+                if (p < 0.25f)      win = 4.0f * p;
+                else if (p > 0.75f) win = 4.0f * (1.0f - p);
+                else                win = 1.0f;
+                uni = tables.sampleCos(k * p) * win * 1.18f;
+                break;
+            }
+            case Waveform::PULSE2: {
+                float d = tables.sampleDcwExp(dcw * 0.78f);
+                const float d_min = 2.0f * w_min;
+                if (d < d_min) d = d_min;
+                const float pd = (p < d) ? (p / d) : 1.0f;
+                uni = tables.sampleCos(pd);
                 break;
             }
             case Waveform::REZ_PULSE: {
-                uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
-                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
-                uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                uint32_t core_uni = static_cast<uint32_t>(static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) + 32768);
-                uint32_t window = (local_phase < 32768) ? 65535 : 0;
-                int32_t prod = static_cast<int32_t>((static_cast<uint64_t>(core_uni) * window) >> 16);
-                int32_t centered = prod - 16384;
-                if (centered > 32767) centered = 32767;
-                else if (centered < -32768) centered = -32768;
-                raw_sample = centered + 32768;
+                float k = tables.sampleRezExp(dcw);
+                if (f_norm > 1e-6f) {
+                    const float k_max = 0.42f / f_norm;
+                    if (k > k_max) k = k_max < 1.0f ? 1.0f : k_max;
+                }
+                const float win = (p < 0.5f) ? 1.0f : 0.0f;
+                uni = tables.sampleCos(k * p) * win * 1.40f;
                 break;
             }
             case Waveform::REZ_DBL_SAW: {
-                uint32_t res_phase_32 = static_cast<uint32_t>(local_phase)
-                    + ((static_cast<uint64_t>(local_phase) * rez_dcw * 14) >> 16);
-                uint16_t res_phase = static_cast<uint16_t>(res_phase_32 & 0xFFFF);
-                uint32_t core_uni = static_cast<uint32_t>(static_cast<int32_t>(tables.sin_lut[res_phase >> shift_bits]) + 32768);
-                uint32_t window = (local_phase < 32768)
-                    ? 65535 - (static_cast<uint32_t>(local_phase) << 1)
-                    : 65535 - (static_cast<uint32_t>(local_phase - 32768) << 1);
-                int32_t prod = static_cast<int32_t>((static_cast<uint64_t>(core_uni) * window) >> 16);
-                int32_t centered = ((prod - 16384) * 5) >> 2;
-                if (centered > 32767) centered = 32767;
-                else if (centered < -32768) centered = -32768;
-                raw_sample = centered + 32768;
+                float k = tables.sampleRezExp(dcw);
+                if (f_norm > 1e-6f) {
+                    const float k_max = 0.42f / f_norm;
+                    if (k > k_max) k = k_max < 1.0f ? 1.0f : k_max;
+                }
+                const float win = (p < 0.5f) ? (1.0f - 2.0f * p) : (2.0f - 2.0f * p);
+                uni = tables.sampleCos(k * p) * win * 1.40f;
                 break;
             }
+            case Waveform::NULL_WAVE:
+            default:
+                uni = 0.0f;
+                break;
         }
-        return raw_sample - 32768;
+
+        // Clean per-oscillator DC blocker centers continuous unipolar uPD933 waves around 0.0
+        const float x = uni * 2.0f;
+        float y = x - osc_dc_x + 0.9965f * osc_dc_y;
+        osc_dc_x = x;
+        if (y > -1e-24f && y < 1e-24f) y = 0.0f;
+        osc_dc_y = y;
+        return y;
+    }
+
+    inline int32_t nextRawSample(const Tables& tables, uint16_t& out_dca) {
+        float dca_f = 0.0f;
+        const float s = nextRawSampleFloat(tables, dca_f, false);
+        out_dca = static_cast<uint16_t>(dca_f * 65535.0f);
+        int32_t v = static_cast<int32_t>(s * 32767.0f);
+        if (v > 32767) v = 32767;
+        else if (v < -32768) v = -32768;
+        return v;
     }
 
     inline int32_t nextSample(const Tables& tables) {
@@ -638,43 +715,29 @@ public:
         return false;
     }
 
-    inline int32_t process(const Tables& tables, LineSelectMode mode = LineSelectMode::LINE1_2, bool ring_modulation = false) {
-        if (!is_active) return 0;
+    inline float processFloat(const Tables& tables, LineSelectMode mode = LineSelectMode::LINE1_2, bool ring_modulation = false) {
+        if (!is_active) return 0.0f;
         const bool need_l1 = ring_modulation || mode != LineSelectMode::LINE2_ONLY;
         const bool need_l2 = ring_modulation || mode != LineSelectMode::LINE1_ONLY;
-        uint16_t dca1 = 0, dca2 = 0;
-        int32_t raw1 = need_l1 ? line1.nextRawSample(tables, dca1) : 0;
-        int32_t raw2 = need_l2 ? line2.nextRawSample(tables, dca2) : 0;
+        float dca1 = 0.0f, dca2 = 0.0f;
+        const float raw1 = need_l1 ? line1.nextRawSampleFloat(tables, dca1, noise_modulation) : 0.0f;
+        const float raw2 = need_l2 ? line2.nextRawSampleFloat(tables, dca2, noise_modulation) : 0.0f;
 
-        int32_t s1 = (raw1 * static_cast<int32_t>(dca1)) >> 16;
-        int32_t s2 = (raw2 * static_cast<int32_t>(dca2)) >> 16;
+        const float s1 = raw1 * dca1;
+        const float s2 = raw2 * dca2;
+        const float l2m = static_cast<float>(line2_mix) * (1.0f / 65535.0f);
 
-        if (noise_modulation) {
-            noise_phase = noise_phase * 1103515245u + 12345u;
-            int32_t n_bipolar = static_cast<int32_t>((noise_phase >> 16) & 0xFFFF) - 32768;
-            if (need_l1) {
-                int32_t n1 = (n_bipolar * static_cast<int32_t>(dca1)) >> 16;
-                s1 = (s1 * 6 + n1 * 2) >> 3;
-            }
-            if (need_l2) {
-                int32_t n2 = (n_bipolar * static_cast<int32_t>(dca2)) >> 16;
-                s2 = (s2 * 6 + n2 * 2) >> 3;
-            }
-        }
-
-        int32_t out = 0;
+        float out = 0.0f;
         if (ring_modulation) {
-            // Post-ring DCA staging preserves full sustain & metallic bell shimmer (no DCA^2 choke)
-            int32_t ring_raw = (raw1 * raw2) >> 15;
-            int32_t ring_amp = (ring_raw * static_cast<int32_t>(dca1)) >> 16;
+            // Post-ring DCA staging: crystal-clean metallic bell sidebands with zero DC bleed
+            const float ring_amp = (raw1 * raw2) * dca1;
             if (mode == LineSelectMode::LINE1_2) {
-                int32_t ring_wet = (ring_amp * static_cast<int32_t>(line2_mix)) >> 16;
-                out = (s1 + ring_wet) >> 1;
+                out = (s1 + ring_amp * l2m) * 0.58f;
             } else {
-                out = ring_amp;
+                out = ring_amp * 0.92f;
             }
         } else {
-            int32_t s2_mix = (s2 * static_cast<int32_t>(line2_mix)) >> 16;
+            const float s2_mix = s2 * l2m;
             switch (mode) {
                 case LineSelectMode::LINE1_ONLY:
                     out = s1;
@@ -683,15 +746,23 @@ public:
                     out = s2_mix;
                     break;
                 case LineSelectMode::LINE1_2_INV:
-                    out = (s1 - s2_mix) >> 1;
+                    out = (s1 - s2_mix) * 0.62f;
                     break;
                 case LineSelectMode::LINE1_2:
                 default:
-                    out = (s1 + s2_mix) >> 1;
+                    out = (s1 + s2_mix) * 0.60f;
                     break;
             }
         }
-        return (out * static_cast<int32_t>(velocity_gain)) >> 16;
+        return out * (static_cast<float>(velocity_gain) * (1.0f / 65535.0f));
+    }
+
+    inline int32_t process(const Tables& tables, LineSelectMode mode = LineSelectMode::LINE1_2, bool ring_modulation = false) {
+        const float f = processFloat(tables, mode, ring_modulation);
+        int32_t v = static_cast<int32_t>(f * 32767.0f);
+        if (v > 32767) v = 32767;
+        else if (v < -32768) v = -32768;
+        return v;
     }
 };
 
@@ -716,6 +787,9 @@ private:
     float dc_y1 = 0.0f;
     float dc_x1R = 0.0f;
     float dc_y1R = 0.0f;
+    float silk_lpL = 0.0f;
+    float silk_lpR = 0.0f;
+    float silk_coef = 0.85f;
 
     // MASTER section (PARAMETERS.md)
     uint8_t master_octave = 1;         // 0-2 (1=center)
@@ -746,7 +820,15 @@ public:
     void setup(const int16_t* sin_lut, uint16_t lut_size, uint32_t sr) {
         tables.sin_lut = sin_lut;
         tables.lut_size = lut_size;
+        tables.initFloatTables();
         sample_rate = sr;
+        // Authentic Casio CZ-101 ~13.5 kHz analog output reconstruction silk filter
+        const float fc = 13500.0f;
+        const float sr_f = sr > 8000u ? static_cast<float>(sr) : 44100.0f;
+        silk_coef = 1.0f - __builtin_expf(-6.28318530717958647692f * fc / sr_f);
+        if (silk_coef > 0.99f) silk_coef = 0.99f;
+        silk_lpL = 0.0f;
+        silk_lpR = 0.0f;
         for (auto& v : voices) {
             v.init(sr);
             v.line1.dco_eg.initCz101Defaults();
@@ -761,6 +843,9 @@ public:
 
     void setSampleRate(uint32_t sr) {
         sample_rate = sr;
+        const float sr_f = sr > 8000u ? static_cast<float>(sr) : 44100.0f;
+        silk_coef = 1.0f - __builtin_expf(-6.28318530717958647692f * 13500.0f / sr_f);
+        if (silk_coef > 0.99f) silk_coef = 0.99f;
         for (auto& v : voices) v.sample_rate = sr;
         vibrato_lfo.setSampleRate(sr);  
     }
@@ -1015,6 +1100,8 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
         dc_y1 = 0.0f;
         dc_x1R = 0.0f;
         dc_y1R = 0.0f;
+        silk_lpL = 0.0f;
+        silk_lpR = 0.0f;
         vibrato_lfo.release();
     }
     void setPitchBendRangeUp(uint8_t semitones) { pitch_bend_up_semitones = semitones > 24 ? 24 : semitones; }
@@ -1295,7 +1382,7 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
         }
     }
 
-    // Stereo float renderer with subtle per-voice stereo pan spread in Poly modes (center in Mono)
+    // Studio-clean high-headroom stereo float renderer with subtle per-voice pan spread & CZ-101 silk LPF
     void processBlockStereo(float* outL, float* outR, uint32_t numSamples) {
         const uint8_t limit = mono_mode ? 1 : max_polyphony;
         const bool has_bend = (pitch_bend_value != 0);
@@ -1312,31 +1399,19 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
 
         const bool has_vib = (vibrato_lfo.effectiveDepth() > 0);
         const bool has_drive = (master_drive > 0);
-        const float drive_amount = 1.0f + static_cast<float>(master_drive) / 99.0f * 3.5f;
+        const float drive_amount = 1.0f + static_cast<float>(master_drive) / 99.0f * 2.5f;
         const float vol = static_cast<float>(master_volume) / 99.0f;
         const bool do_porta = (portamento_enabled && portamento_time > 0);
         const uint32_t glide = 1 + static_cast<uint32_t>(portamento_time) * 16;
 
-        // Fixed-point stereo voice pan weights (sum = 512, ±24% width in Poly; dead center in Mono)
-        static constexpr int32_t kPanL[8] = { 210, 302, 190, 322, 228, 284, 198, 314 };
-
-        auto softClip32 = [](int32_t m) -> int32_t {
-            m = m >> 1;
-            if (m > 24576) {
-                int32_t ex = m - 24576;
-                m = 24576 + ((ex * 8192) / (8192 + ex));
-            } else if (m < -24576) {
-                int32_t ex = -m - 24576;
-                m = -24576 - ((ex * 8192) / (8192 + ex));
-            }
-            if (m > 32767) m = 32767;
-            else if (m < -32768) m = -32768;
-            return m;
-        };
+        // Clean polyphonic headroom: 4-8 note chords stay 100% linear & intermodulation-free!
+        const float voice_gain = mono_mode ? 0.48f : 0.38f;
+        // Subtle stereo voice pan weights (sum = 2.0, ±18% width in Poly; dead center in Mono)
+        static constexpr float kPanL[8] = { 0.84f, 1.16f, 0.78f, 1.22f, 0.90f, 1.10f, 0.82f, 1.18f };
 
         for (uint32_t i = 0; i < numSamples; i++) {
             int32_t lfo_mod = has_vib ? vibrato_lfo.nextSample() : 0;
-            int32_t mixL = 0, mixR = 0;
+            float mixL = 0.0f, mixR = 0.0f;
 
             for (uint8_t vi = 0; vi < limit; vi++) {
                 Voice& v = voices[vi];
@@ -1386,26 +1461,29 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
                 v.line1.phase_inc = line1_phase_inc;
                 v.line2.phase_inc = line2_phase_inc;
 
-                const int32_t vs = v.process(tables, line_select, ring_modulation);
+                const float vs = v.processFloat(tables, line_select, ring_modulation) * voice_gain;
                 if (mono_mode) {
                     mixL += vs;
                     mixR += vs;
                 } else {
-                    const int32_t pL = kPanL[vi & 7];
-                    const int32_t pR = 512 - pL;
-                    mixL += (vs * pL) >> 8;
-                    mixR += (vs * pR) >> 8;
+                    const float pL = kPanL[vi & 7];
+                    mixL += vs * pL;
+                    mixR += vs * (2.0f - pL);
                 }
             }
 
-            const float rawL = static_cast<float>(softClip32(mixL)) * (1.0f / 32768.0f);
-            const float rawR = static_cast<float>(softClip32(mixR)) * (1.0f / 32768.0f);
-            float fL = rawL - dc_x1  + 0.995f * dc_y1;  dc_x1  = rawL; if (fL > -1e-24f && fL < 1e-24f) fL = 0.0f; dc_y1  = fL;
-            float fR = rawR - dc_x1R + 0.995f * dc_y1R; dc_x1R = rawR; if (fR > -1e-24f && fR < 1e-24f) fR = 0.0f; dc_y1R = fR;
+            // Gentle Casio CZ-101 ~13.5 kHz analog output reconstruction silk filter
+            silk_lpL += (mixL - silk_lpL) * silk_coef;
+            silk_lpR += (mixR - silk_lpR) * silk_coef;
+            if (silk_lpL > -1e-24f && silk_lpL < 1e-24f) silk_lpL = 0.0f;
+            if (silk_lpR > -1e-24f && silk_lpR < 1e-24f) silk_lpR = 0.0f;
+
+            float fL = silk_lpL;
+            float fR = silk_lpR;
 
             if (has_drive) {
-                const float xL = fL * drive_amount; const float aL = xL < 0.0f ? -xL : xL; fL = xL / (1.0f + 0.65f * aL);
-                const float xR = fR * drive_amount; const float aR = xR < 0.0f ? -xR : xR; fR = xR / (1.0f + 0.65f * aR);
+                const float xL = fL * drive_amount; const float aL = xL < 0.0f ? -xL : xL; fL = xL / (1.0f + 0.50f * aL);
+                const float xR = fR * drive_amount; const float aR = xR < 0.0f ? -xR : xR; fR = xR / (1.0f + 0.50f * aR);
             }
             outL[i] = fL * vol;
             outR[i] = fR * vol;

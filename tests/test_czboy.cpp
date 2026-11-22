@@ -229,6 +229,59 @@ int main()
                "All 32 factory presets audible & finite", msg);
     }
 
+    // 8. Clean Glassy Sine Purity (zero LUT grit / zipper / drive fuzz) & Click-Free Wave1+Wave2 Splice
+    {
+        CzBoyEngine eng;
+        eng.prepare (sr);
+        SynthParams p;
+        p.lineMode = 0; p.l1Wave1 = 0; p.l1Wave2 = 0; p.modMode = 0;
+        p.dcwTimbre = 0.0f; p.dcwEnv = 0.0f;
+        p.dcaAtt = 0.0f; p.dcaDec = 0.1f; p.dcaSus = 1.0f; p.dcaRel = 0.2f;
+        p.chorus = 0.0f; p.spaceSend = 0.0f; p.volume = 0.85f;
+
+        eng.noteOn (69, 1.0f, p); // A4 = 440 Hz
+        std::vector<float> L (N), R (N);
+        for (int pos = 0; pos < N; pos += 128)
+            eng.render (L.data() + pos, R.data() + pos, std::min (128, N - pos), p, 120.0);
+
+        // Least-squares fit pure 440 Hz sinusoid over steady-state window to measure THD+N
+        double sSin = 0.0, sCos = 0.0, sSS = 0.0, sCC = 0.0, sSC = 0.0;
+        const int a = 8192, b = N - 512;
+        const double w = 2.0 * 3.14159265358979323846 * 440.0 / sr;
+        for (int i = a; i < b; ++i)
+        {
+            const double sn = std::sin (w * i), cs = std::cos (w * i), y = L[(size_t) i];
+            sSin += y * sn; sCos += y * cs; sSS += sn * sn; sCC += cs * cs; sSC += sn * cs;
+        }
+        const double det = sSS * sCC - sSC * sSC;
+        const double A = (sCC * sSin - sSC * sCos) / det;
+        const double B = (-sSC * sSin + sSS * sCos) / det;
+        double sigSq = 0.0, errSq = 0.0;
+        for (int i = a; i < b; ++i)
+        {
+            const double fit = A * std::sin (w * i) + B * std::cos (w * i);
+            const double e = L[(size_t) i] - fit;
+            sigSq += fit * fit;
+            errSq += e * e;
+        }
+        const double snrDb = 10.0 * std::log10 (sigSq / std::max (1e-18, errSq));
+
+        // Check click-free Wave1 (SAW) + Wave2 (REZ_TRI) cycle splice
+        CzBoyEngine eng2;
+        eng2.prepare (sr);
+        p.l1Wave1 = 0; p.l1Wave2 = 7; p.dcwTimbre = 0.25f; // SAW + REZ_TRI
+        eng2.noteOn (60, 1.0f, p);
+        for (int pos = 0; pos < N; pos += 128)
+            eng2.render (L.data() + pos, R.data() + pos, std::min (128, N - pos), p, 120.0);
+        double maxJump = 0.0;
+        for (int i = 4096; i < N - 256; ++i)
+            maxJump = std::max (maxJump, (double) std::fabs (L[(size_t) i] - L[(size_t) (i - 1)]));
+
+        std::snprintf (msg, sizeof (msg), "sineSNR=%.1f dB, SAW+REZ_TRI maxStep=%.4f", snrDb, maxJump);
+        check (snrDb > 55.0 && maxJump < 0.08,
+               "Glassy sine purity & click-free Wave1+Wave2 splice", msg);
+    }
+
     std::printf ("\nSummary: %d passed, %d failed\n", gPass, gFail);
     return gFail == 0 ? 0 : 1;
 }

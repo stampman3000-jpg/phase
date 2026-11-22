@@ -74,7 +74,7 @@ public:
     void prepare (float sr)
     {
         sr_ = sr > 8000.0f ? sr : 44100.0f;
-        lpCoef_ = 1.0f - std::exp (-kTwoPi * 7600.0f / sr_);
+        lpCoef_ = 1.0f - std::exp (-kTwoPi * 11000.0f / sr_);
         reset();
     }
 
@@ -114,10 +114,14 @@ public:
             ph1_ += inc1; if (ph1_ >= 1.0f) ph1_ -= 1.0f;
             ph2_ += inc2; if (ph2_ >= 1.0f) ph2_ -= 1.0f;
 
-            const float t1L = 4.0f * std::fabs (ph1_ - 0.5f) - 1.0f;
+            auto fastSin = [] (float ph01) -> float {
+                const float u = ph01 * 2.0f - 1.0f; // -1..+1
+                return 4.0f * u * (1.0f - std::fabs (u)); // smooth sine-like curve, zero corners
+            };
+            const float t1L = fastSin (ph1_);
             float p1R = ph1_ + 0.333f; if (p1R >= 1.0f) p1R -= 1.0f;
-            const float t1R = 4.0f * std::fabs (p1R - 0.5f) - 1.0f;
-            const float t2  = 4.0f * std::fabs (ph2_ - 0.5f) - 1.0f;
+            const float t1R = fastSin (p1R);
+            const float t2  = fastSin (ph2_);
 
             const float tapL = 0.65f * readDelay (bufL_, (7.2f + 2.8f * t1L) * ms)
                              + 0.35f * readDelay (bufR_, (13.4f + 1.6f * t2) * ms);
@@ -164,7 +168,7 @@ public:
     void prepare (float sr)
     {
         sr_ = sr > 8000.0f ? sr : 44100.0f;
-        lpCoef_ = 1.0f - std::exp (-kTwoPi * 3600.0f / sr_);
+        lpCoef_ = 1.0f - std::exp (-kTwoPi * 7800.0f / sr_);
         hpCoef_ = 1.0f - std::exp (-kTwoPi * 110.0f / sr_);
         apLen1_ = clampi ((int) (0.0173f * sr_), 128, kAp1 - 2);
         apLen2_ = clampi ((int) (0.0289f * sr_), 128, kAp2 - 2);
@@ -318,7 +322,7 @@ public:
         core_.setMasterOctave (1);
         core_.setMasterNote (0);
         core_.setMasterFine (30);
-        core_.setMasterDrive (10); // Warm 1984 CZ analog output sheen
+        core_.setMasterDrive (0);  // Studio-clean linear CZ-101 polyphonic bus (zero chord fuzz)
         core_.setPitchBendRangeUp (2);
         core_.setPitchBendRangeDown (2);
         core_.setVibratoWaveform (CrispyZebra::LfoWaveform::TRIANGLE);
