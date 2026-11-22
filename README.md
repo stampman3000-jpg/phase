@@ -12,7 +12,7 @@ Licensed under the **GNU General Public License v3.0 or later (GPL-3.0-or-later)
   - **Live Real-Time Timbre Control:** Dedicated **`DCW Timbre`** (instant live phase-distortion floor/cutoff) + **`DCW Env`** (live DCW envelope depth) alongside smooth logarithmic (`3 ms – 6.6 s`) **DCW** and **DCA** ADSR envelopes.
   - **Stereo Voice Spread, Dual-Line Layering & Ambient Space FX:** Natural per-voice stereo panning in `Poly 8` / `Poly 4` (dead center in `Mono`), `Line 1 / Line 2 / 1+2 / 1+2'`, post-ring DCA **Ring Mod** & pitched LFSR **Noise Mod**, **L2 Mix / L2 DCW / bipolar L2 Env Ofs**, silky sine-LFO **Stereo Chorus**, and an airy diffused tempo-synced stereo **Space FX** (`Space Send` true pre-delay send + `Space Decay`).
 - **32 Factory Presets (`bridge/CzBoyPresets.h`)**:
-  - **Warm, Glassy & Aphex Pads:** *CZ-101 Poly Glass*, *Warm Glass Pad*, *Crystal Tine EP*, *Aphex SAW Pad*, *Rhubarb Glass*, *Xtal Rez Cloud*, *Stone In Focus*, *Warm CZ Strings*, *CZ-101 Brass Ens*.
+  - **Boards of Canada Glassy Sines & Ambient Pads:** *BoC Glassy Sine*, *Olson VHS Sine*, *Roygbiv Sine Ld*, *Turquoise Glass*, *NFB Film Organ*, *Dayvan Glass Pad*, *Crystal Tine EP*, *Aphex SAW Pad*, *Rhubarb Glass*.
   - **Fat PD Basses & Leads:** *Fat Rez Bass*, *Acid Rez Squelch*, *Electro Slap Bs*, *Deep Sub Pulse*, *Hollow House Bs*, *Rubber Techno Arp*, *Detuned Rave Ld*, *Metallic Clav*.
   - **Converted CZ-101 Classics:** *Velvet 1+2' Pad*, *Tubular Chimes*, *Woody Marimba*, *Bright Harpsi*, *Slap Horn Funk*, *Light Harp Pluck*, *Breathy Pan Pipe*.
   - **Synthy Noises & IDM Textures:** *Sci-Fi Ring Zaps*, *Noise Wind Sweep*, *Broken Arcade*, *Radio Static Bell*, *Electro Synth Tom*, *Glitch PD Blip*, *Cyber Drone FX*, *Init CZ Saw*.

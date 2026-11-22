@@ -326,7 +326,7 @@ public:
         core_.setPitchBendRangeUp (2);
         core_.setPitchBendRangeDown (2);
         core_.setVibratoWaveform (CrispyZebra::LfoWaveform::TRIANGLE);
-        core_.setVibratoDelay (28); // Expressive ~0.28s vibrato ramp-in
+        core_.setVibratoDelay (10); // Natural ~70 ms smooth BoC vibrato bloom-in
         core_.setVelocitySensitivity (52);
         core_.setDcaCurveMode (CrispyZebra::DcaCurveMode::PSEUDO_EXP);
         chorus_.prepare ((float) sr_);

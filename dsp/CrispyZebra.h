@@ -187,14 +187,24 @@ public:
 };
 
 // ==========================================
-// Vibrato
+// Vibrato (Silky Sine + Organic Boards-of-Canada VHS Tape Wow/Flutter)
 // ==========================================
 class LFO {
 private:
-    uint32_t phase = 0;
-    uint32_t phase_inc = 0;
-    uint16_t delay_counter = 0;
+    float phase1 = 0.0f;
+    float phase2 = 0.27f;
+    float inc1 = 0.0f;
+    float inc2 = 0.0f;
+    float ramp = 0.0f;
+    float ramp_inc = 0.0002f;
+    uint32_t sr_ = DEFAULT_SAMPLE_RATE;
     bool is_active = false;
+
+    static inline float smoothSin(float ph) {
+        const float u = ph * 2.0f - 1.0f; // -1..+1
+        const float p = 4.0f * u * (1.0f - (u < 0.0f ? -u : u));
+        return p * (0.775f + 0.225f * (p < 0.0f ? -p : p));
+    }
 
 public:
     LfoWaveform waveform = LfoWaveform::TRIANGLE;
@@ -205,15 +215,25 @@ public:
     uint16_t delay_samples = 0; 
 
     void setSampleRate(uint32_t sr) {
-        float freq = 0.1f + (static_cast<float>(rate) / 99.0f) * 19.9f;
-        phase_inc = static_cast<uint32_t>((freq * 4294967296.0f) / sr);
-        delay_samples = (static_cast<uint32_t>(delay) * sr) / 100; 
+        sr_ = sr > 8000u ? sr : 44100u;
+        // Logarithmic musical vibrato rate: 0.15 Hz (glacial VHS wow) -> 12.0 Hz (expressive vibrato/flutter)
+        const float norm = static_cast<float>(rate > 99 ? 99 : rate) * (1.0f / 99.0f);
+        const float freq1 = 0.15f * __builtin_powf(80.0f, norm);
+        // Irrational secondary drift harmonic (~0.3173x) for organic non-repeating tape warble
+        const float freq2 = freq1 * 0.3173f;
+        inc1 = freq1 / static_cast<float>(sr_);
+        inc2 = freq2 / static_cast<float>(sr_);
+        const float ramp_sec = 0.015f + (static_cast<float>(delay > 99 ? 99 : delay) * (1.0f / 99.0f)) * 0.55f;
+        ramp_inc = 1.0f / (ramp_sec * static_cast<float>(sr_));
+        delay_samples = static_cast<uint16_t>(ramp_sec * 100.0f);
     }
 
     void trigger() {
-        phase = 0;
-        delay_counter = 0;
-        is_active = true;
+        // Free-running phase across polyphonic chords; smoothly ramps in from idle
+        if (!is_active) {
+            ramp = 0.0f;
+            is_active = true;
+        }
     }
     void release() { is_active = false; }
 
@@ -225,31 +245,37 @@ public:
     inline int32_t nextSample() {
         const uint16_t eff_depth = effectiveDepth();
         if (!is_active || eff_depth == 0) return 0;
-        if (delay_counter < delay_samples) {
-            delay_counter++;
-            return 0;
+
+        if (ramp < 1.0f) {
+            ramp += ramp_inc;
+            if (ramp > 1.0f) ramp = 1.0f;
         }
 
-        phase += phase_inc;
-        uint16_t phase_16 = phase >> 16;
-        int32_t output = 0;
+        phase1 += inc1; if (phase1 >= 1.0f) phase1 -= 1.0f;
+        phase2 += inc2; if (phase2 >= 1.0f) phase2 -= 1.0f;
 
+        float sig = 0.0f;
         switch (waveform) {
-            case LfoWaveform::TRIANGLE:
-                if (phase_16 < 32768) output = (phase_16 << 1) - 32768; 
-                else output = 65535 - (phase_16 << 1); 
+            case LfoWaveform::TRIANGLE: {
+                // Silky sine vibrato + organic Boards-of-Canada VHS wow blend at slow/mid rates
+                const float s1 = smoothSin(phase1);
+                const float s2 = smoothSin(phase2);
+                const float wow = (rate < 68) ? (0.34f * (1.0f - static_cast<float>(rate) * (1.0f / 68.0f))) : 0.0f;
+                sig = s1 * (1.0f - wow) + s2 * wow;
                 break;
+            }
             case LfoWaveform::SQUARE:
-                output = (phase_16 < 32768) ? 32767 : -32768;
+                sig = (phase1 < 0.5f) ? 1.0f : -1.0f;
                 break;
             case LfoWaveform::SAW_UP:
-                output = static_cast<int32_t>(phase_16) - 32768;
+                sig = phase1 * 2.0f - 1.0f;
                 break;
             case LfoWaveform::SAW_DOWN:
-                output = 32767 - static_cast<int32_t>(phase_16);
+                sig = 1.0f - phase1 * 2.0f;
                 break;
         }
-        return (output * eff_depth) / 99;
+        const float depth_f = static_cast<float>(eff_depth) * (1.0f / 99.0f);
+        return static_cast<int32_t>(sig * depth_f * ramp * 32767.0f);
     }
 };
 
@@ -623,6 +649,7 @@ public:
 
     bool noise_modulation = false;  
     uint32_t noise_phase = 0;       
+    float drift_phase = 0.0f;       // Per-voice slow organic tape drift phase (active when vibrato > 0)
 
     void init(uint32_t sr) { sample_rate = sr; }
 
@@ -829,8 +856,10 @@ public:
         if (silk_coef > 0.99f) silk_coef = 0.99f;
         silk_lpL = 0.0f;
         silk_lpR = 0.0f;
+        uint8_t v_idx = 0;
         for (auto& v : voices) {
             v.init(sr);
+            v.drift_phase = static_cast<float>(v_idx++) * 0.137f;
             v.line1.dco_eg.initCz101Defaults();
             v.line1.dcw_eg.initCz101Defaults();
             v.line1.dca_eg.initCz101Defaults();
@@ -1315,14 +1344,19 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
                     line2_phase_inc += static_cast<uint32_t>((static_cast<uint64_t>(line2_phase_inc) * dco2_lvl) >> 16);
                 }
 
-                if (has_vib && lfo_mod != 0) {
-                    int32_t lfo_range1 = static_cast<int32_t>(v.line1.base_phase_inc >> 4);
-                    int32_t lfo_pitch_mod1 = static_cast<int32_t>((static_cast<int64_t>(lfo_mod) * lfo_range1) >> 15);
-                    line1_phase_inc += static_cast<uint32_t>(lfo_pitch_mod1);
+                if (has_vib) {
+                    // Lush ±1.55 semitone musical vibrato + subtle per-voice organic VHS tape drift
+                    const float vib_norm = static_cast<float>(vibrato_lfo.effectiveDepth()) * (1.0f / 99.0f);
+                    static constexpr float kDriftHz[8] = { 0.19f, 0.27f, 0.34f, 0.23f, 0.31f, 0.17f, 0.29f, 0.37f };
+                    v.drift_phase += kDriftHz[vi & 7] / static_cast<float>(sample_rate > 8000u ? sample_rate : 44100u);
+                    if (v.drift_phase >= 1.0f) v.drift_phase -= 1.0f;
+                    const float du = v.drift_phase * 2.0f - 1.0f;
+                    const float drift_sin = 4.0f * du * (1.0f - (du < 0.0f ? -du : du));
+                    const float drift_ratio = mono_mode ? 0.0f : (drift_sin * 0.0045f * vib_norm); // ±7.8 cents per voice
 
-                    int32_t lfo_range2 = static_cast<int32_t>(v.line2.base_phase_inc >> 4);
-                    int32_t lfo_pitch_mod2 = static_cast<int32_t>((static_cast<int64_t>(lfo_mod) * lfo_range2) >> 15);
-                    line2_phase_inc += static_cast<uint32_t>(lfo_pitch_mod2);
+                    const float vib_ratio = (static_cast<float>(lfo_mod) * (1.0f / 32768.0f)) * 0.092f + drift_ratio;
+                    line1_phase_inc = static_cast<uint32_t>(static_cast<float>(line1_phase_inc) * (1.0f + vib_ratio));
+                    line2_phase_inc = static_cast<uint32_t>(static_cast<float>(line2_phase_inc) * (1.0f + vib_ratio));
                 }
 
                 v.line1.phase_inc = line1_phase_inc;
@@ -1448,14 +1482,19 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
                     line2_phase_inc += static_cast<uint32_t>((static_cast<uint64_t>(line2_phase_inc) * dco2_lvl) >> 16);
                 }
 
-                if (has_vib && lfo_mod != 0) {
-                    int32_t lfo_range1 = static_cast<int32_t>(v.line1.base_phase_inc >> 4);
-                    int32_t lfo_pitch_mod1 = static_cast<int32_t>((static_cast<int64_t>(lfo_mod) * lfo_range1) >> 15);
-                    line1_phase_inc += static_cast<uint32_t>(lfo_pitch_mod1);
+                if (has_vib) {
+                    // Lush ±1.55 semitone musical vibrato + subtle per-voice organic VHS tape drift
+                    const float vib_norm = static_cast<float>(vibrato_lfo.effectiveDepth()) * (1.0f / 99.0f);
+                    static constexpr float kDriftHz[8] = { 0.19f, 0.27f, 0.34f, 0.23f, 0.31f, 0.17f, 0.29f, 0.37f };
+                    v.drift_phase += kDriftHz[vi & 7] / static_cast<float>(sample_rate > 8000u ? sample_rate : 44100u);
+                    if (v.drift_phase >= 1.0f) v.drift_phase -= 1.0f;
+                    const float du = v.drift_phase * 2.0f - 1.0f;
+                    const float drift_sin = 4.0f * du * (1.0f - (du < 0.0f ? -du : du));
+                    const float drift_ratio = mono_mode ? 0.0f : (drift_sin * 0.0045f * vib_norm); // ±7.8 cents per voice
 
-                    int32_t lfo_range2 = static_cast<int32_t>(v.line2.base_phase_inc >> 4);
-                    int32_t lfo_pitch_mod2 = static_cast<int32_t>((static_cast<int64_t>(lfo_mod) * lfo_range2) >> 15);
-                    line2_phase_inc += static_cast<uint32_t>(lfo_pitch_mod2);
+                    const float vib_ratio = (static_cast<float>(lfo_mod) * (1.0f / 32768.0f)) * 0.092f + drift_ratio;
+                    line1_phase_inc = static_cast<uint32_t>(static_cast<float>(line1_phase_inc) * (1.0f + vib_ratio));
+                    line2_phase_inc = static_cast<uint32_t>(static_cast<float>(line2_phase_inc) * (1.0f + vib_ratio));
                 }
 
                 v.line1.phase_inc = line1_phase_inc;

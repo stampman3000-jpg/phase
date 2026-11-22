@@ -24,175 +24,175 @@ struct CzPreset
 inline const CzPreset* factoryPresets (int& outCount)
 {
     static const CzPreset kPresets[] = {
-        // === WARM, RICH, GLASSY & CLEAN CZ-101 SHOWCASE + APHEX PADS (0..8) ===
+        // === BOARDS OF CANADA GLASSY SINES & VIBRATO + APHEX PADS (0..8) ===
 
-        // 0: CZ-101 Poly Glass (warm Saw-Pulse + glassy Double Sine + detuned Saw, crisp <0.45s release for host_sim)
+        // 0: BoC Glassy Sine (warm liquid Saw-Pulse sine + crystalline Double Sine halo + silky BoC vibrato, <0.45s rel for host_sim)
         {
-            "CZ-101 Poly Glass",
-            [] {
-                SynthParams p;
-                p.lineMode = 2; p.l1Wave1 = 4; p.l1Wave2 = 4; p.modMode = 0; // Saw-Pulse + Double Sine alternation
-                p.dcwTimbre = 0.22f; p.dcwEnv = 0.54f;
-                p.dcwAtt = 0.28f; p.dcwDec = 0.64f; p.dcwSus = 0.42f; p.dcwRel = 0.40f;
-                p.dcaAtt = 0.14f; p.dcaDec = 0.64f; p.dcaSus = 0.88f; p.dcaRel = 0.40f;
-                p.chorus = 0.42f; p.volume = 0.86f;
-                p.l2Wave1 = 0; p.l2Wave2 = 5; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 9;
-                p.l2Mix = 0.88f; p.l2Dcw = 0.72f; p.l2EnvOfs = 0.14f;
-                p.pitchEnv = 0.0f; p.pitchDec = 0.20f;
-                p.vibRate = 0.30f; p.vibDepth = 0.08f;
-                p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.0f; p.spaceDecay = 0.48f;
-                return p;
-            }()
-        },
-
-        // 1: Warm Glass Pad (iconic 1984 CZ-101 warm Saw-Pulse bed + pure crystalline Double Sine halo)
-        {
-            "Warm Glass Pad",
+            "BoC Glassy Sine",
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 4; p.l1Wave2 = 0; p.modMode = 0;
-                p.dcwTimbre = 0.14f; p.dcwEnv = 0.56f;
-                p.dcwAtt = 0.74f; p.dcwDec = 0.84f; p.dcwSus = 0.46f; p.dcwRel = 0.80f;
-                p.dcaAtt = 0.66f; p.dcaDec = 0.82f; p.dcaSus = 0.90f; p.dcaRel = 0.82f;
-                p.chorus = 0.62f; p.volume = 0.86f;
-                p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 10;
-                p.l2Mix = 0.66f; p.l2Dcw = 0.58f; p.l2EnvOfs = 0.32f;
-                p.pitchEnv = 0.0f; p.pitchDec = 0.25f;
-                p.vibRate = 0.22f; p.vibDepth = 0.10f;
-                p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.42f; p.spaceDecay = 0.72f;
+                p.dcwTimbre = 0.04f; p.dcwEnv = 0.22f;
+                p.dcwAtt = 0.04f; p.dcwDec = 0.46f; p.dcwSus = 0.06f; p.dcwRel = 0.38f;
+                p.dcaAtt = 0.06f; p.dcaDec = 0.62f; p.dcaSus = 0.88f; p.dcaRel = 0.40f;
+                p.chorus = 0.34f; p.volume = 0.88f;
+                p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 7;
+                p.l2Mix = 0.36f; p.l2Dcw = 0.14f; p.l2EnvOfs = 0.08f;
+                p.pitchEnv = 0.0f; p.pitchDec = 0.18f;
+                p.vibRate = 0.54f; p.vibDepth = 0.30f; // ~1.6 Hz silky sine + subtle VHS tape wow
+                p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.0f; p.spaceDecay = 0.50f;
                 return p;
             }()
         },
 
-        // 2: Crystal Tine EP (clean, warm & glassy CZ-101 electric piano — Saw-Pulse body + snappy octave Double Sine tine)
+        // 1: Olson VHS Sine (iconic MHTRTC warm wobbling hollow VHS sine-organ chord pad in Space!)
+        {
+            "Olson VHS Sine",
+            [] {
+                SynthParams p;
+                p.lineMode = 2; p.l1Wave1 = 1; p.l1Wave2 = 0; p.modMode = 0;
+                p.dcwTimbre = 0.06f; p.dcwEnv = 0.16f;
+                p.dcwAtt = 0.48f; p.dcwDec = 0.74f; p.dcwSus = 0.20f; p.dcwRel = 0.76f;
+                p.dcaAtt = 0.44f; p.dcaDec = 0.76f; p.dcaSus = 0.90f; p.dcaRel = 0.78f;
+                p.chorus = 0.56f; p.volume = 0.88f;
+                p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 11;
+                p.l2Mix = 0.44f; p.l2Dcw = 0.18f; p.l2EnvOfs = 0.28f;
+                p.pitchEnv = 0.0f; p.pitchDec = 0.22f;
+                p.vibRate = 0.42f; p.vibDepth = 0.38f; // ~0.95 Hz seasick BoC tape warble!
+                p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.48f; p.spaceDecay = 0.74f;
+                return p;
+            }()
+        },
+
+        // 2: Roygbiv Sine Ld (warm, clean, slightly hollow BoC glassy sine mono lead with glide & vibrato)
+        {
+            "Roygbiv Sine Ld",
+            [] {
+                SynthParams p;
+                p.lineMode = 2; p.l1Wave1 = 4; p.l1Wave2 = 2; p.modMode = 0;
+                p.dcwTimbre = 0.12f; p.dcwEnv = 0.26f;
+                p.dcwAtt = 0.02f; p.dcwDec = 0.44f; p.dcwSus = 0.18f; p.dcwRel = 0.46f;
+                p.dcaAtt = 0.03f; p.dcaDec = 0.64f; p.dcaSus = 0.88f; p.dcaRel = 0.48f;
+                p.chorus = 0.26f; p.volume = 0.88f;
+                p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 6;
+                p.l2Mix = 0.30f; p.l2Dcw = 0.12f; p.l2EnvOfs = -0.10f;
+                p.pitchEnv = 0.0f; p.pitchDec = 0.14f;
+                p.vibRate = 0.66f; p.vibDepth = 0.32f; // ~2.7 Hz expressive vintage vibrato
+                p.voiceMode = 2; p.glide = 0.16f; p.spaceSend = 0.36f; p.spaceDecay = 0.60f;
+                return p;
+            }()
+        },
+
+        // 3: Turquoise Glass (pure crystalline glassy sine bell/pad with octave Double Sine chime & BoC warble)
+        {
+            "Turquoise Glass",
+            [] {
+                SynthParams p;
+                p.lineMode = 2; p.l1Wave1 = 0; p.l1Wave2 = 0; p.modMode = 0;
+                p.dcwTimbre = 0.02f; p.dcwEnv = 0.20f;
+                p.dcwAtt = 0.10f; p.dcwDec = 0.64f; p.dcwSus = 0.08f; p.dcwRel = 0.82f;
+                p.dcaAtt = 0.08f; p.dcaDec = 0.84f; p.dcaSus = 0.72f; p.dcaRel = 0.84f;
+                p.chorus = 0.50f; p.volume = 0.88f;
+                p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 1; p.l2Semi = 0; p.l2Fine = 8;
+                p.l2Mix = 0.38f; p.l2Dcw = 0.16f; p.l2EnvOfs = -0.30f;
+                p.pitchEnv = 0.0f; p.pitchDec = 0.20f;
+                p.vibRate = 0.46f; p.vibDepth = 0.40f; // ~1.1 Hz hypnotic crystalline shimmer
+                p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.58f; p.spaceDecay = 0.80f;
+                return p;
+            }()
+        },
+
+        // 4: NFB Film Organ (1970s/80s National Film Board haunting glassy flute/sine organ with 16mm wow)
+        {
+            "NFB Film Organ",
+            [] {
+                SynthParams p;
+                p.lineMode = 2; p.l1Wave1 = 1; p.l1Wave2 = 0; p.modMode = 0;
+                p.dcwTimbre = 0.10f; p.dcwEnv = 0.14f;
+                p.dcwAtt = 0.22f; p.dcwDec = 0.62f; p.dcwSus = 0.40f; p.dcwRel = 0.66f;
+                p.dcaAtt = 0.20f; p.dcaDec = 0.64f; p.dcaSus = 0.90f; p.dcaRel = 0.68f;
+                p.chorus = 0.48f; p.volume = 0.86f;
+                p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 12;
+                p.l2Mix = 0.50f; p.l2Dcw = 0.22f; p.l2EnvOfs = 0.16f;
+                p.pitchEnv = 0.0f; p.pitchDec = 0.20f;
+                p.vibRate = 0.34f; p.vibDepth = 0.44f; // ~0.66 Hz authentic 16mm projector wow!
+                p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.46f; p.spaceDecay = 0.72f;
+                return p;
+            }()
+        },
+
+        // 5: Dayvan Glass Pad (lush sweeping warm Saw-Pulse sine + Rez-Tri glassy swell + BoC vibrato)
+        {
+            "Dayvan Glass Pad",
+            [] {
+                SynthParams p;
+                p.lineMode = 2; p.l1Wave1 = 4; p.l1Wave2 = 0; p.modMode = 0;
+                p.dcwTimbre = 0.06f; p.dcwEnv = 0.40f;
+                p.dcwAtt = 0.76f; p.dcwDec = 0.86f; p.dcwSus = 0.32f; p.dcwRel = 0.84f;
+                p.dcaAtt = 0.68f; p.dcaDec = 0.84f; p.dcaSus = 0.90f; p.dcaRel = 0.84f;
+                p.chorus = 0.62f; p.volume = 0.86f;
+                p.l2Wave1 = 6; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 9;
+                p.l2Mix = 0.58f; p.l2Dcw = 0.36f; p.l2EnvOfs = 0.36f;
+                p.pitchEnv = 0.0f; p.pitchDec = 0.25f;
+                p.vibRate = 0.48f; p.vibDepth = 0.34f; // ~1.2 Hz dreamy cinematic pitch shimmer
+                p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.54f; p.spaceDecay = 0.78f;
+                return p;
+            }()
+        },
+
+        // 6: Crystal Tine EP (clean, warm & glassy CZ-101 electric piano with silky gentle vibrato)
         {
             "Crystal Tine EP",
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 4; p.l1Wave2 = 0; p.modMode = 0;
-                p.dcwTimbre = 0.08f; p.dcwEnv = 0.64f;
-                p.dcwAtt = 0.01f; p.dcwDec = 0.68f; p.dcwSus = 0.12f; p.dcwRel = 0.68f;
+                p.dcwTimbre = 0.06f; p.dcwEnv = 0.60f;
+                p.dcwAtt = 0.01f; p.dcwDec = 0.68f; p.dcwSus = 0.10f; p.dcwRel = 0.68f;
                 p.dcaAtt = 0.01f; p.dcaDec = 0.86f; p.dcaSus = 0.26f; p.dcaRel = 0.70f;
                 p.chorus = 0.38f; p.volume = 0.88f;
                 p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 1; p.l2Semi = 0; p.l2Fine = 6;
-                p.l2Mix = 0.56f; p.l2Dcw = 0.76f; p.l2EnvOfs = -0.60f;
+                p.l2Mix = 0.54f; p.l2Dcw = 0.74f; p.l2EnvOfs = -0.60f;
                 p.pitchEnv = 0.0f; p.pitchDec = 0.16f;
-                p.vibRate = 0.26f; p.vibDepth = 0.06f;
+                p.vibRate = 0.56f; p.vibDepth = 0.20f;
                 p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.28f; p.spaceDecay = 0.58f;
                 return p;
             }()
         },
 
-        // 3: Aphex SAW Pad (dreamy SAW 85-92 phase-inverted Rez-Tri + Saw-Pulse cloud drenched in airy Space!)
+        // 7: Aphex SAW Pad (dreamy SAW 85-92 phase-inverted Rez-Tri + Saw-Pulse cloud drenched in airy Space!)
         {
             "Aphex SAW Pad",
             [] {
                 SynthParams p;
                 p.lineMode = 3; p.l1Wave1 = 6; p.l1Wave2 = 5; p.modMode = 0;
-                p.dcwTimbre = 0.18f; p.dcwEnv = 0.58f;
-                p.dcwAtt = 0.82f; p.dcwDec = 0.88f; p.dcwSus = 0.50f; p.dcwRel = 0.86f;
-                p.dcaAtt = 0.76f; p.dcaDec = 0.84f; p.dcaSus = 0.88f; p.dcaRel = 0.86f;
+                p.dcwTimbre = 0.14f; p.dcwEnv = 0.54f;
+                p.dcwAtt = 0.80f; p.dcwDec = 0.88f; p.dcwSus = 0.46f; p.dcwRel = 0.86f;
+                p.dcaAtt = 0.74f; p.dcaDec = 0.84f; p.dcaSus = 0.88f; p.dcaRel = 0.86f;
                 p.chorus = 0.68f; p.volume = 0.84f;
                 p.l2Wave1 = 7; p.l2Wave2 = 5; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 14;
-                p.l2Mix = 0.88f; p.l2Dcw = 0.66f; p.l2EnvOfs = 0.40f;
+                p.l2Mix = 0.88f; p.l2Dcw = 0.62f; p.l2EnvOfs = 0.40f;
                 p.pitchEnv = 0.0f; p.pitchDec = 0.30f;
-                p.vibRate = 0.18f; p.vibDepth = 0.12f;
+                p.vibRate = 0.40f; p.vibDepth = 0.26f;
                 p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.56f; p.spaceDecay = 0.78f;
                 return p;
             }()
         },
 
-        // 4: Rhubarb Glass (fragile SAW II ambient glass pad — warm Saw-Pulse bed + slow octave Double Sine shimmer)
+        // 8: Rhubarb Glass (fragile SAW II ambient glass pad — pure warm Saw-Pulse + slow octave Double Sine halo)
         {
             "Rhubarb Glass",
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 4; p.l1Wave2 = 0; p.modMode = 0;
-                p.dcwTimbre = 0.10f; p.dcwEnv = 0.48f;
-                p.dcwAtt = 0.84f; p.dcwDec = 0.90f; p.dcwSus = 0.38f; p.dcwRel = 0.90f;
-                p.dcaAtt = 0.78f; p.dcaDec = 0.88f; p.dcaSus = 0.86f; p.dcaRel = 0.90f;
+                p.dcwTimbre = 0.06f; p.dcwEnv = 0.40f;
+                p.dcwAtt = 0.84f; p.dcwDec = 0.90f; p.dcwSus = 0.32f; p.dcwRel = 0.90f;
+                p.dcaAtt = 0.76f; p.dcaDec = 0.88f; p.dcaSus = 0.86f; p.dcaRel = 0.90f;
                 p.chorus = 0.64f; p.volume = 0.86f;
                 p.l2Wave1 = 3; p.l2Wave2 = 7; p.l2Oct = 1; p.l2Semi = 0; p.l2Fine = 8;
-                p.l2Mix = 0.52f; p.l2Dcw = 0.48f; p.l2EnvOfs = 0.54f;
+                p.l2Mix = 0.50f; p.l2Dcw = 0.40f; p.l2EnvOfs = 0.54f;
                 p.pitchEnv = 0.0f; p.pitchDec = 0.30f;
-                p.vibRate = 0.16f; p.vibDepth = 0.12f;
+                p.vibRate = 0.36f; p.vibDepth = 0.30f;
                 p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.62f; p.spaceDecay = 0.84f;
-                return p;
-            }()
-        },
-
-        // 5: Xtal Rez Cloud (silky exponential resonant phase-distortion swell + wide crystalline stereo echo)
-        {
-            "Xtal Rez Cloud",
-            [] {
-                SynthParams p;
-                p.lineMode = 2; p.l1Wave1 = 6; p.l1Wave2 = 4; p.modMode = 0;
-                p.dcwTimbre = 0.16f; p.dcwEnv = 0.66f;
-                p.dcwAtt = 0.72f; p.dcwDec = 0.82f; p.dcwSus = 0.44f; p.dcwRel = 0.82f;
-                p.dcaAtt = 0.68f; p.dcaDec = 0.80f; p.dcaSus = 0.86f; p.dcaRel = 0.84f;
-                p.chorus = 0.60f; p.volume = 0.84f;
-                p.l2Wave1 = 5; p.l2Wave2 = 7; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 14;
-                p.l2Mix = 0.80f; p.l2Dcw = 0.72f; p.l2EnvOfs = 0.30f;
-                p.pitchEnv = 0.0f; p.pitchDec = 0.30f;
-                p.vibRate = 0.22f; p.vibDepth = 0.10f;
-                p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.52f; p.spaceDecay = 0.76f;
-                return p;
-            }()
-        },
-
-        // 6: Stone In Focus (deep hypnotic slow-breathing sub-octave warm pad in cavernous Space)
-        {
-            "Stone In Focus",
-            [] {
-                SynthParams p;
-                p.lineMode = 3; p.l1Wave1 = 7; p.l1Wave2 = 0; p.modMode = 0;
-                p.dcwTimbre = 0.12f; p.dcwEnv = 0.42f;
-                p.dcwAtt = 0.88f; p.dcwDec = 0.94f; p.dcwSus = 0.44f; p.dcwRel = 0.92f;
-                p.dcaAtt = 0.72f; p.dcaDec = 0.92f; p.dcaSus = 0.90f; p.dcaRel = 0.92f;
-                p.chorus = 0.74f; p.volume = 0.86f;
-                p.l2Wave1 = 4; p.l2Wave2 = 7; p.l2Oct = -1; p.l2Semi = 0; p.l2Fine = 10;
-                p.l2Mix = 0.90f; p.l2Dcw = 0.40f; p.l2EnvOfs = 0.42f;
-                p.pitchEnv = 0.0f; p.pitchDec = 0.30f;
-                p.vibRate = 0.12f; p.vibDepth = 0.12f;
-                p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.68f; p.spaceDecay = 0.88f;
-                return p;
-            }()
-        },
-
-        // 7: Warm CZ Strings (silky 1984 Casio CZ-101 String Ensemble — clean detuned Saw + Saw-Pulse)
-        {
-            "Warm CZ Strings",
-            [] {
-                SynthParams p;
-                p.lineMode = 2; p.l1Wave1 = 0; p.l1Wave2 = 5; p.modMode = 0;
-                p.dcwTimbre = 0.28f; p.dcwEnv = 0.48f;
-                p.dcwAtt = 0.70f; p.dcwDec = 0.78f; p.dcwSus = 0.62f; p.dcwRel = 0.76f;
-                p.dcaAtt = 0.68f; p.dcaDec = 0.76f; p.dcaSus = 0.92f; p.dcaRel = 0.78f;
-                p.chorus = 0.66f; p.volume = 0.84f;
-                p.l2Wave1 = 4; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 13;
-                p.l2Mix = 0.92f; p.l2Dcw = 0.78f; p.l2EnvOfs = 0.28f;
-                p.pitchEnv = 0.0f; p.pitchDec = 0.25f;
-                p.vibRate = 0.28f; p.vibDepth = 0.10f;
-                p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.36f; p.spaceDecay = 0.62f;
-                return p;
-            }()
-        },
-
-        // 8: CZ-101 Brass Ens (rich, luminous 1984 Casio CZ-101 Brass Ensemble — Pulse + Saw-Pulse)
-        {
-            "CZ-101 Brass Ens",
-            [] {
-                SynthParams p;
-                p.lineMode = 2; p.l1Wave1 = 2; p.l1Wave2 = 5; p.modMode = 0;
-                p.dcwTimbre = 0.20f; p.dcwEnv = 0.68f;
-                p.dcwAtt = 0.42f; p.dcwDec = 0.68f; p.dcwSus = 0.46f; p.dcwRel = 0.50f;
-                p.dcaAtt = 0.32f; p.dcaDec = 0.66f; p.dcaSus = 0.88f; p.dcaRel = 0.50f;
-                p.chorus = 0.44f; p.volume = 0.86f;
-                p.l2Wave1 = 0; p.l2Wave2 = 5; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 12;
-                p.l2Mix = 0.90f; p.l2Dcw = 0.82f; p.l2EnvOfs = 0.16f;
-                p.pitchEnv = 0.05f; p.pitchDec = 0.20f;
-                p.vibRate = 0.32f; p.vibDepth = 0.08f;
-                p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.22f; p.spaceDecay = 0.50f;
                 return p;
             }()
         },
