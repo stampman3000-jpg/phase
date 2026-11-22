@@ -1,0 +1,470 @@
+{
+  "page1": {
+    "knobs": [
+      {
+        "param": 1,
+        "id": "line_mode",
+        "cx": 102,
+        "cy": 258,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_teal_4way.png",
+        "frames": 4,
+        "bipolar": false
+      },
+      {
+        "param": 2,
+        "id": "l1_wave1",
+        "cx": 248,
+        "cy": 258,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_teal_8way.png",
+        "frames": 8,
+        "bipolar": false
+      },
+      {
+        "param": 3,
+        "id": "l1_wave2",
+        "cx": 102,
+        "cy": 468,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_teal_9way.png",
+        "frames": 9,
+        "bipolar": false
+      },
+      {
+        "param": 4,
+        "id": "mod_mode",
+        "cx": 248,
+        "cy": 468,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_coral_4way.png",
+        "frames": 4,
+        "bipolar": false
+      },
+      {
+        "param": 5,
+        "id": "dcw_depth",
+        "cx": 1038,
+        "cy": 258,
+        "w": 78,
+        "h": 78,
+        "strip": "knob_cz_coral_hero.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 14,
+        "id": "chorus",
+        "cx": 1184,
+        "cy": 258,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_teal_pot.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 15,
+        "id": "drive",
+        "cx": 1038,
+        "cy": 468,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_amber_pot.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 0,
+        "id": "volume",
+        "cx": 1184,
+        "cy": 468,
+        "w": 74,
+        "h": 74,
+        "strip": "knob_cz_silver_hero.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 6,
+        "id": "dcw_att",
+        "cx": 386,
+        "cy": 368,
+        "w": 46,
+        "h": 276,
+        "strip": "fader_cz_coral.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 7,
+        "id": "dcw_dec",
+        "cx": 454,
+        "cy": 368,
+        "w": 46,
+        "h": 276,
+        "strip": "fader_cz_coral.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 8,
+        "id": "dcw_sus",
+        "cx": 522,
+        "cy": 368,
+        "w": 46,
+        "h": 276,
+        "strip": "fader_cz_coral.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 13,
+        "id": "dcw_rel",
+        "cx": 590,
+        "cy": 368,
+        "w": 46,
+        "h": 276,
+        "strip": "fader_cz_coral.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 9,
+        "id": "dca_att",
+        "cx": 700,
+        "cy": 368,
+        "w": 46,
+        "h": 276,
+        "strip": "fader_cz_amber.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 10,
+        "id": "dca_dec",
+        "cx": 768,
+        "cy": 368,
+        "w": 46,
+        "h": 276,
+        "strip": "fader_cz_amber.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 11,
+        "id": "dca_sus",
+        "cx": 836,
+        "cy": 368,
+        "w": 46,
+        "h": 276,
+        "strip": "fader_cz_amber.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 12,
+        "id": "dca_rel",
+        "cx": 904,
+        "cy": 368,
+        "w": 46,
+        "h": 276,
+        "strip": "fader_cz_amber.png",
+        "frames": 65,
+        "bipolar": false
+      }
+    ],
+    "strips": [
+      {
+        "param": 2,
+        "id": "wave_lcd_p1",
+        "cx": 575,
+        "cy": 61,
+        "w": 424,
+        "h": 76,
+        "strip": "wave_lcd_8.png",
+        "frames": 8
+      },
+      {
+        "param": 32,
+        "id": "meter_l_p1",
+        "cx": 1148,
+        "cy": 56,
+        "w": 26,
+        "h": 62,
+        "strip": "meter_lcd_8.png",
+        "frames": 8
+      },
+      {
+        "param": 33,
+        "id": "meter_r_p1",
+        "cx": 1188,
+        "cy": 56,
+        "w": 26,
+        "h": 62,
+        "strip": "meter_lcd_8.png",
+        "frames": 8
+      }
+    ],
+    "labels": [
+      {
+        "param": 34,
+        "id": "stat_info_p1",
+        "x": 40,
+        "y": 69,
+        "w": 288,
+        "h": 34,
+        "size": 17,
+        "color": "ff182a1a"
+      },
+      {
+        "param": 35,
+        "id": "stat_wave_p1",
+        "x": 824,
+        "y": 44,
+        "w": 298,
+        "h": 44,
+        "size": 17,
+        "color": "ff182a1a"
+      }
+    ]
+  },
+  "page2": {
+    "knobs": [
+      {
+        "param": 16,
+        "id": "l2_wave1",
+        "cx": 102,
+        "cy": 258,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_teal_8way.png",
+        "frames": 8,
+        "bipolar": false
+      },
+      {
+        "param": 17,
+        "id": "l2_wave2",
+        "cx": 248,
+        "cy": 258,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_teal_9way.png",
+        "frames": 9,
+        "bipolar": false
+      },
+      {
+        "param": 18,
+        "id": "l2_dcw",
+        "cx": 102,
+        "cy": 468,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_coral_pot.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 19,
+        "id": "l2_oct",
+        "cx": 248,
+        "cy": 468,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_teal_5way.png",
+        "frames": 5,
+        "bipolar": false
+      },
+      {
+        "param": 20,
+        "id": "l2_semi",
+        "cx": 416,
+        "cy": 258,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_silver_pot.png",
+        "frames": 65,
+        "bipolar": true
+      },
+      {
+        "param": 21,
+        "id": "l2_fine",
+        "cx": 562,
+        "cy": 258,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_silver_pot.png",
+        "frames": 65,
+        "bipolar": true
+      },
+      {
+        "param": 22,
+        "id": "pitch_env",
+        "cx": 416,
+        "cy": 468,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_coral_pot.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 23,
+        "id": "pitch_dec",
+        "cx": 562,
+        "cy": 468,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_coral_pot.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 24,
+        "id": "vib_wave",
+        "cx": 730,
+        "cy": 258,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_amber_4way.png",
+        "frames": 4,
+        "bipolar": false
+      },
+      {
+        "param": 25,
+        "id": "vib_rate",
+        "cx": 876,
+        "cy": 258,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_amber_pot.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 26,
+        "id": "vib_depth",
+        "cx": 730,
+        "cy": 468,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_amber_pot.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 27,
+        "id": "vib_delay",
+        "cx": 876,
+        "cy": 468,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_amber_pot.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 28,
+        "id": "voice_mode",
+        "cx": 1038,
+        "cy": 258,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_teal_3way.png",
+        "frames": 3,
+        "bipolar": false
+      },
+      {
+        "param": 29,
+        "id": "glide",
+        "cx": 1184,
+        "cy": 258,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_silver_pot.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 30,
+        "id": "vel_sens",
+        "cx": 1038,
+        "cy": 468,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_silver_pot.png",
+        "frames": 65,
+        "bipolar": false
+      },
+      {
+        "param": 31,
+        "id": "dca_curve",
+        "cx": 1184,
+        "cy": 468,
+        "w": 68,
+        "h": 68,
+        "strip": "knob_cz_amber_2way.png",
+        "frames": 2,
+        "bipolar": false
+      }
+    ],
+    "strips": [
+      {
+        "param": 16,
+        "id": "wave_lcd_p2",
+        "cx": 575,
+        "cy": 61,
+        "w": 424,
+        "h": 76,
+        "strip": "wave_lcd_8.png",
+        "frames": 8
+      },
+      {
+        "param": 32,
+        "id": "meter_l_p2",
+        "cx": 1148,
+        "cy": 56,
+        "w": 26,
+        "h": 62,
+        "strip": "meter_lcd_8.png",
+        "frames": 8
+      },
+      {
+        "param": 33,
+        "id": "meter_r_p2",
+        "cx": 1188,
+        "cy": 56,
+        "w": 26,
+        "h": 62,
+        "strip": "meter_lcd_8.png",
+        "frames": 8
+      }
+    ],
+    "labels": [
+      {
+        "param": 34,
+        "id": "stat_info_p2",
+        "x": 40,
+        "y": 69,
+        "w": 288,
+        "h": 34,
+        "size": 17,
+        "color": "ff182a1a"
+      },
+      {
+        "param": 35,
+        "id": "stat_wave_p2",
+        "x": 824,
+        "y": 44,
+        "w": 298,
+        "h": 44,
+        "size": 17,
+        "color": "ff182a1a"
+      }
+    ]
+  }
+}
