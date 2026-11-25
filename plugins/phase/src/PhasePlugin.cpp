@@ -92,7 +92,7 @@ public:
         info.name         = "Phase";
         info.vendor       = "Stampman3000";
         info.uniqueId     = MPC_FOURCC ('P', 'H', 'S', 'E');
-        info.version      = 1000;
+        info.version      = 1001;
         info.isInstrument = true;
         info.numInputs    = 0;
         info.numOutputs   = 2;

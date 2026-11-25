@@ -1553,8 +1553,8 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
                     const float drift_sin = 4.0f * du * (1.0f - (du < 0.0f ? -du : du));
 
                     const float vib_norm = has_vib ? (static_cast<float>(vibrato_lfo.effectiveDepth()) * (1.0f / 99.0f)) : 0.0f;
-                    // Baseline ±3.0 cents slow thermal wonk on aged hardware, swelling to ±10 cents shimmer with Vib Depth
-                    const float thermal_depth = mono_mode ? (0.0012f + 0.0020f * vib_norm) : (0.0017f + 0.0046f * vib_norm);
+                    // Half the old per-voice drift (was 0.0012+0.0020 mono, 0.0017+0.0046 poly).
+                    const float thermal_depth = mono_mode ? (0.0006f + 0.0010f * vib_norm) : (0.00085f + 0.0023f * vib_norm);
                     const float voice_cal = mono_mode ? 0.0f : kVoiceCal[vi & 7];
                     const float lfo_ratio = has_vib ? ((static_cast<float>(lfo_mod) * (1.0f / 32768.0f)) * 0.092f) : 0.0f;
 

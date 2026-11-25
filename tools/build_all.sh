@@ -6,7 +6,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MPC_SDK="${MPC_SDK:-}"
 OPEN_MPC="${OPEN_MPC:-}"
-VERSION="1.0.0"
+VERSION="1.0.1"
 
 if [ ! -f "$MPC_SDK/tools/build.py" ]; then
   echo "ERROR: Set MPC_SDK to a checkout of https://github.com/inmusic-software/mpc-plugin-builder-sdk" >&2

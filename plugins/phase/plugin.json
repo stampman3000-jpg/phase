@@ -2,7 +2,7 @@
   "name": "Phase",
   "manufacturer": "Stampman3000",
   "uid": "PHSE",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "kind": "instrument",
   "category": "Synth",
   "numInputs": 0,

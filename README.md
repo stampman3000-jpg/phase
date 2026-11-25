@@ -22,8 +22,8 @@ Inspired by 1980s Casio CZ phase-distortion synths, Phase morphs a clean interpo
 ## Installation
 
 Download the zip matching your MPC from [Releases](https://github.com/stampman3000-jpg/phase/releases):
-- **Gen1 MPC (MPC One, Live, Live II, X, Key 61, Force — 32-bit ARMv7):** `Phase-1.0.0-mpc-armv7.zip`
-- **Gen2 MPC (64-bit AArch64):** `Phase-1.0.0-mpc-aarch64.zip`
+- **Gen1 MPC (MPC One, Live, Live II, X, Key 61, Force — 32-bit ARMv7):** `Phase-1.0.1-mpc-armv7.zip`
+- **Gen2 MPC (64-bit AArch64):** `Phase-1.0.1-mpc-aarch64.zip`
 
 ### MPC OS 3.10.1+ (Official External VST Plugins)
 1. Enable **Preferences → Enhancements → External Plugin Support** on your MPC.
@@ -96,8 +96,8 @@ MPC_SDK=/path/to/mpc-plugin-builder-sdk bash tools/run_tests.sh
 ```
 
 Release archives:
-- `dist/Phase-1.0.0-mpc-armv7.zip`
-- `dist/Phase-1.0.0-mpc-aarch64.zip`
+- `dist/Phase-1.0.1-mpc-armv7.zip`
+- `dist/Phase-1.0.1-mpc-aarch64.zip`
 
 ## Desktop CPU Reference (44.1 kHz, 128-frame = 2902.5 µs)
 *(Tested live on Gen1 MPC One ARMv7; formal on-device `bench.sh` numbers pending capture.)*
