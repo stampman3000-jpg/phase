@@ -61,11 +61,11 @@ int main()
     benchScenario ("Line 1 Only (4 voices, dry)", pL1Dry, 4);
     benchScenario ("Line 1 Only (8 voices, dry)", pL1Dry, 8);
 
-    SynthParams pDual = presets[0].p; // BoC Glassy Sine + Chorus
+    SynthParams pDual = presets[0].p; // Glassy Sine + Chorus
     pDual.dcaSus = 0.9f; pDual.vibDepth = 0.2f;
     benchScenario ("Dual-Line 1+2 + Chorus (8 voices)", pDual, 8);
 
-    SynthParams pAphex = presets[5].p; // Aphex SAW Pad: 1-2 + Chorus + Space FX
+    SynthParams pAphex = presets[5].p; // Ambient Phase Pad: 1-2 + Chorus + Space FX
     pAphex.dcaAtt = 0.02f; pAphex.dcaSus = 0.9f;
     benchScenario ("Dual-Line + Chorus + Space FX (8 voices)", pAphex, 8);
 

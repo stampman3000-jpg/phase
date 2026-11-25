@@ -1,5 +1,5 @@
 // CZboy — 32 Curated Presets:
-//   Boards of Canada & Aphex Glassy/Ambient, 80s/90s Saws & Classics, Fat PD Basses,
+//   Glassy Sines & Ambient Pads, 80s/90s Saws & Classics, Fat PD Basses,
 //   CZ Keys/Bells & Synthy FX.
 // Copyright (C) 2026 Stampman3000 — GNU General Public License v3.0 or later.
 #pragma once
@@ -25,11 +25,11 @@ struct CzPreset
 inline const CzPreset* factoryPresets (int& outCount)
 {
     static const CzPreset kPresets[] = {
-        // === BOARDS OF CANADA & APHEX GLASSY / AMBIENT (0..7) ===
+        // === GLASSY SINES & AMBIENT PADS (0..7) ===
 
-        // 0: BoC Glassy Sine (warm liquid Saw-Pulse sine + crystalline Double Sine halo + subtle BoC vibrato, <0.45s rel for host_sim)
+        // 0: Glassy Sine (warm liquid Saw-Pulse sine + crystalline Double Sine halo + subtle vibrato, <0.45s rel for host_sim)
         {
-            "BoC Glassy Sine",
+            "Glassy Sine",
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 4; p.l1Wave2 = 0; p.modMode = 0;
@@ -40,15 +40,15 @@ inline const CzPreset* factoryPresets (int& outCount)
                 p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 7;
                 p.l2Mix = 0.32f; p.l2Dcw = 0.24f; p.l2EnvOfs = 0.08f;
                 p.pitchEnv = 0.0f; p.pitchDec = 0.18f;
-                p.vibRate = 0.52f; p.vibDepth = 0.16f; // Subtle silky sine + VHS tape shimmer
+                p.vibRate = 0.52f; p.vibDepth = 0.16f; // Subtle silky sine + tape shimmer
                 p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.0f; p.spaceDecay = 0.50f;
                 return p;
             }()
         },
 
-        // 1: Olson VHS Sine (warm hollow MHTRTC sine-organ chord pad with gentle tape wow + Space)
+        // 1: Warm Tape Sine (warm hollow vintage sine-organ chord pad with gentle tape wow + Space)
         {
-            "Olson VHS Sine",
+            "Warm Tape Sine",
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 1; p.l1Wave2 = 0; p.modMode = 0;
@@ -59,15 +59,15 @@ inline const CzPreset* factoryPresets (int& outCount)
                 p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 10;
                 p.l2Mix = 0.38f; p.l2Dcw = 0.28f; p.l2EnvOfs = 0.28f;
                 p.pitchEnv = 0.0f; p.pitchDec = 0.22f;
-                p.vibRate = 0.40f; p.vibDepth = 0.22f; // Tasteful slow VHS pitch drift
+                p.vibRate = 0.40f; p.vibDepth = 0.22f; // Tasteful slow tape pitch drift
                 p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.48f; p.spaceDecay = 0.74f;
                 return p;
             }()
         },
 
-        // 2: Roygbiv Sine Ld (warm, clean, slightly hollow BoC glassy sine mono lead with glide & subtle vibrato)
+        // 2: Soft Sine Lead (warm, clean, slightly hollow glassy sine mono lead with glide & subtle vibrato)
         {
-            "Roygbiv Sine Ld",
+            "Soft Sine Lead",
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 4; p.l1Wave2 = 2; p.modMode = 0;
@@ -84,9 +84,9 @@ inline const CzPreset* factoryPresets (int& outCount)
             }()
         },
 
-        // 3: Turquoise Glass (pure crystalline glassy sine bell/pad with octave Double Sine chime & gentle drift)
+        // 3: Crystal Sine Pad (pure crystalline glassy sine bell/pad with octave Double Sine chime & gentle drift)
         {
-            "Turquoise Glass",
+            "Crystal Sine Pad",
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 0; p.l1Wave2 = 0; p.modMode = 0;
@@ -103,9 +103,9 @@ inline const CzPreset* factoryPresets (int& outCount)
             }()
         },
 
-        // 4: NFB Film Organ (1970s/80s National Film Board haunting glassy flute/sine organ with gentle 16mm wow)
+        // 4: Hollow Tape Organ (nostalgic 70s/80s glassy flute/sine organ with gentle 16mm wow)
         {
-            "NFB Film Organ",
+            "Hollow Tape Organ",
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 1; p.l1Wave2 = 0; p.modMode = 0;
@@ -116,15 +116,15 @@ inline const CzPreset* factoryPresets (int& outCount)
                 p.l2Wave1 = 3; p.l2Wave2 = 0; p.l2Oct = 0; p.l2Semi = 0; p.l2Fine = 11;
                 p.l2Mix = 0.46f; p.l2Dcw = 0.32f; p.l2EnvOfs = 0.16f;
                 p.pitchEnv = 0.0f; p.pitchDec = 0.20f;
-                p.vibRate = 0.34f; p.vibDepth = 0.24f; // Subtle 16mm projector drift
+                p.vibRate = 0.34f; p.vibDepth = 0.24f; // Subtle 16mm tape drift
                 p.voiceMode = 0; p.glide = 0.0f; p.spaceSend = 0.46f; p.spaceDecay = 0.72f;
                 return p;
             }()
         },
 
-        // 5: Aphex SAW Pad (dreamy SAW 85-92 phase-subtracted 1-2 Rez-Tri + Saw-Pulse cloud drenched in Space)
+        // 5: Ambient Phase Pad (dreamy phase-subtracted 1-2 Rez-Tri + Saw-Pulse cloud drenched in Space)
         {
-            "Aphex SAW Pad",
+            "Ambient Phase Pad",
             [] {
                 SynthParams p;
                 p.lineMode = 3; p.l1Wave1 = 6; p.l1Wave2 = 5; p.modMode = 0;
@@ -141,9 +141,9 @@ inline const CzPreset* factoryPresets (int& outCount)
             }()
         },
 
-        // 6: Rhubarb Glass (fragile SAW II ambient glass pad — pure warm Saw-Pulse + slow octave Double Sine halo)
+        // 6: Fragile Glass Pad (warm Saw-Pulse bed + slow octave Double Sine shimmer in Space)
         {
-            "Rhubarb Glass",
+            "Fragile Glass Pad",
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 4; p.l1Wave2 = 0; p.modMode = 0;
@@ -160,9 +160,9 @@ inline const CzPreset* factoryPresets (int& outCount)
             }()
         },
 
-        // 7: Stone In Focus (deep hypnotic slow-breathing sub-octave 1-2 ambient drone pad in cavernous Space)
+        // 7: Deep Drift Drone (deep hypnotic slow-breathing sub-octave 1-2 ambient drone pad in cavernous Space)
         {
-            "Stone In Focus",
+            "Deep Drift Drone",
             [] {
                 SynthParams p;
                 p.lineMode = 3; p.l1Wave1 = 7; p.l1Wave2 = 0; p.modMode = 0;

@@ -12,7 +12,7 @@ Licensed under the **GNU General Public License v3.0 or later (GPL-3.0-or-later)
   - **Live Real-Time Timbre Control:** Dedicated **`DCW Timbre`** (instant live phase-distortion floor/cutoff) + **`DCW Env`** (live DCW envelope depth) alongside smooth logarithmic (`3 ms – 6.6 s`) **DCW** and **DCA** ADSR envelopes.
   - **Stereo Voice Spread, Dual-Line Layering & Ambient Space FX:** Natural per-voice stereo panning in `Poly 8` / `Poly 4` (dead center in `Mono`), `Line 1 / Line 2 / 1+2 / 1-2` (where `1-2` subtracts Line 2 for hollow phase-cancelled PWM timbres), post-ring DCA **Ring Mod** & pitched LFSR **Noise Mod**, **L2 Mix / L2 DCW / bipolar L2 Env Ofs**, silky sine-LFO **Stereo Chorus**, and an airy diffused tempo-synced stereo **Space FX** (`Space Send` true pre-delay send + `Space Decay`).
 - **32 Factory Presets (`bridge/CzBoyPresets.h`)**:
-  - **Boards of Canada & Aphex Glassy / Ambient:** *BoC Glassy Sine*, *Olson VHS Sine*, *Roygbiv Sine Ld*, *Turquoise Glass*, *NFB Film Organ*, *Aphex SAW Pad*, *Rhubarb Glass*, *Stone In Focus*.
+  - **Glassy Sines & Ambient Pads:** *Glassy Sine*, *Warm Tape Sine*, *Soft Sine Lead*, *Crystal Sine Pad*, *Hollow Tape Organ*, *Ambient Phase Pad*, *Fragile Glass Pad*, *Deep Drift Drone*.
   - **80s / 90s Saws, Brass, Strings & Pads:** *80s CZ Poly Saw*, *90s Rave Saw Stab*, *80s Synthwave Saw*, *90s Detuned Lead*, *CZ-101 Brass Ens*, *Warm CZ Strings*, *Velvet 1-2 Pad*.
   - **Fat PD Basses, Acid & Arps:** *Fat Rez Bass*, *Acid Rez Squelch*, *Electro Slap Bs*, *Deep Sub Pulse*, *Hollow House Bs*, *Rubber Techno Arp*.
   - **Classic CZ Keys, Bells & Plucked:** *Crystal Tine EP*, *Metallic Clav*, *Tubular Chimes*, *Woody Marimba*, *Bright Harpsi*, *Light Harp Pluck*.

@@ -282,10 +282,10 @@ int main()
                "Glassy sine purity & click-free Wave1+Wave2 splice", msg);
     }
 
-    // 9. Zero-Click Retrigger, Voice-Steal, Vibrato Release & Smooth Limiter on BoC Glassy Sine
+    // 9. Zero-Click Retrigger, Voice-Steal, Vibrato Release & Smooth Limiter on Glassy Sine
     {
         int cnt = 0;
-        SynthParams p = factoryPresets (cnt)[0].p; // BoC Glassy Sine
+        SynthParams p = factoryPresets (cnt)[0].p; // Glassy Sine
         CzBoyEngine eng;
         eng.prepare (sr);
         std::vector<float> L, R;
