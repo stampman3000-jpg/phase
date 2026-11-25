@@ -24,25 +24,27 @@ MANIFEST = os.path.join(ROOT, "tools", "ui_manifest.json")
 W, H = 1280, 628
 SS = 2
 
-# 1984 Casio CZ-101 Industrial Palette
-WHITE      = (238, 238, 234, 255)
-OFF_WHITE  = (184, 188, 190, 255)
-MUTED      = (118, 124, 130, 255)
-DARK_INK   = (18, 22, 24, 255)
+# Purple & Green Industrial Palette (matching Johnny's hardware suite)
+WHITE      = (224, 238, 232, 255)  # crisp mint-white
+OFF_WHITE  = (168, 200, 184, 255)  # #A8C8B8
+MUTED      = (114, 126, 134, 255)
+DARK_INK   = (13, 14, 17, 255)     # #0D0E11
 
-CZ_TEAL    = (30, 174, 180, 255)
-CZ_TEAL_HI = (72, 212, 216, 255)
-CZ_CORAL   = (224, 82, 58, 255)
-CZ_CORAL_H = (246, 114, 86, 255)
-CZ_IVORY   = (222, 214, 188, 255)
-CZ_SILVER  = (158, 166, 174, 255)
-CZ_LINE    = (92, 98, 106, 255)
+CZ_TEAL    = (52, 176, 114, 255)   # #34B072 — green primary accent
+CZ_TEAL_HI = (112, 194, 150, 255)  # #70C296 — green highlight / pointers
+CZ_CORAL   = (124, 90, 168, 255)   # #7C5AA8 — purple primary accent
+CZ_CORAL_H = (164, 134, 204, 255)  # #A486CC — purple highlight / resonant waves
+CZ_IVORY   = (216, 239, 228, 255)  # #D8EFE4 — mint-ivory secondary badge & DCA
+CZ_SILVER  = (156, 166, 172, 255)
+CZ_LINE    = (74, 78, 92, 255)
+PURP_BAR   = (90, 62, 122, 255)    # #5A3E7A — purple header/divider
+GRN_BAR    = (38, 94, 72, 255)     # #265E48 — green header bar
 
-# Authentic Casio CZ-101 Silver-Framed Green-Grey LCD
-LCD_BG     = (146, 170, 120, 255)
-LCD_INK    = (22, 36, 24, 255)
-LCD_DIM    = (54, 74, 48, 235)
-LCD_GHOST  = (124, 148, 102, 255)
+# Brushed-Silver Framed Backlit Green-Grey LCD
+LCD_BG     = (146, 176, 136, 255)
+LCD_INK    = (14, 28, 20, 255)
+LCD_DIM    = (42, 68, 52, 235)
+LCD_GHOST  = (122, 152, 116, 255)
 
 
 def load_font(px, bold=True):
@@ -154,17 +156,17 @@ def make_cz101_chassis(seed=101):
     """Authentic 1984 Casio CZ-101 flat matte jet-charcoal molded ABS console body."""
     w, h = W * SS, H * SS
     rng = random.Random(seed)
-    base = Image.new("RGBA", (w, h), (26, 29, 33, 255))
+    base = Image.new("RGBA", (w, h), (13, 14, 17, 255))
     dr = ImageDraw.Draw(base)
 
-    # Subtle matte ABS top-edge studio falloff
+    # Subtle matte dark-chassis top-edge falloff (#0D0E11)
     for y in range(h):
         t = y / float(h)
-        d = int(round(5.0 * (1.0 - t * 1.15)))
-        c = (max(18, 25 + d), max(21, 28 + d), max(24, 32 + d), 255)
+        d = int(round(4.0 * (1.0 - t * 1.15)))
+        c = (max(10, 13 + d), max(11, 14 + d), max(14, 17 + d), 255)
         dr.line([(0, y), (w, y)], fill=c)
 
-    # Fine Casio molded ABS micro-grain
+    # Fine molded ABS micro-grain
     grain = Image.new("RGBA", (w // 2, h // 2), (0, 0, 0, 0))
     px = grain.load()
     for gy in range(h // 2):
@@ -178,17 +180,17 @@ def make_cz101_chassis(seed=101):
     base = Image.alpha_composite(base, grain)
     dr = ImageDraw.Draw(base)
 
-    # Recessed matte outer casing bevel (authentic CZ-101 clean black plastic frame)
-    dr.rectangle([0, 0, w - 1, 5 * SS], fill=(42, 46, 52, 255))
-    dr.rectangle([0, h - 5 * SS, w - 1, h - 1], fill=(14, 16, 18, 255))
-    dr.rectangle([0, 0, 5 * SS, h - 1], fill=(34, 38, 43, 255))
-    dr.rectangle([w - 5 * SS, 0, w - 1, h - 1], fill=(16, 18, 21, 255))
+    # Recessed matte outer casing bevel
+    dr.rectangle([0, 0, w - 1, 5 * SS], fill=(28, 30, 36, 255))
+    dr.rectangle([0, h - 5 * SS, w - 1, h - 1], fill=(8, 9, 11, 255))
+    dr.rectangle([0, 0, 5 * SS, h - 1], fill=(22, 24, 29, 255))
+    dr.rectangle([w - 5 * SS, 0, w - 1, h - 1], fill=(10, 11, 14, 255))
 
-    # Crisp Casio CZ-101 top fascia separator rules (signature white + coral-orange + teal thin lines)
-    dr.rectangle([10 * SS, 8 * SS, w - 10 * SS, 118 * SS], fill=(21, 24, 28, 255))
-    dr.line([(10 * SS, 118 * SS), (w - 10 * SS, 118 * SS)], fill=(145, 152, 160, 220), width=SS)
-    dr.line([(10 * SS, 121 * SS), (w - 10 * SS, 121 * SS)], fill=(224, 82, 58, 210), width=int(1.5 * SS))
-    dr.line([(10 * SS, 124 * SS), (w - 10 * SS, 124 * SS)], fill=(30, 174, 180, 190), width=SS)
+    # Crisp top fascia separator rules (silver + purple #5A3E7A + green #34B072)
+    dr.rectangle([10 * SS, 8 * SS, w - 10 * SS, 118 * SS], fill=(16, 17, 21, 255))
+    dr.line([(10 * SS, 118 * SS), (w - 10 * SS, 118 * SS)], fill=(136, 146, 154, 200), width=SS)
+    dr.line([(10 * SS, 121 * SS), (w - 10 * SS, 121 * SS)], fill=(90, 62, 122, 235), width=int(1.5 * SS))
+    dr.line([(10 * SS, 124 * SS), (w - 10 * SS, 124 * SS)], fill=(52, 176, 114, 205), width=SS)
 
     return base
 
@@ -296,31 +298,31 @@ def draw_cz_schematic_box(img, x, y, w, h, badge_text, sub_text, accent, bank_ta
     dr = ImageDraw.Draw(img)
     x0, y0, x1, y1 = int(x * SS), int(y * SS), int((x + w) * SS), int((y + h) * SS)
 
-    # Slightly darker recessed inner work area + crisp hairline Casio outline
+    # Recessed panel work area (#141519) + crisp hairline outline
     dr.rounded_rectangle([x0, y0 + 10 * SS, x1, y1], radius=4 * SS,
-                         fill=(20, 23, 27, 255), outline=CZ_LINE, width=int(1.25 * SS))
+                         fill=(20, 21, 25, 255), outline=CZ_LINE, width=int(1.25 * SS))
     # Subtle accent hairline along top edge inside box
     dr.line([(x0 + 4 * SS, y0 + 10 * SS), (x1 - 4 * SS, y0 + 10 * SS)], fill=accent, width=int(1.5 * SS))
 
-    # Flat rectangular Casio silkscreen colour badge straddling the top border
+    # Flat rectangular colour badge straddling the top border
     bw = (len(badge_text) * 9.6 + 24) * SS
     bx0 = x0 + 14 * SS
     by0 = y0
     by1 = y0 + 21 * SS
     dr.rectangle([bx0, by0, bx0 + bw, by1], fill=accent)
-    ink = DARK_INK if (accent[0] * 0.3 + accent[1] * 0.59 + accent[2] * 0.11) > 130 else WHITE
+    ink = DARK_INK if (accent[0] * 0.3 + accent[1] * 0.59 + accent[2] * 0.11) > 145 else WHITE
     draw_text(img, badge_text, bx0 + bw / 2.0, (by0 + by1) / 2.0, 10.6, fill=ink, align="center", bold=True, track=0.10)
 
-    # Clean technical sub-label inline on top border with matte-charcoal knock-out gap
+    # Clean technical sub-label inline on top border with chassis knock-out gap
     sub_x = bx0 + bw + 8 * SS
     sub_w = (len(sub_text) * 6.4 + 14) * SS
-    dr.rectangle([sub_x - 2 * SS, by0 + 2 * SS, sub_x + sub_w, by1 - 2 * SS], fill=(24, 27, 31, 255))
+    dr.rectangle([sub_x - 2 * SS, by0 + 2 * SS, sub_x + sub_w, by1 - 2 * SS], fill=(15, 16, 20, 255))
     draw_text(img, sub_text, sub_x + 5 * SS, (by0 + by1) / 2.0 + 0.5 * SS, 8.6, fill=OFF_WHITE, align="left", bold=True, track=0.08)
 
     # Subtle Q-Link bank indicator on right of top line
     tbw = 58 * SS
     tx1 = x1 - 12 * SS
-    dr.rectangle([tx1 - tbw, by0 + 2 * SS, tx1, by1 - 2 * SS], fill=(26, 29, 33, 255), outline=CZ_LINE, width=SS)
+    dr.rectangle([tx1 - tbw, by0 + 2 * SS, tx1, by1 - 2 * SS], fill=(20, 21, 25, 255), outline=CZ_LINE, width=SS)
     draw_text(img, bank_tag, tx1 - tbw / 2.0, (by0 + by1) / 2.0, 7.6, fill=MUTED, align="center", bold=True, track=0.08)
 
 
@@ -748,25 +750,25 @@ def main():
     make_wave_lcd_strip("wave_lcd_8.png", 200, 76)
     make_meter_lcd_strip("meter_lcd_8.png", 20, 62)
 
-    # Flat matte-black CZ-style rotary dials
-    make_flat_cz_dial("dial_cz_teal_pot.png",    66, 65, (64, 212, 216))
-    make_flat_cz_dial("dial_cz_teal_3way.png",   66, 3,  (64, 212, 216), -65, 65)
-    make_flat_cz_dial("dial_cz_teal_4way.png",   66, 4,  (64, 212, 216), -75, 75)
-    make_flat_cz_dial("dial_cz_teal_5way.png",   66, 5,  (64, 212, 216), -100, 100)
-    make_flat_cz_dial("dial_cz_teal_8way.png",   66, 8,  (64, 212, 216), -135, 135)
-    make_flat_cz_dial("dial_cz_teal_9way.png",   66, 9,  (64, 212, 216), -140, 140)
+    # Flat matte-black rotary dials (Green #70C296 & Purple #A486CC / #C4A6EE)
+    make_flat_cz_dial("dial_cz_teal_pot.png",    66, 65, (112, 194, 150))
+    make_flat_cz_dial("dial_cz_teal_3way.png",   66, 3,  (112, 194, 150), -65, 65)
+    make_flat_cz_dial("dial_cz_teal_4way.png",   66, 4,  (112, 194, 150), -75, 75)
+    make_flat_cz_dial("dial_cz_teal_5way.png",   66, 5,  (112, 194, 150), -100, 100)
+    make_flat_cz_dial("dial_cz_teal_8way.png",   66, 8,  (112, 194, 150), -135, 135)
+    make_flat_cz_dial("dial_cz_teal_9way.png",   66, 9,  (112, 194, 150), -140, 140)
 
-    make_flat_cz_dial("dial_cz_coral_hero.png",  72, 65, (246, 104, 78))
-    make_flat_cz_dial("dial_cz_coral_pot.png",   66, 65, (246, 104, 78))
-    make_flat_cz_dial("dial_cz_coral_4way.png",  66, 4,  (246, 104, 78), -75, 75)
+    make_flat_cz_dial("dial_cz_coral_hero.png",  72, 65, (180, 146, 224))
+    make_flat_cz_dial("dial_cz_coral_pot.png",   66, 65, (180, 146, 224))
+    make_flat_cz_dial("dial_cz_coral_4way.png",  66, 4,  (180, 146, 224), -75, 75)
 
-    make_flat_cz_dial("dial_cz_white_hero.png",  70, 65, (240, 240, 236))
-    make_flat_cz_dial("dial_cz_white_pot.png",   66, 65, (226, 228, 226))
+    make_flat_cz_dial("dial_cz_white_hero.png",  70, 65, (216, 239, 228))
+    make_flat_cz_dial("dial_cz_white_pot.png",   66, 65, (216, 239, 228))
 
-    # Compact Casio CZ-101 mini-sliders
-    make_cz_mini_slider("slider_cz_coral.png", 44, 144, 65, (242, 98, 72))
-    make_cz_mini_slider("slider_cz_ivory.png", 44, 144, 65, (228, 220, 192))
-    make_cz_mini_slider("slider_cz_teal.png",  44, 144, 65, (64, 208, 212))
+    # Compact mini-sliders (Purple #A486CC, Mint-Ivory #D8EFE4, Green #70C296)
+    make_cz_mini_slider("slider_cz_coral.png", 44, 144, 65, (164, 134, 204))
+    make_cz_mini_slider("slider_cz_ivory.png", 44, 144, 65, (216, 239, 228))
+    make_cz_mini_slider("slider_cz_teal.png",  44, 144, 65, (112, 194, 150))
 
     with open(MANIFEST, "w", encoding="utf-8") as fh:
         json.dump({"page1": p1, "page2": p2}, fh, indent=2)
