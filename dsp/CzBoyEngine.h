@@ -25,7 +25,7 @@ struct SynthParams
     float volume     = 0.84f; // 0..1 (Param 0)
 
     // Page 1: Core CZ Voice, Waveforms, Live DCW Timbre & ADSR Envelopes
-    int   lineMode   = 2;     // 0=Line1, 1=Line2, 2=1+2, 3=1+2'
+    int   lineMode   = 2;     // 0=Line1, 1=Line2, 2=1+2, 3=1-2
     int   l1Wave1    = 2;     // 0..7 -> CrispyZebra::Waveform 1..8
     int   l1Wave2    = 5;     // 0=Off, 1..8 -> Waveform 1..8
     int   modMode    = 0;     // 0=Off, 1=Ring, 2=Noise, 3=Ring+Noise

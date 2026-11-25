@@ -65,7 +65,7 @@ int main()
     pDual.dcaSus = 0.9f; pDual.vibDepth = 0.2f;
     benchScenario ("Dual-Line 1+2 + Chorus (8 voices)", pDual, 8);
 
-    SynthParams pAphex = presets[1].p; // Aphex SAW Pad: 1+2' + Chorus + Space FX
+    SynthParams pAphex = presets[7].p; // Aphex SAW Pad: 1-2 + Chorus + Space FX
     pAphex.dcaAtt = 0.02f; pAphex.dcaSus = 0.9f;
     benchScenario ("Dual-Line + Chorus + Space FX (8 voices)", pAphex, 8);
 

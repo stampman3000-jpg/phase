@@ -92,7 +92,7 @@ enum class LineSelectMode : uint8_t {
     LINE1_ONLY  = 0, // LINE 1 only
     LINE2_ONLY  = 1, // LINE 2 only
     LINE1_2     = 2, // LINE 1 + 2 (normal)
-    LINE1_2_INV  = 3 // LINE 1 + 2' (phase inverted)
+    LINE1_2_INV  = 3 // 1-2 (Line 1 minus Line 2 phase subtraction)
 };
 
 enum class LfoWaveform : uint8_t {
@@ -1313,11 +1313,19 @@ void setEgRate(int line, int eg_type, int stage, uint8_t value) {
     }
 
     void midiNoteOff(uint8_t note) {
+        // Release only the oldest currently held, unsustained voice for this pitch so
+        // overlapping same-pitch notes (common in MPC sequences) do not cut each other short.
+        Voice* target = nullptr;
         for (auto& v : voices) {
-            if (v.is_active && v.current_note == note) {
-                if (sustain_pedal) v.sustained = true;
-                else v.noteOff();
+            if (v.is_active && v.current_note == note && v.isKeyHeld() && !v.sustained) {
+                if (!target || v.age < target->age) {
+                    target = &v;
+                }
             }
+        }
+        if (target) {
+            if (sustain_pedal) target->sustained = true;
+            else target->noteOff();
         }
         // Keep vibrato LFO gliding smoothly through release tails (released once active voices hit 0)
     }

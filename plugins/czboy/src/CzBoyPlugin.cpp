@@ -130,7 +130,7 @@ public:
         if (index == P_STAT_INFO)
         {
             const char* pname = programName (currentProgram());
-            static const char* kLines[4] = { "L1", "L2", "1+2", "1+2'" };
+            static const char* kLines[4] = { "L1", "L2", "1+2", "1-2" };
             const int lm = clampi (getInt (P_LINE_MODE), 0, 3);
             const int av = activeVoicesAtomic_.load (std::memory_order_relaxed);
             std::snprintf (buf, sizeof (buf), "%.17s | %s | V:%d", pname ? pname : "CZboy", kLines[lm], av);
@@ -295,7 +295,7 @@ private:
         addParam (floatParam  ("volume",      "Master Vol",    0.0f, 100.0f, 84.0f, "%", 0));
 
         // 1..15: Page 1 Core CZ Voice, Live DCW Timbre & ADSR Envelopes
-        addParam (choiceParam ("line_mode",   "Line Mode",     { "Line 1", "Line 2", "1 + 2", "1 + 2'" }, 2));
+        addParam (choiceParam ("line_mode",   "Line Mode",     { "Line 1", "Line 2", "1 + 2", "1 - 2" }, 2));
         addParam (choiceParam ("l1_wave1",    "L1 Wave 1",     w1Names, 2));
         addParam (choiceParam ("l1_wave2",    "L1 Wave 2",     w2Names, 5));
         addParam (choiceParam ("mod_mode",    "Mod Mode",      { "Off", "Ring Mod", "Noise", "Ring+N" }, 0));

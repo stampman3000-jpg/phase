@@ -585,7 +585,7 @@ def build_page1():
     dials_spec = [
         # Bank 1: DCO 1 (4 flat matte-black CZ dials in one wide row)
         (1, "line_mode",  104, y_row1, 66, "dial_cz_teal_4way.png",  4, "LINE MODE", "choice",
-         choice_ticks(["L1", "L2", "1+2", "1+2'"]), -75, 75, CZ_TEAL_HI),
+         choice_ticks(["L1", "L2", "1+2", "1-2"]), -75, 75, CZ_TEAL_HI),
         (2, "l1_wave1",   250, y_row1, 66, "dial_cz_teal_8way.png",  8, "WAVE 1",    "choice",
          choice_ticks(w1_short), -135, 135, CZ_TEAL_HI),
         (3, "l1_wave2",   396, y_row1, 66, "dial_cz_teal_9way.png",  9, "WAVE 2",    "choice",

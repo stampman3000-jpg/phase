@@ -314,6 +314,38 @@ int main()
                "Zero-click retrigger, voice-steal & vibrato release", msg);
     }
 
+    // 10. Overlapping same-pitch notes (MPC sequence legato): first Note-Off only releases oldest voice
+    {
+        CzBoyEngine eng;
+        eng.prepare (sr);
+        SynthParams p;
+        p.lineMode = 0; p.l1Wave1 = 0; p.l1Wave2 = 0; p.modMode = 0;
+        p.dcwTimbre = 0.0f; p.dcwEnv = 0.0f;
+        p.dcaAtt = 0.0f; p.dcaDec = 0.1f; p.dcaSus = 1.0f; p.dcaRel = 0.05f; // ultra-fast ~4 ms release
+        p.chorus = 0.0f; p.spaceSend = 0.0f; p.volume = 0.85f; p.vibDepth = 0.0f;
+
+        std::vector<float> L (8192), R (8192);
+        eng.noteOn (69, 1.0f, p); // A4 #1
+        for (int pos = 0; pos < 2048; pos += 128) eng.render (L.data() + pos, R.data() + pos, 128, p, 120.0);
+        eng.noteOn (69, 1.0f, p); // A4 #2 overlapping while #1 still held
+        for (int pos = 0; pos < 1024; pos += 128) eng.render (L.data() + pos, R.data() + pos, 128, p, 120.0);
+        eng.noteOff (69);         // First Note-Off must release ONLY A4 #1, leaving A4 #2 held!
+        for (int pos = 0; pos < 8192; pos += 128) eng.render (L.data() + pos, R.data() + pos, 128, p, 120.0);
+
+        const int voicesAfterFirstOff = eng.activeVoices();
+        const double heldRms = rmsRange (L, 4096, 8192);
+
+        eng.noteOff (69);         // Second Note-Off releases A4 #2 cleanly to silence
+        for (int pos = 0; pos < 8192; pos += 128) eng.render (L.data() + pos, R.data() + pos, 128, p, 120.0);
+        const int voicesAfterSecondOff = eng.activeVoices();
+        const double finalRms = rmsRange (L, 4096, 8192);
+
+        std::snprintf (msg, sizeof (msg), "afterOff1: v=%d rms=%.3f | afterOff2: v=%d rms=%.6f",
+                       voicesAfterFirstOff, heldRms, voicesAfterSecondOff, finalRms);
+        check (voicesAfterFirstOff == 1 && heldRms > 0.10 && voicesAfterSecondOff == 0 && finalRms < 1e-4,
+               "Overlapping same-pitch A4 releases only oldest voice", msg);
+    }
+
     std::printf ("\nSummary: %d passed, %d failed\n", gPass, gFail);
     return gFail == 0 ? 0 : 1;
 }

@@ -1664,7 +1664,7 @@
     "replacementStrings": [
       {
         "key": "Parameter 1",
-        "value": ["Line 1", "Line 2", "1 + 2", "1 + 2'"]
+        "value": ["Line 1", "Line 2", "1 + 2", "1 - 2"]
       },
       {
         "key": "Parameter 2",

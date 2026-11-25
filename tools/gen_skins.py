@@ -156,7 +156,7 @@ def main():
     w1_names = ["Saw", "Square", "Pulse", "Dbl Sine", "Saw-Pulse", "Rez Saw", "Rez Tri", "Rez Trap"]
     w2_names = ["Off"] + w1_names
     repl_rows = [
-        (1,  ["Line 1", "Line 2", "1 + 2", "1 + 2'"]),
+        (1,  ["Line 1", "Line 2", "1 + 2", "1 - 2"]),
         (2,  w1_names),
         (3,  w2_names),
         (4,  ["Off", "Ring Mod", "Noise", "Ring+N"]),

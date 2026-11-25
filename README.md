@@ -2,19 +2,19 @@
 
 ![CZboy](screenshots/czboy.png)
 
-**CZboy** (`UID: CZBY`, vendor `Stampman3000`) is a standalone 1984 CZ-101-style Phase Distortion synthesizer for Akai MPC OS 3.10.1+ (32-bit ARM32 Cortex-A17 & 64-bit ARM64), based on the fixed-point C++ [**CrispyZebra**](https://github.com/hugelton/CrispyZebra) Phase Distortion engine by Leo Kuroshita (`@kurogedelic`).
+**CZboy** (`UID: CZBY`, vendor `Stampman3000`) is a standalone CZ-derived Phase Distortion synthesizer for Akai MPC OS 3.10.1+ (32-bit ARM32 Cortex-A17 & 64-bit ARM64), based on the C++ [**CrispyZebra**](https://github.com/hugelton/CrispyZebra) Phase Distortion engine by Leo Kuroshita (`@kurogedelic`).
 
 Licensed under the **GNU General Public License v3.0 or later (GPL-3.0-or-later)** — see [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md).
 
 ## Highlights
-- **Studio-Clean NEC uPD933-Accurate Casio CZ-101 Phase Distortion Core (`dsp/CrispyZebra.h`, `dsp/CzBoyEngine.h`)**:
-  - All 8 classic CZ waveforms (**Saw**, **Square**, **Pulse**, **Double Sine**, **Saw-Pulse**, **Rez Saw**, **Rez Tri**, **Rez Trap**) rendered with a 2048-point linear-interpolated unipolar cosine LUT (`> 100 dB` sine purity), **exponential Casio DCW knee curves**, **exponential 3.8-octave musical resonant sweeps (`1×–14×` with frequency-aware Nyquist guard)**, **click-free continuous `Wave 1 + Wave 2` cycle splicing**, per-sample smoothed envelopes (zero zipper noise), pitch-tracked LFSR phase-noise mod, high-headroom linear stereo polyphonic bus, and a gentle `13.5 kHz` CZ-101 analog output silk filter.
+- **CZ-Derived Phase Distortion Engine (`dsp/CrispyZebra.h`, `dsp/CzBoyEngine.h`)**:
+  - Inspired by the Casio CZ-101 / NEC uPD933 phase-distortion architecture, combining all 8 classic CZ waveform families (**Saw**, **Square**, **Pulse**, **Double Sine**, **Saw-Pulse**, **Rez Saw**, **Rez Tri**, **Rez Trap**) with a 2048-point linear-interpolated unipolar cosine LUT (`> 100 dB` sine purity), a convex Casio-style DCW curve (`0–55%` warm sine/EP sweet spot through full sawtooth), exponential 3.6-octave resonant sweeps (`1×–12×` with frequency-aware Nyquist guard), click-free continuous `Wave 1 + Wave 2` cycle splicing, per-sample smoothed envelopes, pitched LFSR phase-noise mod, subtle per-voice aged-hardware drift, and a clean stereo bus with a gentle `11.8 kHz` output silk filter.
   - **Live Real-Time Timbre Control:** Dedicated **`DCW Timbre`** (instant live phase-distortion floor/cutoff) + **`DCW Env`** (live DCW envelope depth) alongside smooth logarithmic (`3 ms – 6.6 s`) **DCW** and **DCA** ADSR envelopes.
-  - **Stereo Voice Spread, Dual-Line Layering & Ambient Space FX:** Natural per-voice stereo panning in `Poly 8` / `Poly 4` (dead center in `Mono`), `Line 1 / Line 2 / 1+2 / 1+2'`, post-ring DCA **Ring Mod** & pitched LFSR **Noise Mod**, **L2 Mix / L2 DCW / bipolar L2 Env Ofs**, silky sine-LFO **Stereo Chorus**, and an airy diffused tempo-synced stereo **Space FX** (`Space Send` true pre-delay send + `Space Decay`).
+  - **Stereo Voice Spread, Dual-Line Layering & Ambient Space FX:** Natural per-voice stereo panning in `Poly 8` / `Poly 4` (dead center in `Mono`), `Line 1 / Line 2 / 1+2 / 1-2` (where `1-2` subtracts Line 2 for hollow phase-cancelled PWM timbres), post-ring DCA **Ring Mod** & pitched LFSR **Noise Mod**, **L2 Mix / L2 DCW / bipolar L2 Env Ofs**, silky sine-LFO **Stereo Chorus**, and an airy diffused tempo-synced stereo **Space FX** (`Space Send` true pre-delay send + `Space Decay`).
 - **32 Factory Presets (`bridge/CzBoyPresets.h`)**:
   - **Boards of Canada Glassy Sines & Ambient Pads:** *BoC Glassy Sine*, *Olson VHS Sine*, *Roygbiv Sine Ld*, *Turquoise Glass*, *NFB Film Organ*, *Dayvan Glass Pad*, *Crystal Tine EP*, *Aphex SAW Pad*, *Rhubarb Glass*.
   - **Fat PD Basses & Leads:** *Fat Rez Bass*, *Acid Rez Squelch*, *Electro Slap Bs*, *Deep Sub Pulse*, *Hollow House Bs*, *Rubber Techno Arp*, *Detuned Rave Ld*, *Metallic Clav*.
-  - **Converted CZ-101 Classics:** *Velvet 1+2' Pad*, *Tubular Chimes*, *Woody Marimba*, *Bright Harpsi*, *Slap Horn Funk*, *Light Harp Pluck*, *Breathy Pan Pipe*.
+  - **CZ-Style Classics:** *Velvet 1-2 Pad*, *Tubular Chimes*, *Woody Marimba*, *Bright Harpsi*, *Slap Horn Funk*, *Light Harp Pluck*, *Breathy Pan Pipe*.
   - **Synthy Noises & IDM Textures:** *Sci-Fi Ring Zaps*, *Noise Wind Sweep*, *Broken Arcade*, *Radio Static Bell*, *Electro Synth Tom*, *Glitch PD Blip*, *Cyber Drone FX*, *Init CZ Saw*.
 - **1984 Casio CZ-101 Hardware Faceplate UI (`1280 × 628`, `tools/gen_ui_assets.py`)**:
   - Matte jet-charcoal ABS faceplate with hairline `DCO → DCW → DCA` schematic framing, brushed-silver chamfered green-grey LCD (2-line readout + live 8-waveform PD scope + stereo LCD meters), printed 8-waveform legend table, flat matte-black CZ-style rotary dials, and compact Casio mini-sliders across 2 tabs (**`CZ-101`** and **`LINE 2/MOD`**) with 100% 4×4 hardware Q-Link coverage.

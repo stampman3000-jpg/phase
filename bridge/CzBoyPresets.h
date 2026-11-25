@@ -16,7 +16,7 @@ struct CzPreset
 // Reference scales:
 //   Wave 1 (0..7):  0=Saw, 1=Square, 2=Pulse, 3=DblSin, 4=SawPls, 5=RezSaw, 6=RezTri, 7=RezTrp
 //   Wave 2 (0..8):  0=Off, 1=Saw, 2=Square, 3=Pulse, 4=DblSin, 5=SawPls, 6=RezSaw, 7=RezTri, 8=RezTrp
-//   Line Mode:      0=Line 1, 1=Line 2, 2=1+2, 3=1+2'
+//   Line Mode:      0=Line 1, 1=Line 2, 2=1+2, 3=1-2
 //   Mod Mode:       0=Off, 1=Ring, 2=Noise, 3=Ring+Noise
 //   Voice Mode:     0=Poly 8, 1=Poly 4, 2=Mono
 //   Env Time (0..1): 0.00=3ms, 0.25=20ms, 0.40=65ms, 0.50=140ms, 0.65=445ms, 0.78=1.2s, 0.88=2.6s, 0.96=4.8s
@@ -353,9 +353,9 @@ inline const CzPreset* factoryPresets (int& outCount)
 
         // === CONVERTED CASIO CZ-101 KEYS, BELLS & HORNS (17..23) ===
 
-        // 17: Velvet 1+2' Pad (classic Casio CZ-101 1+2' phase-inverted warm PWM glassy pad + chorus)
+        // 17: Velvet 1-2 Pad (phase-subtracted 1-2 warm hollow PWM glassy pad + chorus)
         {
-            "Velvet 1+2' Pad",
+            "Velvet 1-2 Pad",
             [] {
                 SynthParams p;
                 p.lineMode = 3; p.l1Wave1 = 4; p.l1Wave2 = 0; p.modMode = 0;
