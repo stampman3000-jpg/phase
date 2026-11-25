@@ -61,15 +61,15 @@ int main()
     benchScenario ("Line 1 Only (4 voices, dry)", pL1Dry, 4);
     benchScenario ("Line 1 Only (8 voices, dry)", pL1Dry, 8);
 
-    SynthParams pDual = presets[0].p; // CZ-101 Brass + Chorus
+    SynthParams pDual = presets[0].p; // BoC Glassy Sine + Chorus
     pDual.dcaSus = 0.9f; pDual.vibDepth = 0.2f;
     benchScenario ("Dual-Line 1+2 + Chorus (8 voices)", pDual, 8);
 
-    SynthParams pAphex = presets[7].p; // Aphex SAW Pad: 1-2 + Chorus + Space FX
+    SynthParams pAphex = presets[5].p; // Aphex SAW Pad: 1-2 + Chorus + Space FX
     pAphex.dcaAtt = 0.02f; pAphex.dcaSus = 0.9f;
     benchScenario ("Dual-Line + Chorus + Space FX (8 voices)", pAphex, 8);
 
-    SynthParams pRing = presets[6].p; // Cosmic Ring Wash + Noise + Space FX
+    SynthParams pRing = presets[28].p; // Sci-Fi Ring Zaps + Noise + Space FX
     pRing.dcaAtt = 0.02f; pRing.dcaSus = 0.9f; pRing.modMode = 3;
     benchScenario ("Dual-Line Ring+Noise+Chorus+Space (8v)", pRing, 8);
 
