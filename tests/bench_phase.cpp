@@ -1,15 +1,15 @@
 // CZboy — Desktop / On-Device ARMv7 CPU Benchmark (44.1 kHz, 128-frame blocks).
 // Copyright (C) 2026 Stampman3000 — GNU General Public License v3.0 or later.
 
-#include "../bridge/CzBoyPresets.h"
-#include "../dsp/CzBoyEngine.h"
+#include "../bridge/PhasePresets.h"
+#include "../dsp/PhaseEngine.h"
 
 #include <algorithm>
 #include <chrono>
 #include <cstdio>
 #include <vector>
 
-using namespace czboy;
+using namespace phase;
 
 static void benchScenario (const char* label, const SynthParams& p, int numNotes)
 {
@@ -18,7 +18,7 @@ static void benchScenario (const char* label, const SynthParams& p, int numNotes
     const int warmup = 64;
     const int iters  = 2000;
 
-    CzBoyEngine eng;
+    PhaseEngine eng;
     eng.prepare (sr);
     const int notes[8] = { 48, 52, 55, 59, 60, 64, 67, 71 };
     for (int i = 0; i < numNotes && i < 8; ++i)
@@ -50,9 +50,9 @@ static void benchScenario (const char* label, const SynthParams& p, int numNotes
 int main()
 {
     int cnt = 0;
-    const CzPreset* presets = factoryPresets (cnt);
+    const PhasePreset* presets = factoryPresets (cnt);
 
-    std::printf ("=== CZboy CPU Benchmark (44.1 kHz, 128-frame = 2902.5 us) ===\n");
+    std::printf ("=== Phase CPU Benchmark (44.1 kHz, 128-frame = 2902.5 us) ===\n");
     std::printf ("%-44s %7s  %7s  %7s  %7s\n", "Scenario", "Avg(us)", "p99(us)", "Avg%128", "p99%128");
     std::printf ("--------------------------------------------------------------------------------\n");
 

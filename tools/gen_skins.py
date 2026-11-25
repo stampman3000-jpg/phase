@@ -4,7 +4,7 @@ import json
 import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SKIN_DIR = os.path.join(ROOT, "plugins", "czboy", "skins")
+SKIN_DIR = os.path.join(ROOT, "plugins", "phase", "skins")
 MANIFEST = os.path.join(ROOT, "tools", "ui_manifest.json")
 
 
@@ -168,7 +168,7 @@ def main():
 
     tabs = []
     for tname, fn_key, fn_sub, bg_file, spec in [
-        ("CZ-101",     0, 0, "bg_czboy.png", m["page1"]),
+        ("PHASE",      0, 0, "bg_phase.png", m["page1"]),
         ("LINE 2/MOD", 1, 0, "bg_line2.png", m["page2"]),
     ]:
         comps = [

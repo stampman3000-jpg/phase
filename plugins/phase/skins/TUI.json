@@ -1702,7 +1702,7 @@
     "tabs": [
       {
         "version": 1,
-        "tabName": "CZ-101",
+        "tabName": "PHASE",
         "fnKeyIndex": 0,
         "fnKeySubIndex": 0,
         "componentDefinition": {
@@ -1734,7 +1734,7 @@
                   "version": 2,
                   "imageType": "Regular",
                   "colour": "0",
-                  "image": "bg_czboy.png"
+                  "image": "bg_phase.png"
                 }
               },
               "handle remapping": {

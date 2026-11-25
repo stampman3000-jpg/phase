@@ -1,9 +1,9 @@
-// CZboy — Casio CZ-Series Phase Distortion Synthesizer for Akai MPC.
+// Phase — CZ-Derived Phase Distortion Synthesizer for Akai MPC.
 // Built on CrispyZebra fixed-point C++ engine & official Akai MPC Plugin Builder SDK.
 // Copyright (C) 2026 Stampman3000 — GNU General Public License v3.0 or later.
 
-#include "../../../bridge/CzBoyPresets.h"
-#include "../../../dsp/CzBoyEngine.h"
+#include "../../../bridge/PhasePresets.h"
+#include "../../../dsp/PhaseEngine.h"
 #include "mpc_plugin.h"
 
 #include <algorithm>
@@ -17,7 +17,7 @@
 #include <thread>
 #include <vector>
 
-namespace czboy {
+namespace phase {
 
 enum ParamIdx : int
 {
@@ -67,10 +67,10 @@ enum ParamIdx : int
     P_COUNT = 36
 };
 
-class CzBoyPlugin final : public mpc::Plugin
+class PhasePlugin final : public mpc::Plugin
 {
 public:
-    CzBoyPlugin() : mpc::Plugin (makeInfo()), engine_ (std::make_unique<CzBoyEngine>())
+    PhasePlugin() : mpc::Plugin (makeInfo()), engine_ (std::make_unique<PhaseEngine>())
     {
         registerAllParams();
         registerFactoryPresets();
@@ -80,7 +80,7 @@ public:
         worker_ = std::thread ([this] { uiWorkerLoop(); });
     }
 
-    ~CzBoyPlugin() override
+    ~PhasePlugin() override
     {
         stopWorker_.store (true, std::memory_order_release);
         if (worker_.joinable()) worker_.join();
@@ -89,10 +89,10 @@ public:
     static mpc::PluginInfo makeInfo()
     {
         mpc::PluginInfo info;
-        info.name         = "CZboy";
+        info.name         = "Phase";
         info.vendor       = "Stampman3000";
-        info.uniqueId     = MPC_FOURCC ('C', 'Z', 'B', 'Y');
-        info.version      = 1002;
+        info.uniqueId     = MPC_FOURCC ('P', 'H', 'S', 'E');
+        info.version      = 1000;
         info.isInstrument = true;
         info.numInputs    = 0;
         info.numOutputs   = 2;
@@ -133,7 +133,7 @@ public:
             static const char* kLines[4] = { "L1", "L2", "1+2", "1-2" };
             const int lm = clampi (getInt (P_LINE_MODE), 0, 3);
             const int av = activeVoicesAtomic_.load (std::memory_order_relaxed);
-            std::snprintf (buf, sizeof (buf), "%.17s | %s | V:%d", pname ? pname : "CZboy", kLines[lm], av);
+            std::snprintf (buf, sizeof (buf), "%.17s | %s | V:%d", pname ? pname : "Phase", kLines[lm], av);
             out = buf;
             return true;
         }
@@ -339,7 +339,7 @@ private:
     void registerFactoryPresets()
     {
         int count = 0;
-        const CzPreset* presets = factoryPresets (count);
+        const PhasePreset* presets = factoryPresets (count);
         for (int i = 0; i < count; ++i)
         {
             const auto& p = presets[i].p;
@@ -443,7 +443,7 @@ private:
         }
     }
 
-    std::unique_ptr<CzBoyEngine> engine_;
+    std::unique_ptr<PhaseEngine> engine_;
     std::atomic<bool> readyForHost_ { false };
     std::atomic<bool> stopWorker_ { false };
     std::atomic<int>  meterLAtomic_ { 0 };
@@ -453,7 +453,7 @@ private:
     std::thread worker_;
 };
 
-} // namespace czboy
+} // namespace phase
 
-using MpcCzBoyPlugin = czboy::CzBoyPlugin;
-MPC_PLUGIN_ENTRY (MpcCzBoyPlugin)
+using MpcPhasePlugin = phase::PhasePlugin;
+MPC_PLUGIN_ENTRY (MpcPhasePlugin)

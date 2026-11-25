@@ -1,4 +1,4 @@
-// CZboy — Casio CZ-Series Phase Distortion Synthesizer Engine for Akai MPC.
+// Phase — CZ-Derived Phase Distortion Synthesizer Engine for Akai MPC.
 // Built on CrispyZebra fixed-point C++ PD engine (Copyright (C) 2026 Leo Kuroshita @kurogedelic, GPL-3.0).
 // Copyright (C) 2026 Stampman3000 — GNU General Public License v3.0 or later.
 #pragma once
@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace czboy {
+namespace phase {
 
 static constexpr float kPi    = 3.14159265358979323846f;
 static constexpr float kTwoPi = 6.28318530717958647692f;
@@ -300,12 +300,12 @@ private:
     float lpL_ = 0.0f, lpR_ = 0.0f, hpL_ = 0.0f, hpR_ = 0.0f;
 };
 
-class CzBoyEngine
+class PhaseEngine
 {
 public:
     static constexpr uint16_t kLutSize = 2048;
 
-    CzBoyEngine()
+    PhaseEngine()
     {
         for (uint16_t i = 0; i < kLutSize; ++i)
         {
@@ -573,4 +573,4 @@ private:
     float outPeakL_ = 0.0f, outPeakR_ = 0.0f;
 };
 
-} // namespace czboy
+} // namespace phase

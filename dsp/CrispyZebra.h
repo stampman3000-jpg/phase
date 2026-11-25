@@ -4,7 +4,7 @@
  * Copyright (C) 2026 Leo Kuroshita @kurogedelic
  * https://github.com/hugelton/CrispyZebra/
  *
- * Modified 2026 by Stampman3000 for CZboy (Akai MPC ARMv7/ARM64 standalone):
+ * Modified 2026 by Stampman3000 for Phase (Akai MPC ARMv7/ARM64 standalone):
  *   - Hoisted per-block pitch bend, drive, volume, and pan math out of the inner sample loop
  *   - Skipped inactive line evaluation in single-line modes (LINE1_ONLY / LINE2_ONLY)
  *   - Added runtime polyphony limit, MIDI velocity scaling, sustain pedal (CC64),

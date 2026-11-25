@@ -1,0 +1,14 @@
+{
+  "name": "Phase",
+  "manufacturer": "Stampman3000",
+  "uid": "PHSE",
+  "version": "1.0.0",
+  "kind": "instrument",
+  "category": "Synth",
+  "numInputs": 0,
+  "numOutputs": 2,
+  "description": "Phase — CZ-derived Phase Distortion synthesizer for Akai MPC based on the CrispyZebra C++ engine.",
+  "file32": "VST/phase-arm32.so",
+  "file64": "VST/phase-arm64.so",
+  "license": "GPL-3.0-or-later"
+}

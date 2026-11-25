@@ -1,14 +1,14 @@
-// CZboy — 32 Curated Presets:
+// Phase — 32 Curated Presets:
 //   Glassy Sines & Ambient Pads, 80s/90s Saws & Classics, Fat PD Basses,
 //   CZ Keys/Bells & Synthy FX.
 // Copyright (C) 2026 Stampman3000 — GNU General Public License v3.0 or later.
 #pragma once
 
-#include "../dsp/CzBoyEngine.h"
+#include "../dsp/PhaseEngine.h"
 
-namespace czboy {
+namespace phase {
 
-struct CzPreset
+struct PhasePreset
 {
     const char* name;
     SynthParams p;
@@ -22,9 +22,9 @@ struct CzPreset
 //   Voice Mode:     0=Poly 8, 1=Poly 4, 2=Mono
 //   Env Time (0..1): 0.00=3ms, 0.25=20ms, 0.40=65ms, 0.50=140ms, 0.65=445ms, 0.78=1.2s, 0.88=2.6s, 0.96=4.8s
 
-inline const CzPreset* factoryPresets (int& outCount)
+inline const PhasePreset* factoryPresets (int& outCount)
 {
-    static const CzPreset kPresets[] = {
+    static const PhasePreset kPresets[] = {
         // === GLASSY SINES & AMBIENT PADS (0..7) ===
 
         // 0: Glassy Sine (warm liquid Saw-Pulse sine + crystalline Double Sine halo + subtle vibrato, <0.45s rel for host_sim)
@@ -183,7 +183,7 @@ inline const CzPreset* factoryPresets (int& outCount)
 
         // 8: 80s CZ Poly Saw (lush detuned dual-Saw 1984 polysynth — warm, wide, glossy 80s chord machine)
         {
-            "80s CZ Poly Saw",
+            "80s Poly Saw",
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 0; p.l1Wave2 = 0; p.modMode = 0;
@@ -259,7 +259,7 @@ inline const CzPreset* factoryPresets (int& outCount)
 
         // 12: CZ-101 Brass Ens (rich, luminous 1984 Casio CZ-101 Brass Ensemble — Pulse + Saw-Pulse)
         {
-            "CZ-101 Brass Ens",
+            "80s Brass Ens",
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 2; p.l1Wave2 = 5; p.modMode = 0;
@@ -278,7 +278,7 @@ inline const CzPreset* factoryPresets (int& outCount)
 
         // 13: Warm CZ Strings (silky 1984 Casio CZ-101 String Ensemble — clean detuned Saw + Saw-Pulse)
         {
-            "Warm CZ Strings",
+            "Warm PD Strings",
             [] {
                 SynthParams p;
                 p.lineMode = 2; p.l1Wave1 = 0; p.l1Wave2 = 5; p.modMode = 0;
@@ -626,7 +626,7 @@ inline const CzPreset* factoryPresets (int& outCount)
 
         // 31: Init CZ Saw (clean bright single-line CZ Saw starting point)
         {
-            "Init CZ Saw",
+            "Init PD Saw",
             [] {
                 SynthParams p;
                 p.lineMode = 0; p.l1Wave1 = 0; p.l1Wave2 = 0; p.modMode = 0;
@@ -648,4 +648,4 @@ inline const CzPreset* factoryPresets (int& outCount)
     return kPresets;
 }
 
-} // namespace czboy
+} // namespace phase

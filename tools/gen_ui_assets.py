@@ -18,7 +18,7 @@ import random
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SKIN_DIR = os.path.join(ROOT, "plugins", "czboy", "skins")
+SKIN_DIR = os.path.join(ROOT, "plugins", "phase", "skins")
 MANIFEST = os.path.join(ROOT, "tools", "ui_manifest.json")
 
 W, H = 1280, 628
@@ -238,7 +238,7 @@ def draw_waveform_legend_chart(img, x, y, w, h):
     dr = ImageDraw.Draw(img)
     x0, y0, x1, y1 = int(x * SS), int(y * SS), int((x + w) * SS), int((y + h) * SS)
     dr.rounded_rectangle([x0, y0, x1, y1], radius=3 * SS, fill=(17, 20, 24, 255), outline=CZ_LINE, width=SS)
-    draw_text(img, "CZ WAVEFORM TABLE", (x + w / 2) * SS, (y + 10) * SS, 7.6, fill=OFF_WHITE, align="center", bold=True, track=0.14)
+    draw_text(img, "PD WAVEFORM TABLE", (x + w / 2) * SS, (y + 10) * SS, 7.6, fill=OFF_WHITE, align="center", bold=True, track=0.14)
     dr.line([(x0 + 6 * SS, (y + 19) * SS), (x1 - 6 * SS, (y + 19) * SS)], fill=(64, 70, 78, 255), width=SS)
 
     labels = ["1 SAW", "2 SQR", "3 PLS", "4 DBL", "5 S-PL", "6 R-SW", "7 R-TR", "8 R-TP"]
@@ -268,11 +268,11 @@ def draw_cz101_header(img, page_tag):
     """Draw the iconic 1984 Casio CZ-101 header: nameplate + silver LCD + waveform legend."""
     dr = ImageDraw.Draw(img)
 
-    # Left: Bold flat 1984 Casio-style CZboy logotype
-    draw_text(img, "CZ", 28 * SS, 36 * SS, 33, fill=WHITE, align="left", bold=True, track=0.01)
-    draw_text(img, "boy", 79 * SS, 38 * SS, 30, fill=CZ_TEAL_HI, align="left", bold=True, track=0.01)
+    # Left: Bold flat 1980s-style PHASE logotype
+    draw_text(img, "PH", 28 * SS, 36 * SS, 33, fill=WHITE, align="left", bold=True, track=0.02)
+    draw_text(img, "ASE", 74 * SS, 36 * SS, 33, fill=CZ_TEAL_HI, align="left", bold=True, track=0.02)
 
-    # Crisp Casio model pill badge next to logo
+    # Crisp model pill badge next to logo
     dr.rounded_rectangle([168 * SS, 22 * SS, 232 * SS, 42 * SS], radius=2 * SS, fill=CZ_CORAL)
     draw_text(img, "PD-101", 200 * SS, 32.5 * SS, 9.2, fill=WHITE, align="center", bold=True, track=0.08)
 
@@ -645,7 +645,7 @@ def build_page1():
     ]
 
     out = img.resize((W, H), Image.LANCZOS).convert("RGB")
-    out.save(os.path.join(SKIN_DIR, "bg_czboy.png"))
+    out.save(os.path.join(SKIN_DIR, "bg_phase.png"))
     return {"knobs": knobs, "strips": strips, "labels": labels}
 
 
@@ -739,9 +739,9 @@ def main():
         if fn.endswith(".png"):
             os.remove(os.path.join(SKIN_DIR, fn))
 
-    print("Rendering CZboy Page 1 (1984 Casio CZ-101 Schematic + Silver LCD + Mini-Sliders)...")
+    print("Rendering Phase Page 1 (PD Schematic + Silver LCD + Mini-Sliders)...")
     p1 = build_page1()
-    print("Rendering CZboy Page 2 (Line 2 Detune / Layer / Pitch EG / Vibrato)...")
+    print("Rendering Phase Page 2 (Line 2 Detune / Layer / Pitch EG / Vibrato)...")
     p2 = build_page2()
 
     print("Rendering 4x-supersampled Flat Matte-Black CZ Dials, Casio Mini-Sliders & LCD Strips...")
@@ -770,7 +770,7 @@ def main():
 
     with open(MANIFEST, "w", encoding="utf-8") as fh:
         json.dump({"page1": p1, "page2": p2}, fh, indent=2)
-    print(f"Done! Wrote authentic CZ-101 skins to {SKIN_DIR}")
+    print(f"Done! Wrote Phase skins to {SKIN_DIR}")
 
 
 if __name__ == "__main__":

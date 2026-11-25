@@ -1,14 +1,14 @@
-// CZboy — Phase Distortion Tuning, 8 Unipolar CZ Waveforms, Live DCW Sweep, Space Send & 32-Preset Suite.
+// Phase — Phase Distortion Tuning, 8 Unipolar CZ Waveforms, Live DCW Sweep, Space Send & 32-Preset Suite.
 // Copyright (C) 2026 Stampman3000 — GNU General Public License v3.0 or later.
 
-#include "../bridge/CzBoyPresets.h"
-#include "../dsp/CzBoyEngine.h"
+#include "../bridge/PhasePresets.h"
+#include "../dsp/PhaseEngine.h"
 
 #include <cmath>
 #include <cstdio>
 #include <vector>
 
-using namespace czboy;
+using namespace phase;
 
 static int gPass = 0, gFail = 0;
 static void check (bool ok, const char* name, const char* detail = "")
@@ -56,11 +56,11 @@ int main()
     const int N = 22050; // 0.5 s
     char msg[160];
 
-    std::printf ("=== CZboy Phase Distortion Validation Suite (sr=%.0f Hz) ===\n\n", sr);
+    std::printf ("=== Phase — Phase Distortion Validation Suite (sr=%.0f Hz) ===\n\n", sr);
 
     // 1. Exact A4 = 440.0 Hz tuning with DCW = 0 (pure cosine core)
     {
-        CzBoyEngine eng;
+        PhaseEngine eng;
         eng.prepare (sr);
         SynthParams p;
         p.lineMode = 0; p.l1Wave1 = 0; p.l1Wave2 = 0; p.modMode = 0;
@@ -86,7 +86,7 @@ int main()
         double minRms = 1e9, maxSlew = 0.0;
         for (int w = 0; w < 8; ++w)
         {
-            CzBoyEngine eng;
+            PhaseEngine eng;
             eng.prepare (sr);
             SynthParams p;
             p.lineMode = 0; p.l1Wave1 = w; p.l1Wave2 = 0; p.modMode = 0;
@@ -111,7 +111,7 @@ int main()
 
     // 3. Live real-time DCW Timbre sweeps unipolar REZ TRI mid-note without retriggering
     {
-        CzBoyEngine eng;
+        PhaseEngine eng;
         eng.prepare (sr);
         SynthParams p;
         p.lineMode = 0; p.l1Wave1 = 6; p.l1Wave2 = 0; // REZ TRI
@@ -134,7 +134,7 @@ int main()
 
     // 4. Space FX true pre-delay Send rings out stereo ambient cloud after Send pulled to 0%
     {
-        CzBoyEngine eng;
+        PhaseEngine eng;
         eng.prepare (sr);
         SynthParams p;
         p.lineMode = 0; p.l1Wave1 = 0; p.l1Wave2 = 0;
@@ -167,7 +167,7 @@ int main()
 
     // 5. Dual-Line 1+2 Polyphonic 8-Voice Chord with Natural Stereo Voice Spread
     {
-        CzBoyEngine eng;
+        PhaseEngine eng;
         eng.prepare (sr);
         int cnt = 0;
         SynthParams p = factoryPresets (cnt)[0].p; // CZ-101 Brass
@@ -188,7 +188,7 @@ int main()
 
     // 6. Program 0 (CZ-101 Brass) releases cleanly to silence < 0.5 s
     {
-        CzBoyEngine eng;
+        PhaseEngine eng;
         eng.prepare (sr);
         int cnt = 0;
         SynthParams p = factoryPresets (cnt)[0].p;
@@ -208,13 +208,13 @@ int main()
     // 7. All 32 Handcrafted & Converted Presets render audibly with zero NaN/Inf
     {
         int count = 0;
-        const CzPreset* presets = factoryPresets (count);
+        const PhasePreset* presets = factoryPresets (count);
         int audible = 0, finite = 0;
         const int PN = 32768; // 0.74 s so slow Aphex ambient pads bloom audibly
         std::vector<float> L (PN), R (PN);
         for (int i = 0; i < count; ++i)
         {
-            CzBoyEngine eng;
+            PhaseEngine eng;
             eng.prepare (sr);
             eng.noteOn (60, 0.9f, presets[i].p);
             for (int pos = 0; pos < PN; pos += 128)
@@ -231,7 +231,7 @@ int main()
 
     // 8. Clean Glassy Sine Purity (zero LUT grit / zipper / drive fuzz) & Click-Free Wave1+Wave2 Splice
     {
-        CzBoyEngine eng;
+        PhaseEngine eng;
         eng.prepare (sr);
         SynthParams p;
         p.lineMode = 0; p.l1Wave1 = 0; p.l1Wave2 = 0; p.modMode = 0;
@@ -267,7 +267,7 @@ int main()
         const double snrDb = 10.0 * std::log10 (sigSq / std::max (1e-18, errSq));
 
         // Check click-free Wave1 (SAW) + Wave2 (REZ_TRI) cycle splice
-        CzBoyEngine eng2;
+        PhaseEngine eng2;
         eng2.prepare (sr);
         p.l1Wave1 = 0; p.l1Wave2 = 7; p.dcwTimbre = 0.25f; // SAW + REZ_TRI
         eng2.noteOn (60, 1.0f, p);
@@ -286,7 +286,7 @@ int main()
     {
         int cnt = 0;
         SynthParams p = factoryPresets (cnt)[0].p; // Glassy Sine
-        CzBoyEngine eng;
+        PhaseEngine eng;
         eng.prepare (sr);
         std::vector<float> L, R;
         auto run = [&] (int n) {
@@ -316,7 +316,7 @@ int main()
 
     // 10. Overlapping same-pitch notes (MPC sequence legato): first Note-Off only releases oldest voice
     {
-        CzBoyEngine eng;
+        PhaseEngine eng;
         eng.prepare (sr);
         SynthParams p;
         p.lineMode = 0; p.l1Wave1 = 0; p.l1Wave2 = 0; p.modMode = 0;

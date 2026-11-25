@@ -6,7 +6,7 @@ import shutil
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SKIN_DIR = os.path.join(ROOT, "plugins", "czboy", "skins")
+SKIN_DIR = os.path.join(ROOT, "plugins", "phase", "skins")
 MANIFEST = os.path.join(ROOT, "tools", "ui_manifest.json")
 OUT_DIR  = os.path.join(ROOT, "docs", "previews")
 SHOT_DIR = os.path.join(ROOT, "screenshots")
@@ -51,8 +51,8 @@ def main():
     }
 
     for pg, bg, out_name, wave_fi, lbl_txts in [
-        ("page1", "bg_czboy.png", "page1_czboy.png", 5, ["CZ-101 Brass | 1+2 | V:4", "PLS+S-PL | POLY8"]),
-        ("page2", "bg_line2.png", "page2_line2.png", 0, ["CZ-101 Brass | 1+2 | V:4", "PLS+S-PL | POLY8"]),
+        ("page1", "bg_phase.png", "page1_phase.png", 4, ["Glassy Sine | 1+2 | V:4", "S-PL | POLY8"]),
+        ("page2", "bg_line2.png", "page2_line2.png", 0, ["Glassy Sine | 1+2 | V:4", "S-PL | POLY8"]),
     ]:
         im = Image.open(os.path.join(SKIN_DIR, bg)).convert("RGBA")
         for st in m[pg].get("strips", []):
@@ -73,8 +73,8 @@ def main():
         out_path = os.path.join(OUT_DIR, out_name)
         im.convert("RGB").save(out_path)
         if pg == "page1":
-            shutil.copy2(out_path, os.path.join(SHOT_DIR, "czboy.png"))
-    print(f"Rendered CZ-101 previews to {OUT_DIR}/ and screenshots/czboy.png")
+            shutil.copy2(out_path, os.path.join(SHOT_DIR, "phase.png"))
+    print(f"Rendered Phase previews to {OUT_DIR}/ and screenshots/phase.png")
 
 
 if __name__ == "__main__":
