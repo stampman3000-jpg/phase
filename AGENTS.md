@@ -1,3 +1,5 @@
+Global rules: also follow ~/agents/AGENTS.md (Johnny's shared rules for all agents).
+
 # AGENTS.md — Build & Maintenance Guide for Phase
 
 ## Project Identity
